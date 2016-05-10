@@ -6758,5 +6758,27 @@ class CronController extends Ep_Controller_Action
 		return $missionTitle;
 		//echo '<pre>';print_r($articleDetails);exit;
 	}
-	
+
+    /** Author: Thilagam**/
+    /** Date:10/5/2016**/
+    /**Function: Cron to delete the temporary files from the temp folder**/
+    public function deleteTempfilesAction()
+    {
+        $cron_obj = new Ep_Ao_CronLock();
+        $cron = $cron_obj->getCronLock('articleParticipationTimeUpLiberte');
+        $lockstatus = $cron[0]['locked'];
+        if($lockstatus == 'locked')
+        {
+            echo "in process";
+            exit;
+        }
+        else
+        {
+            $files = glob(IMAGE_PATH_BO . '/*');
+            for($i=0;$i<count($files);$i++):
+                unlink($files[$i]);
+            endfor;
+        }
+
+    }
 }

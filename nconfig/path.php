@@ -73,3 +73,8 @@ set_include_path( MODEL_PATH_ROOT . PATH_SEPARATOR . ENV_PATH_ROOT . PATH_SEPARA
 //added by naseer on 23-09-2015 //
 define('DATA_PATH_BO','/home/sites/site6/users/xmldb_editplace/');
 
+/** Author: Thilagam**/
+/** Date:10/5/2016**/
+/**Reason: To define the BO path for deleting the temp files**/
+define('IMAGE_PATH_BO','/home/sites/site6/web/BO/assets/temp_img');
+
