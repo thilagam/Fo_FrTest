@@ -1,0 +1,24 @@
+	<header>
+		<div class="container navbar navbar-inverse">
+		  <div class="navbar-inner">
+			<div class="container">
+			  <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			  </a>
+			  <a id="brand" class="brand" title="Accueil edit-place" href="/"><img id="logo" src="/FO/images/shim.gif"></a>
+			  <div class="nav-collapse collapse">
+				<ul class="nav pull-right">
+					<li><h2>Suivi de commande</h2> 
+					
+					{if $superclientidentifier!=""}<span style="color:#FFF;font-weight:bold;margin-top:10px;clear:both;float:left">{$superclient_email}</span> <a tabindex="-1" href="/suivi-de-commande/logout" style="float:right;">Se déconnecter</a>{/if}
+					</li> 
+					<li><img class="flag flag-fr" src="/FO/images/shim.gif"></li>
+				</ul>   
+			  </div><!--/.nav-collapse -->
+			</div>
+		  </div>
+		</div>
+    </header>
+

@@ -1,0 +1,25 @@
+{if $recruit.link_quiz eq 'yes' && $recruit.quiz_partcipation_id}
+	<h1>Quiz</h1>
+	<div class="about mod" id="quiz_block">
+		
+		{if $recruit.qualified eq 'yes'}			
+			<h3 class="text-success" style="text-align: center">F&eacute;licitations ! Vous avez r&eacute;ussi le quiz de pr&eacute;s&eacute;lection</h3>
+		{elseif $recruit.qualified eq 'no'}			
+			<h3 class="text-error">D&eacute;sol&eacute; ! Nous regrettons de ne pouvoir vous s&eacute;lectionner pour cette mission, vous n&rsquo;avez pas obtenu le nombre de bonnes r&eacute;ponses requis.</h3>
+		{/if}
+	</div>
+{/if}
+{if ($recruit.link_quiz eq 'yes' && $recruit.qualified eq 'yes') || ($recruit.link_quiz neq 'yes')}
+	{if $recruit.status eq 'bid_pending' &&  ($recruit.contract_signed eq '' ||   $recruit.contract_signed eq 'no')}
+		
+		<br><br><h1>Article test</h1>
+		<p class="lead" style="text-align: center">Vous avez atteint la derni&egrave;re &eacute;tape de s&eacute;lection. Nous souhaitons vous tester sur la production d'un article test.</p>
+		<div class="about mod" id="sign-contract">		
+			
+			
+			<!-- contract getting from some other file-->
+			{$recruit.contract}			
+			
+		</div>
+	{/if}
+{/if}

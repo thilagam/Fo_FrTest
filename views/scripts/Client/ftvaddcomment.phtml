@@ -1,0 +1,139 @@
+{literal}
+<script type="text/javascript">
+    //Comments submission
+    $(document).ready(function() {
+        $("#comment_submit_ch").click(function(){
+            $("#loading").modal('show');
+            $.post("/ftvchaine/savecomments", $("#comment_form").serialize(),
+                    function(data) {     //alert(data);
+                        window.location.reload();
+                        refreshChaineCommentsModel();
+                        $('#addcomment').bind('hidden.bs.modal', function () {
+                            $("html").css("margin-right", "0px");
+                        });
+                        $('#addcomment').bind('show.bs.modal', function () {
+                            $("html").css("margin-right", "-15px");
+                        });
+                    }
+            );
+        });
+        $("#comment_submit").click(function(){
+            $("#loading").modal('show');
+            $.post("/ftvedito/savecomments", $("#comment_form").serialize(),
+                function(data) {     //alert(data);
+                    window.location.reload();
+                    refreshCommentsModel();
+                    $('#addcomment').bind('hidden.bs.modal', function () {
+                        $("html").css("margin-right", "0px");
+                    });
+                    $('#addcomment').bind('show.bs.modal', function () {
+                        $("html").css("margin-right", "-15px");
+                    });
+                }
+            );
+        });
+    });
+
+    function refreshCommentsModel()
+    {
+        var requestId = $("#request_id").val();
+        var href="/ftvedito/showcomments?request_id="+requestId;
+        $("#addcomment").removeData('modal');
+        $('#addcomment .modal-body').load(href);
+        $("#addcomment").modal();
+        $(".modal-backdrop:gt(0)").remove();
+    }
+    function refreshChaineCommentsModel()
+    {
+        var requestId = $("#request_id").val();
+        var href="/ftvchaine/showcomments?request_id="+requestId;
+        $("#addcomment").removeData('modal');
+        $('#addcomment .modal-body').load(href);
+        $("#addcomment").modal();
+        $(".modal-backdrop:gt(0)").remove();
+    }
+
+
+</script>
+{/literal}
+    {if $showrequestobject eq 'yes'}
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Objet de la demande</h3>
+    </div>
+    <div class="modal-body" id="add_comment">
+        <div class="mod">
+            <div class="row-fluid">{$objectRequest}
+            </div>
+        </div>
+    </div>
+    {elseif $showrecentcomment eq 'yes'}
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Commentaires d'Edit-place </h3>
+    </div>
+    <div class="modal-body" id="add_comment">
+        <div class="mod">
+            <div class="row-fluid">{$recentcomments}
+            </div>
+        </div>
+    </div>
+    {elseif $savedcomments neq 'yes'}
+<!--///show loading time for fetching the plagiarism details ///-->
+
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Ajouter un Commentaire</h3>
+        <div style="display: none" id="loading">
+            <h4><b style="color: red">Commentaire en cours d'envoi..</b><img src="/FO/images/imageB3/ajax_loader.gif"></h4>
+        </div>
+    </div>
+    <div class="modal-body" id="add_comment">
+        <div class="mod">
+            <h4 id="comment"><i class="icon-comment"></i> Commentaires</h4>
+            <div id="ajaxdata"></div>
+            <ul class="media-list" id="comments_list">
+                {if $commentDetails neq "NO"}
+                {foreach from=$commentDetails item=comment}
+                <li class="media" id="comment_{$comment.identifier}">
+                    <div class="media-body">
+                        <h4 class="media-heading">
+                            <a  role="button" data-toggle="modal" data-target="#viewProfile-ajax">{if $comment.user_type eq "BO"}{$comment.bo_user}{else}{$comment.first_name}{/if}</a> <span class="muted" style="font-size: 12px;">{$comment.created_at|date_format:"%d/%m/%Y %H:%M"}</span></h4>
+
+                        {$comment.comments}
+
+                    </div>
+                </li>
+                {/foreach}
+                {else}
+                    Aucun commentaire post&eacute; pr&eacute;cedemment.
+                {/if}
+            </ul>
+            <div class="row-fluid">
+                <div class=" well">
+                    <form action="" method="POST" id="comment_form">
+                        <h4>Commenter / poser une question</h4>
+                        <fieldset>
+                            <textarea class="form-control" rows="8" placeholder="Ecrire un commentaire" name="comments" id="comments"></textarea>
+
+                            <input type="hidden" name="comment_type" value="{$comment_type}" id="comment_type">
+                            <input type="hidden" name="request_id" value="{$request_id}" id="request_id">
+                        </fieldset>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {/if}
+
+<div class="modal-footer">
+
+    {if $showbutton neq 'no'}
+        {if $ftvtype eq 'chaine'}
+            <button type="button" id="comment_submit_ch" name="comment_submit" class="btn btn-success" onclick="saveComments();">Envoyer</button>
+        {else $ftvtype eq 'edito'}
+            <button type="button" id="comment_submit" name="comment_submit" class="btn btn-success" onclick="saveComments();">Envoyer</button>
+        {/if}
+    {/if}
+</div>

@@ -1,0 +1,167 @@
+{literal}
+<script type="text/javascript">
+function fnperiodFees(months,fees,totalInovoice)
+{
+	fees_period=parseFloat(fees);
+	totalInovoice=parseFloat(totalInovoice);
+	
+	$("#period_fees").text(fees.replace(".",","));
+	
+	//total invoice calculation based on period time
+	var FinalInvoice=(totalInovoice-fees_period).toFixed(2);	
+	FinalInvoice=FinalInvoice.toString();
+	$("#total_invoice").text(FinalInvoice.replace(".",","));
+	
+	var period_month='period_month';
+	cookieManager.deleteCookie(period_month);
+	var period_fees_cookie=cookieManager.writeSessionCookie(period_month,months);		
+	
+}
+</script>
+{/literal}
+
+<div class="row-fluid">
+	<div class="span7">
+	<h3>Facture edit-place #{$invoiceId|replace:'ep_invoice_':''}</h3>
+	Cr&eacute;e le 
+	{if $created_at}
+		{$created_at|date_format:"%d/%m/%Y"}
+	{else}
+		{$smarty.now|date_format:"%d/%m/%Y"}
+	{/if}	
+	</div>
+	<div class="span5">
+		<div class="btn-group pull-right">
+		{if $status eq 'refuse'}
+			<a class="btn btn-small" href="/contrib/regeneratepdf?invoiceid={$invoiceId|replace:'ep_invoice_':''}"><i class="icon icon-file"></i> Demander le paiement</a>
+		{elseif $invoiceId && $status eq 'Paid'}
+			<a class="btn btn-small" href="/contrib/downloadinvoice?invoiceid={$invoiceId|replace:'ep_invoice_':''}"><i class="icon icon-file"></i> T&eacute;l&eacute;charger la facture</a>
+		{elseif !$status || $smarty.get.oldinvoice eq 'yes'}	
+			<a class="btn btn-small" href="/contrib/generatepdf"><i class="icon icon-file"></i> Demander le paiement</a>		
+		{/if}	
+		<a class="btn btn-small" href="/contrib/compose-mail?invoice_id={$invoiceId|replace:'ep_invoice_':''}&senduser=111201092609847&obj=complaint"><i class="icon icon-exclamation-sign"></i> Faire une r&eacute;clamation</a>
+		</div>
+	</div>
+</div>
+<hr>
+<div class="row-fluid">
+	<div class="span8 offset2">
+		<table class="table table-hover">
+		<tbody>
+		{assign var=total value=0.0}
+		{if $invoiceDetails|@count gt 0}		
+			{foreach item=article from=$invoiceDetails name=invoice}
+				<tr {if $article.invoice_path && $smarty.get.oldinvoice eq 'yes' } style="font-weight:bold" {/if}>
+					<td colspan="2">{$article.AOTitle} - {$article.client_name|capitalize} - {$article.article_created_date}</td>
+					<td>{$article.price|zero_cut:2} &euro;</td>
+				</tr>
+			{assign var=total value=$total+$article.price}
+			{/foreach}
+		{/if}	
+			
+		<tr class="alert alert-info"><td colspan="2"><strong>Total prestations</strong></td><td><strong>{$totalInvoice|zero_cut:2} &euro;</strong></td></tr>
+		
+		{if $ep_contrib_profile_pay_info_type=='ssn' || ($ep_contrib_profile_pay_info_type=='comp_num' && $ep_contrib_profile_vat_check=='YES')}
+			<tr><td colspan="3"><strong>Pr&eacute;compte : Montant vers&eacute; pour vous par Edit-place</strong></td></tr>
+		{/if}	
+		{if $ep_contrib_profile_pay_info_type=='ssn'}
+			<tr>
+				<td>Cotisation maladie veuvage</td>
+				<td>Taux : 0,85%</td>
+				<td>{math equation="(x* y)/100" x=$total y=0.85 assign=tax1} {$tax1|zero_cut:2} &euro;</td>
+			</tr>
+			<tr>
+				<td>CSG</td>
+				<td>Taux : 7,36875%</td>
+				<td>{math equation="(x* y)/100" x=$total y=7.36875 assign=tax2}	{$tax2|zero_cut:2} &euro;</td>
+			</tr>
+			<tr>
+				<td>CRDS</td>
+				<td>Taux : 0,49125%</td>
+				<td>{math equation="(x* y)/100" x=$total y=0.49125 assign=tax3} {$tax3|zero_cut:2} &euro;</td>
+			</tr>
+			{if $formation_display eq 'yes'}
+				<tr>
+					<td>Formation professionnelle</td>
+					<td>Taux : 0,35%</td>
+					<td>{math equation="(x* y)/100" x=$total y=0.35 assign=tax4} {$tax4|zero_cut:2} &euro;</td>
+				</tr>
+			{/if}	
+			<tr class="alert alert-danger">
+				<td>&nbsp;</td>
+				<td>A verser &agrave; l'AGESSA</td>
+				<td>{$totalTax|zero_cut:2} &euro;</td>
+			</tr>
+		{/if}	
+		{if $ep_contrib_profile_pay_info_type=='comp_num' && $ep_contrib_profile_vat_check=='YES'}
+			<tr>
+				<td>TVA</td>
+				{if $tva_new eq 'no'}
+					<td>Taux : 19,6%</td>
+					<td>{math equation="(x* y)/100" x=$total y=19.6 assign=tax1} {$tax1|zero_cut:2} &euro;</td>
+				{else}	
+					<td>Taux : 20%</td>
+					<td>{math equation="(x* y)/100" x=$total y=20 assign=tax1} {$tax1|zero_cut:2} &euro;</td>
+				{/if}	
+			</tr>
+			<tr class="alert alert-info">
+				<td>&nbsp;</td>
+				<td>A verser &agrave; l'AGESSA</td>
+				<td>{$totalTax|zero_cut:2} &euro;</td>
+			</tr>
+		{/if}
+		{if $ep_contrib_profile_pay_info_type=='ep_admin'}
+			<tr>
+				<td colspan="2">Frais de virement et de traitement Edit-place : {$ep_admin_fee_percentage}%</td>
+				<td>{math equation="(x* y)/100" x=$total y=$ep_admin_fee_percentage assign=tax1} {$tax1|zero_cut:2} &euro;</td>
+				
+			</tr>	
+			{if !$invoiceId}
+			<tr><td colspan="3"><strong>Frais d'avance sur royalties*</strong></td></tr>			
+			{/if}
+			<tr>
+				<td>
+					{if $invoiceId}
+						Frais d'avance : {$pay_later_percentage}% (paiement le 15 {$pay_later_month_name}).
+					{else}					
+					<input type="radio" value="2" name="pay_later_month" {if $pay_later_month eq 2} checked{/if} onchange="fnperiodFees(this.value,'{math equation='((x-z)* y)/100' x=$total z=$totalTax y=0 format='%.2f'}','{math equation='(x-y)' x=$total y=$totalTax format='%.2f'}');"> 0% pour un paiement le 15 {"last day of +2 month"|date_format:'%B'}<br>					
+					<input type="radio" value="1" name="pay_later_month" {if $pay_later_month eq 1} checked{/if} onchange="fnperiodFees(this.value,'{math equation='((x-z)* y)/100' x=$total z=$totalTax y=8 format='%.2f'}','{math equation='(x-y)' x=$total y=$totalTax format='%.2f'}');"> 8% pour un paiement le 15 {"last day of +1 month"|date_format:'%B'}
+					{/if}
+				<td>
+				<td><span id="period_fees">{$period_fees|zero_cut:2}</span> &euro;</td>
+				
+				
+			</tr>
+			{/if}			
+			<tr>
+				<td style="text-align:right" colspan="2"><h4>Montant vers&eacute; au r&eacute;dacteur</h4></td>
+				<td><h4><span id="total_invoice">{$FinaltotalInvoice|zero_cut:2}</span> &euro;</h4></td>
+			</tr>
+			{if $ep_contrib_profile_pay_info_type=='ep_admin' && !$invoiceId}
+			<tr>
+				<td colspan="3">* Nos clients nous paient en moyenne 3 mois apr&egrave;s la fin d&rsquo;une prestation (articles livr&eacute;s et valid&eacute;s)</td>				
+			</tr>
+			{/if}
+		</tbody>
+		</table>
+		
+		{if $status =='refuse'}
+		<p>
+			<a href="/contrib/regeneratepdf?invoiceid={$invoiceId|replace:'ep_invoice_':''}" class="btn btn-primary pull-right">Demander le paiement</a>
+		</p>
+		{elseif !$invoiceId || $smarty.get.oldinvoice eq 'yes'}
+		<p>
+			<a href="/contrib/generatepdf" class="btn btn-primary pull-right">Demander le paiement</a>
+		</p>
+		{/if}
+	</div>
+</div>
+<a class="pull-right btn btn-small disabled anchor-top scroll" href="#brand"><i class="icon-arrow-up"></i></a>
+{literal}
+<script>
+ 	$(".scroll").click(function(event){		
+		event.preventDefault();
+		$('html,body').animate({scrollTop:$(this.hash).offset().top}, 500);
+	});
+</script>	
+{/literal}

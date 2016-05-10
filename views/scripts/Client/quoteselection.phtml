@@ -1,0 +1,319 @@
+{literal}
+<script language="javascript"> 
+(function($,W,D)
+	{
+		var JQUERY4U = {};
+
+		JQUERY4U.UTIL =
+		{
+			setupFormValidation: function()
+			{
+					//form validation rules
+					$("#conactForm").validate({
+						onkeyup:false,
+						errorClass: 'error',
+						validClass: 'valid',
+						message:false,
+						highlight: function(element) {
+							$(element).closest('span').addClass("f_error");
+						},
+						unhighlight: function(element) {
+							$(element).closest('span').removeClass("f_error");
+						},
+						rules: {
+							contact_firstname:  {
+								required: true
+							},
+							contact_lastname:  {
+								required: true
+							},
+							contact_email:  {
+								required: true,
+								email: true
+							},
+							contact_phone: {
+								required: true,
+								number: true
+							}
+						}
+					});
+			    
+			}
+		}
+
+		//when the dom has loaded setup form validation rules
+		$(D).ready(function($) {
+			JQUERY4U.UTIL.setupFormValidation();
+		});
+
+	})(jQuery, window, document);
+</script>
+
+<style>
+		.error { display: none !important;}
+		.f_error input, .f_error select, .f_error textarea {
+			border-color: rgb(185, 74, 72);
+			color: rgb(185, 74, 72);
+		}
+</style>
+{/literal}	 
+	
+<section id="quote-selection">
+	<div class="row-fluid">
+		<!-- col 1 -->
+		<div class="span8">
+			<div class="profilehead-mod">
+				<div class="span3">
+					<div class="editor-container">
+						<a class="imgframe-large" href="#">
+							<img src="{$contribprofile[0].profilepic}" alt="{$contribprofile[0].first_name|ucfirst} {$contribprofile[0].last_name|ucfirst}">
+						</a>
+					</div>
+				</div>
+				<div class="span9 profile-name">
+					<h3>{$contribprofile[0].name}</h3>
+					<p class="" style="">{$contribprofile[0].age} ans  <span class="muted">&bull;</span>  {$contribprofile[0].catstr}  <span class="muted">&bull;</span>  {$contribprofile[0].langstr}</p>
+					<table class="table table-condensed table-hover">
+						<tr>
+							<td class="muted">{$contribprofile[0].participations} participations</td>
+							<td class="muted">{$contribprofile[0].selectedcount} fois s&eacute;lectionn&eacute;</td>
+						</tr>
+						<tr>
+							<td class="muted">Clients : {$contribprofile[0].clientlist}</td>
+							<td><a href="#skills">D&eacute;tails du profil</a></td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			
+			<div class="comment well well-large">
+				<p><strong><i class="icon-comment"></i> A propos de votre annonce : "{$contribprofile[0].title}"</strong></p>
+				<p class="">
+				</p>
+			</div>
+
+			<h3>Son profil</h3>
+			
+			<section id="skills">
+				<div class="mod">
+					<h4>Langues</h4>
+					{assign var="language" value=$contribprofile[0].language}
+					<strong>{$language_array.$language}</strong> (langue maternelle)
+					{foreach from=$langpercent item=more key=lang}
+						<div class="skillstat row-fluid">	
+							<div class="span6">
+								<p><strong>{$language_array.$lang}</strong>  {$more}%</p>
+								<div class="progress">
+									<div class="bar" style="width: {$more}%"></div>
+								</div>
+								<span class="pull-left legend muted">Débutant</span> <span class="pull-right legend muted">Bilingue</span>
+							</div>
+						</div>
+					{/foreach}	
+				</div>
+
+				<div class="mod">
+					<h4>Domaines de comp&eacute;tences</h4>
+					{foreach from=$contribprofile[0].cats item=cat}
+						{if $catpercent.$cat!=""}
+						<div class="skillstat row-fluid">
+							<div class="span6">
+								<p><strong data-original-title="Seo / marketing internet" rel="tooltip">{$category_array.$cat}</strong>  {$catpercent.$cat}%</p>
+								<div class="progress">
+								<div class="bar" style="width: {$catpercent.$cat}%"></div>
+								</div>
+								<span class="pull-left legend muted">Débutant</span> <span class="pull-right legend muted">Expert</span>
+							</div>
+						</div>
+						{/if}
+					{/foreach}	
+				</div>
+
+				{if $exp_details|@count>0}
+				<div class="mod">
+					<h4>Exp&egrave;riences professionnelles</h4>
+					<dl>
+						{foreach from=$exp_details item=exp}
+							<dt>{$exp.title}</dt>
+							<dd class="company">{$exp.institute}</dd>
+							<dd class="muted">
+								Type de contrat : {$exp.contract}
+							</dd>
+							<dd class="muted">
+								<time> {$exp.from_month|ucfirst} {$exp.from_year}</time> - <time>{if $exp.to_year!="0"}{$exp.to_month|ucfirst} {$exp.to_year}{else}Actuel{/if}</time>
+							</dd>
+						{/foreach}
+					</dl>
+				</div>
+				{/if}
+
+				{if $education_details|@count>0}
+				<div class="mod">
+					<h4>Formations</h4>
+					<dl>
+						{foreach from=$education_details item=edu}
+							<dt>{$edu.title}</dt>
+							<dd class="company">{$edu.institute}</dd>
+							<dd class="muted">
+								<time> {$edu.from_month|ucfirst} {$edu.from_year}</time> - <time>{if $edu.to_year!="0"}{$edu.to_month|ucfirst} {$edu.to_year}{else}Actuel{/if}</time>
+							</dd>
+						{/foreach}
+					</dl>
+				</div>
+				{/if}
+			</section>
+		</div>
+
+		<!-- col 2 -->
+		<div class="span4">
+			<div class="quote-cta">
+				<p class="quote-price">Prix total :<strong> {$contribprofile[0].price_user_total|ceil} &euro;</strong><sup>*</sup></p>
+				<ul class="unstyled stripe">
+					{if $contribprofile[0].premium_option=="0"}
+						<li>Tarif contributeur : {$contribprofile[0].price_user|zero_cut:2} &euro;</li>
+						<li>Commission Edit-place inclus : {$contribprofile[0].ep_percent|zero_cut:2}%</li>
+					{/if}
+					{if ($contribprofile[0].valid_until!="no" && $contribprofile[0].premium_option!="0") || ($contribprofile[0].datevalid=="yes" && $contribprofile[0].premium_option=="0")}
+					<li>*Devis garanti jusqu'au {$contribprofile[0].valid_until}</li>
+					{/if}
+				</ul>
+				
+				{if $contribprofile[0].premium_option=="0" && $contribprofile[0].datevalid=="yes" && $contribprofile[0].cycle=="0" &&  $contribprofile[0].articlestatus!="closed_client"}
+					<p><a  data-toggle="modal" href="#confirm-selection" class="btn btn-primary btn-block">S&eacute;lectionner ce r&eacute;dacteur</a></p>
+				{/if}
+				{if $contribprofile[0].datevalid=="no" && $contribprofile[0].premium_option=="0"}
+					<strong> *La date de validit&eacute; de ce devis a expir&eacute;</strong>
+				{/if}
+				
+				{if $contribprofile[0].created_by=="FO"}
+					<div class="private-info">
+						<h4>Devis privé</h4>
+						<ul>
+							<li>Confier seulement une partie de la mission à ce rédacteur</li>
+							<li>Confier une mission plus importante à ce rédacteur </li>
+						</ul>
+						<p><a  data-toggle="modal" href="/client/quotes-1?article={$contribprofile[0].artid}&private={$contribprofile[0].user_id}" class="btn btn-primary btn-block"><span class="icon-lock icon-white"></span> Demander un devis en privé</a></p>
+					</div>
+				{/if}				
+				
+		
+				<aside>
+					<div class="aside-bg">
+						<div id="garantee" class="aside-block">
+							<h4>Vos garanties</h4>
+							<dl>
+								<dt><span class="umbrella"></span>Edit-place est votre médiateur</dt>
+								<dd>En cas de contestation (délai de livraison, reprise d’articles, remboursement...)</dd>
+								<dt><span class="locked"></span>Paiement sécurisé</dt>
+								<dd>Notre solution de paiement en ligne vous garantit une transaction en toute tranquillité</dd>
+							</dl>
+						</div>
+						
+						{if $contribprofile[0].clientlogo|@count>0}
+						<div class="aside-block" id="we-trust">
+							<h4>Ses Publications</h4>
+							<ul class="unstyled">
+								{foreach from=$contribprofile[0].clientlogo item=clogo key=ckey}
+									<li><img src="{$clogo}" rel="tooltip" data-original-title="{$ckey|utf8_decode}" data-placement="left"></li>
+								{/foreach}
+							</ul>
+						</div>
+						{/if}
+					</div>
+				</aside>	
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- end, contributor status --> 
+
+<a class="pull-right btn btn-small disabled anchor-top scroll" href="#brand"><i class="icon-arrow-up"></i></a>
+
+
+
+<div id="confirm-selection" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+	<form method="POST" name="conactForm" id="conactForm" action="/client/order1?id={$contribprofile[0].id}">
+
+		<div class="modal-header">
+
+			<button type="button" class="close" onclick="$('#confirm-selection').hide();return false;" aria-hidden="true">&times;</button>
+
+			<h3 id="myModalLabel">Confirmer la s&eacute;lection</h3>
+
+		</div>
+
+		<div class="modal-body">
+
+			<p><strong>Je confirme vouloir s&eacute;lectionner {$contribprofile[0].name}. pour mon projet "{$contribprofile[0].title} " au prix total de {$contribprofile[0].price_user_total|ceil} &euro;</strong></p>
+
+			<p>Veuillez compléter vos coordonnées pour être mis en relation avec le rédacteur.</p>
+			
+			<div class="mod form-horizontal">
+				<div class="control-group">
+					<label class="control-label" for="client-name"> Nom</label>
+					<div class="controls">
+						<span><input type="text" id="contact_firstname" name="contact_firstname" value="{$clientcontact[0].contact_firstname}" class="span3"></span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="client-surname"> Prénom</label>
+					<div class="controls">
+						<span><input type="text" id="contact_lastname" name="contact_lastname" value="{$clientcontact[0].contact_lastname}" class="span3"></span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="client-email"> Votre email</label>
+					<div class="controls">
+						<span><input type="text" id="contact_email" name="contact_email" value="{$clientcontact[0].contact_email}" class="span3"></span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="client-phone"> Téléphone</label>
+					<div class="controls">
+						<span><input type="text" id="contact_phone" name="contact_phone" value="{$clientcontact[0].contact_phone}" class="span3"></span>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal-footer">
+
+			<button class="btn" type="button" onclick="$('#confirm-selection').hide();return false;" aria-hidden="true">Annuler</button>
+
+			<button class="btn btn-primary" type="submit">Confirmer</button>
+
+		</div>
+
+		<input type="hidden" name="quote" id="quote" value="{$contribprofile[0].user_id}" />
+
+		<input type="hidden" name="article" id="article" value="{$contribprofile[0].artid}" />
+
+		<input type="hidden" name="contribprice" id="contribprice" value="{$contribprofile[0].price_user}" />
+
+	</form>
+
+</div>        
+
+
+
+{literal}
+
+
+
+<script>
+ 
+
+
+	$("[rel=tooltip]").tooltip();
+
+	$("[rel=popover]").popover();
+
+
+
+</script>
+
+
+
+{/literal}

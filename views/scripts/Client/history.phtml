@@ -1,0 +1,40 @@
+{literal}
+<script>
+	$(document).ready(function(){
+		$("#aohistory a").removeAttr("href");
+		if($("#namepermission").val()=="first_name" || $("#namepermission").val()=="last_name" || $("#namepermission").val()=="anonymous")
+		{	
+			$(".writer").html("<b>rédacteur</b>");
+			$(".corrector").html("<b>correcteur</b>");
+			//$(".span12").find("a[href^='/user/contributor-edit']").html("<b>Le rédacteur</b>");
+		}
+	});
+</script>
+
+<style>
+	a:hover{text-decoration:none ! important;}
+</style>
+{/literal}
+<div class="row-fluid">
+	<div class="span12">
+		{if $aoHistory|@count gt 0}
+			<table class="table table-hover">
+				<tbody>
+					{foreach item=details from=$aoHistory name="historyDetails"} 	
+						{if $details.show=='yes'} 
+						<tr>
+							<td>{$details.action_at}</td>
+							{if $details.action eq 'Corrector Validation'}
+								<td style="text-align:left">{$details.action_sentence|stripslashes|utf8_decode}</td>
+							{else}
+								<td>{$details.action_sentence|stripslashes}</td>
+							{/if}	
+						</tr>
+						{/if}
+					{/foreach}
+				</tbody>	
+			</table>
+			<input type="hidden" name="namepermission" id="namepermission" value="{$namepermission}" />
+		{/if}
+	</div>
+</div>

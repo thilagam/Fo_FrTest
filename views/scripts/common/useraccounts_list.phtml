@@ -1,0 +1,552 @@
+{literal}
+
+<script>
+  $(function () {
+    $('#myTab a:first').tab('show')
+  })
+</script>
+{/literal}
+
+<div class='container padding pull-top'>
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading"><h3>Users List</h3h3></div>
+  <ul class="nav nav-tabs" role="tablist" id="myTab">
+	<li class="active"><a href="#all" role="tab" data-toggle="tab">All</a></li>
+	<li><a href="#clients" role="tab" data-toggle="tab">Clients</a></li>
+	<li><a href="#contributers" role="tab" data-toggle="tab">Contributers</a></li>
+	<li><a href="#suadmins" role="tab" data-toggle="tab">super Admins</a></li>
+	<li><a href="#editors" role="tab" data-toggle="tab">Editors</a></li>
+	<li><a href="#ceditors" role="tab" data-toggle="tab">Chief Editors</a></li>
+	<li><a href="#cfd" role="tab" data-toggle="tab">Chiefodigeos</a></li>
+	<li><a href="#ceo" role="tab" data-toggle="tab">CEO User</a></li>
+	<li><a href="#cc" role="tab" data-toggle="tab">Customer Care</a></li>
+	<li><a href="#fact" role="tab" data-toggle="tab">Facturation</a></li>
+	<li><a href="#multi" role="tab" data-toggle="tab">Multilingue</a></li>
+</ul>
+
+<div class="tab-content">
+  <!-- Tab 1 start -->	
+  <div class="tab-pane active" id="all">
+	  <div class="panel-body" style='overflow:auto;height:600px;'>
+
+
+  <!-- Table -->
+  <table class="table" >
+	<thead >
+   <tr>
+	<th rowspan='2'>Email</th>
+	<th rowspan='2'>Full Name</th>
+	<th rowspan='2'>Profile Type</th>
+	<th rowspan='2'>User Type</th>
+	<th style="text-align:center;" colspan='5' rowspan='1'>Missions</th>
+	<th style="text-align:center;" colspan='2' rowspan='1'>Royalties Gained</th>
+	
+	<th rowspan='2'>DOJ</th>
+	<th rowspan='2'>Country</th>
+	<th rowspan='2'>Categories</th>
+   </tr>
+   <tr>
+   <th rowspan='1'>participated</th>
+	<th rowspan='1'>Ongoing</th>
+	<th rowspan='1'>Closed</th>
+	<th rowspan='1'>Refused</th>
+	<th rowspan='1'>Published</th>
+	<th rowspan='1'>Total</th>
+	<th rowspan='1'>This Month</th>
+	</tr>
+   </thead>
+   <tbody >
+	{if $user_details | @count gt 0}
+	{foreach item=user from=$user_details name=userdetails}
+		<tr>
+		<td>{$user.email}</td>
+		<td>{$user.first_name} {$user.last_name}</td>
+		<td>{$user.type}</td>
+		<td>{$user.profile_type}</td>
+		<td>{$user.mission_participation}</td>
+		<td>{$user.mission_participation_ongoing}</td>
+		<td>{$user.mission_participation_closed}
+		<td>{$user.mission_participation_refused}</td></td>
+		<td>{$user.mission_participation_published}</td>
+		<td>{$user.royalties}</td>
+		<td>{$user.royalties_month}</td>
+		<td>{$user.created_at}</td>
+		<td>{$user.country}</td>
+		<td>{$user.categories}</td>
+	   </tr>
+	{/foreach}
+	{else}
+		<tr>
+			<td colspan="3">
+				<span class="no-data">Il n'y a pas d'articles en attente d'attribution</span>
+			</td>
+		</tr>
+	{/if}			
+   </tbody>
+  </table>
+      
+  </div></div>
+  <!-- Tab 2 start -->
+  <div class="tab-pane" id="clients">
+		
+			 <div class="panel-body" style='overflow:auto;height:600px;'>
+
+
+  <!-- Table -->
+  <table class="table" >
+	<thead >
+   <tr>
+	<th >Email</th>
+	<th >Full Name</th>
+	<th >Profile Type</th>
+	<th >DOJ</th>
+	<th >Country</th>
+	
+
+	</tr>
+   </thead>
+   <tbody >
+	{if $user_details | @count gt 0}
+	{foreach item=user from=$user_details name=userdetails}
+		{if $user.type=='client'}
+		<tr>
+		<td>{$user.email}</td>
+		<td>{$user.first_name} {$user.last_name}</td>
+		<td>{$user.type}</td>
+		
+		<td>{$user.created_at}</td>
+		<td>{$user.country}</td>
+		
+	   </tr>
+	   {/if}
+	{/foreach}
+	{else}
+		<tr>
+			<td colspan="3">
+				<span class="no-data">Il n'y a pas d'articles en attente d'attribution</span>
+			</td>
+		</tr>
+	{/if}			
+   </tbody>
+  </table>
+      
+  </div>
+  </div>
+  <!-- Tab 3 start -->
+  <div class="tab-pane" id="contributers">
+	  <div class="panel-body" style='overflow:auto;height:600px;'>
+
+
+  <!-- Table -->
+  <table class="table" >
+	<thead >
+   <tr>
+	<th rowspan='2'>Email</th>
+	<th rowspan='2'>Full Name</th>
+	<th rowspan='2'>Profile Type</th>
+	<th rowspan='2'>User Type</th>
+	<th style="text-align:center;" colspan='5' rowspan='1'>Missions</th>
+	<th style="text-align:center;" colspan='2' rowspan='1'>Royalties Gained</th>
+	
+	<th rowspan='2'>DOJ</th>
+	<th rowspan='2'>Country</th>
+	<th rowspan='2'>Categories</th>
+   </tr>
+   <tr>
+   <th rowspan='1'>participated</th>
+	<th rowspan='1'>Ongoing</th>
+	<th rowspan='1'>Closed</th>
+	<th rowspan='1'>Refused</th>
+	<th rowspan='1'>Published</th>
+	<th rowspan='1'>Total</th>
+	<th rowspan='1'>This Month</th>
+	</tr>
+   </thead>
+   <tbody >
+	{if $user_details | @count gt 0}
+	{foreach item=user from=$user_details name=userdetails}
+		{if $user.type =='contributor'}
+		<tr>
+		<td>{$user.email}</td>
+		<td>{$user.first_name} {$user.last_name}</td>
+		<td>{$user.type}</td>
+		<td>{$user.profile_type}</td>
+		<td>{$user.mission_participation}</td>
+		<td>{$user.mission_participation_ongoing}</td>
+		<td>{$user.mission_participation_closed}
+		<td>{$user.mission_participation_refused}</td></td>
+		<td>{$user.mission_participation_published}</td>
+		<td>{$user.royalties}</td>
+		<td>{$user.royalties_month}</td>
+		<td>{$user.created_at}</td>
+		<td>{$user.country}</td>
+		<td>{$user.categories}</td>
+	   </tr>
+	   {/if}
+	{/foreach}
+	{else}
+		<tr>
+			<td colspan="3">
+				<span class="no-data">Il n'y a pas d'articles en attente d'attribution</span>
+			</td>
+		</tr>
+	{/if}			
+   </tbody>
+  </table>
+      
+  </div></div>
+  <!-- Tab 4 start -->
+  <div class="tab-pane" id="suadmins">
+		
+			 <div class="panel-body" style='overflow:auto;height:600px;'>
+
+
+  <!-- Table -->
+  <table class="table" >
+	<thead >
+   <tr>
+	<th >Email</th>
+	<th >Full Name</th>
+	<th >Profile Type</th>
+	<th >DOJ</th>
+	<th >Country</th>
+	
+
+	</tr>
+   </thead>
+   <tbody >
+	{if $user_details | @count gt 0}
+	{foreach item=user from=$user_details name=userdetails}
+		{if $user.type=='superadmin'}
+		<tr>
+		<td>{$user.email}</td>
+		<td>{$user.first_name} {$user.last_name}</td>
+		<td>{$user.type}</td>
+		
+		<td>{$user.created_at}</td>
+		<td>{$user.country}</td>
+		
+	   </tr>
+	   {/if}
+	{/foreach}
+	{else}
+		<tr>
+			<td colspan="3">
+				<span class="no-data">Il n'y a pas d'articles en attente d'attribution</span>
+			</td>
+		</tr>
+	{/if}			
+   </tbody>
+  </table>
+      
+  </div>
+  </div>
+  <!-- Tab 5 start -->
+  <div class="tab-pane" id="editors"> <div class="panel-body" style='overflow:auto;height:600px;'>
+
+
+  <!-- Table -->
+  <table class="table" >
+	<thead >
+   <tr>
+	<th >Email</th>
+	<th >Full Name</th>
+	<th >Profile Type</th>
+	<th >DOJ</th>
+	<th >Country</th>
+	
+
+	</tr>
+   </thead>
+   <tbody >
+	{if $user_details | @count gt 0}
+	{foreach item=user from=$user_details name=userdetails}
+		{if $user.type=='editor'}
+		<tr>
+		<td>{$user.email}</td>
+		<td>{$user.first_name} {$user.last_name}</td>
+		<td>{$user.type}</td>
+		
+		<td>{$user.created_at}</td>
+		<td>{$user.country}</td>
+		
+	   </tr>
+	   {/if}
+	{/foreach}
+	{else}
+		<tr>
+			<td colspan="3">
+				<span class="no-data">Il n'y a pas d'articles en attente d'attribution</span>
+			</td>
+		</tr>
+	{/if}			
+   </tbody>
+  </table>
+      
+  </div></div>
+  <!-- Tab 6 start -->
+  <div class="tab-pane" id="ceditors"> <div class="panel-body" style='overflow:auto;height:600px;'>
+
+
+  <!-- Table -->
+  <table class="table" >
+	<thead >
+   <tr>
+	<th >Email</th>
+	<th >Full Name</th>
+	<th >Profile Type</th>
+	<th >DOJ</th>
+	<th >Country</th>
+	
+
+	</tr>
+   </thead>
+   <tbody >
+	{if $user_details | @count gt 0}
+	{foreach item=user from=$user_details name=userdetails}
+		{if $user.type=='chiefeditor'}
+		<tr>
+		<td>{$user.email}</td>
+		<td>{$user.first_name} {$user.last_name}</td>
+		<td>{$user.type}</td>
+		
+		<td>{$user.created_at}</td>
+		<td>{$user.country}</td>
+		
+	   </tr>
+	   {/if}
+	{/foreach}
+	{else}
+		<tr>
+			<td colspan="3">
+				<span class="no-data">Il n'y a pas d'articles en attente d'attribution</span>
+			</td>
+		</tr>
+	{/if}			
+   </tbody>
+  </table>
+      
+  </div></div>
+  <!-- Tab 7 start -->
+  <div class="tab-pane" id="cfd">
+		 <div class="panel-body" style='overflow:auto;height:600px;'>
+
+
+  <!-- Table -->
+  <table class="table" >
+	<thead >
+   <tr>
+	<th >Email</th>
+	<th >Full Name</th>
+	<th >Profile Type</th>
+	<th >DOJ</th>
+	<th >Country</th>
+	
+
+	</tr>
+   </thead>
+   <tbody >
+	{if $user_details | @count gt 0}
+	{foreach item=user from=$user_details name=userdetails}
+		{if $user.type=='chiefodigeo'}
+		<tr>
+		<td>{$user.email}</td>
+		<td>{$user.first_name} {$user.last_name}</td>
+		<td>{$user.type}</td>
+		
+		<td>{$user.created_at}</td>
+		<td>{$user.country}</td>
+		
+	   </tr>
+	   {/if}
+	{/foreach}
+	{else}
+		<tr>
+			<td colspan="3">
+				<span class="no-data">Il n'y a pas d'articles en attente d'attribution</span>
+			</td>
+		</tr>
+	{/if}			
+   </tbody>
+  </table>
+      
+  </div>
+  </div>
+  <!-- Tab 8 start -->
+  <div class="tab-pane" id="ceo"> <div class="panel-body" style='overflow:auto;height:600px;'>
+
+
+  <!-- Table -->
+  <table class="table" >
+	<thead >
+   <tr>
+	<th >Email</th>
+	<th >Full Name</th>
+	<th >Profile Type</th>
+	<th >DOJ</th>
+	<th >Country</th>
+	
+
+	</tr>
+   </thead>
+   <tbody >
+	{if $user_details | @count gt 0}
+	{foreach item=user from=$user_details name=userdetails}
+		{if $user.type=='ceouser'}
+		<tr>
+		<td>{$user.email}</td>
+		<td>{$user.first_name} {$user.last_name}</td>
+		<td>{$user.type}</td>
+		
+		<td>{$user.created_at}</td>
+		<td>{$user.country}</td>
+		
+	   </tr>
+	   {/if}
+	{/foreach}
+	{else}
+		<tr>
+			<td colspan="3">
+				<span class="no-data">Il n'y a pas d'articles en attente d'attribution</span>
+			</td>
+		</tr>
+	{/if}			
+   </tbody>
+  </table>
+      
+  </div></div>
+  <!-- Tab 9 start -->
+  <div class="tab-pane" id="cc"> <div class="panel-body" style='overflow:auto;height:600px;'>
+
+
+  <!-- Table -->
+  <table class="table" >
+	<thead >
+   <tr>
+	<th >Email</th>
+	<th >Full Name</th>
+	<th >Profile Type</th>
+	<th >DOJ</th>
+	<th >Country</th>
+	
+
+	</tr>
+   </thead>
+   <tbody >
+	{if $user_details | @count gt 0}
+	{foreach item=user from=$user_details name=userdetails}
+		{if $user.type=='customercare'}
+		<tr>
+		<td>{$user.email}</td>
+		<td>{$user.first_name} {$user.last_name}</td>
+		<td>{$user.type}</td>
+		
+		<td>{$user.created_at}</td>
+		<td>{$user.country}</td>
+		
+	   </tr>
+	   {/if}
+	{/foreach}
+	{else}
+		<tr>
+			<td colspan="3">
+				<span class="no-data">Il n'y a pas d'articles en attente d'attribution</span>
+			</td>
+		</tr>
+	{/if}			
+   </tbody>
+  </table>
+      
+  </div></div>
+  <!-- Tab 10 start -->
+  <div class="tab-pane" id="fact"> <div class="panel-body" style='overflow:auto;height:600px;'>
+
+
+  <!-- Table -->
+  <table class="table" >
+	<thead >
+   <tr>
+	<th >Email</th>
+	<th >Full Name</th>
+	<th >Profile Type</th>
+	<th >DOJ</th>
+	<th >Country</th>
+	
+
+	</tr>
+   </thead>
+   <tbody >
+	{if $user_details | @count gt 0}
+	{foreach item=user from=$user_details name=userdetails}
+		{if $user.type=='facturation'}
+		<tr>
+		<td>{$user.email}</td>
+		<td>{$user.first_name} {$user.last_name}</td>
+		<td>{$user.type}</td>
+		
+		<td>{$user.created_at}</td>
+		<td>{$user.country}</td>
+		
+	   </tr>
+	   {/if}
+	{/foreach}
+	{else}
+		<tr>
+			<td colspan="3">
+				<span class="no-data">Il n'y a pas d'articles en attente d'attribution</span>
+			</td>
+		</tr>
+	{/if}			
+   </tbody>
+  </table>
+      
+  </div></div>
+  <!-- Tab 11 start -->
+  <div class="tab-pane" id="multi"> <div class="panel-body" style='overflow:auto;height:600px;'>
+
+
+  <!-- Table -->
+  <table class="table" >
+	<thead >
+   <tr>
+	<th >Email</th>
+	<th >Full Name</th>
+	<th >Profile Type</th>
+	<th >DOJ</th>
+	<th >Country</th>
+	
+	</tr>
+   </thead>
+   <tbody >
+	{if $user_details | @count gt 0}
+	{foreach item=user from=$user_details name=userdetails}
+		{if $user.type=='multilingue'}
+		<tr>
+		<td>{$user.email}</td>
+		<td>{$user.first_name} {$user.last_name}</td>
+		<td>{$user.type}</td>
+		
+		<td>{$user.created_at}</td>
+		<td>{$user.country}</td>
+		
+	   </tr>
+	   {/if}
+	{/foreach}
+	{else}
+		<tr>
+			<td colspan="3">
+				<span class="no-data">Il n'y a pas d'articles en attente d'attribution</span>
+			</td>
+		</tr>
+	{/if}			
+   </tbody>
+  </table>
+      
+  </div></div>
+</div>
+
+  
+  
+</div>
+</div>

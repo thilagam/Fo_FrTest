@@ -1,0 +1,1034 @@
+{if $smarty.get.profile eq 'invoice'}
+<script type="text/javascript" src="/FO/script/contrib/profile-validate-invoice.js"></script>
+{else}
+<script type="text/javascript" src="/FO/script/contrib/profile-validate.js"></script>
+{/if}
+{literal}
+<style>
+    #training_more_1 .popover-title, #job_more_1 .popover-title{ display: none; }
+    .checkbox:hover{cursor: pointer;cursor: hand;}
+</style>
+<script type="text/javascript">
+    $("#menu_profile").addClass("active");
+
+    /**profile pic uploading**/
+    $(function(){
+        var btnUpload=$('.customfile');
+        var status=$('#file_name');
+        new AjaxUpload(btnUpload, {
+            action: 'uploadprofilepic',
+            name: 'uploadpic',
+            onSubmit: function(file, ext){
+                if (! (ext && /^(jpg|jpeg|gif|png)$/.test(ext))){
+                    // extension is not allowed 
+                    status.text("Merci d'uploaded uniquement des fichiers JPG.").css('color','#FF0000');
+                    return false;
+                }
+
+                /*if (! (ext && /^(doc|docx|rtf)$/.test(ext))){
+                 // extension is not allowed
+                 status.html('Only doc,docx,rtf files are allowed').css('color','#FF0000');
+                 return false;
+                 }*/
+                status.html('<img src="/FO/images/icon-image.gif" /> Chargement..');
+            },
+            onComplete: function(file, response){
+                //On completion clear the status
+                status.text('');
+                $('#file_name').html('');
+
+                //Add uploaded file to list
+                var obj = $.parseJSON(response);
+                var approot="/FO/";
+
+                if(obj.status=="success"){
+                    $('#spec_file_name').val(file);
+
+                    var approot="/FO/";
+                    var profilepic=approot+obj.path+obj.identifier+"_p."+obj.ext+ '?' + (new Date()).getTime();
+                    $("#profilepic").attr("src",profilepic);
+
+//                    $('#Cropimage').modal();
+//                    var top=$(window).scrollTop();
+//                    var box_top=$('#Cropimage').css('top', (parseInt(60) + ((top*2)/$(window).height())) + '%');
+//                    //alert(approot+obj.path+obj.identifier+"_crop."+obj.ext+ '?' + (new Date()).getTime());
+//                    $("#cropbox").attr('src','#');
+//                    $(".jcrop-holder").remove();
+//                    $("#cropbox").removeData('Jcrop');
+//                    $("#cropbox").attr("src",approot+obj.path+obj.identifier+"_crop."+obj.ext+ '?' + (new Date()).getTime());
+//                    $("#cropbox").show();
+//                    $('#cropbox').Jcrop({
+//                        aspectRatio: 1,
+//                        addClass: 'jcrop-dark',
+//                        setSelect: [ 60, 110, 150, 200 ],
+//                        onSelect: updateCoords
+//                    });
+
+                    if(file.length>25)
+                        $('#file_name').html(file.substr(0,25)+".. Uploaded").css('color','#006600');
+                    else
+                        $('#file_name').html(file+" Uploaded").css('color','#006600');
+
+                    //window.setTimeout('location.reload()', 10);
+
+
+
+                }
+                else if(obj.status=="smallfile"){
+
+                    $('#file_name').html("L'image est trop petite, merci d'en uploader une autre").css('color','#FF0000');
+                }
+                else{
+                    $('#file_name').html('Error in upload').css('color','#FF0000');
+                }
+            }
+        });
+
+        jQuery('img').each(function(){
+            jQuery(this).attr('src',jQuery(this).attr('src')+ '?' + (new Date()).getTime());
+        });
+
+        //show update profile message
+        var profile='{/literal}{$smarty.get.profile}{literal}';
+        if(profile=='invoice')
+        {
+            $("#profile-update").modal('show');
+            $("#profile-update").removeClass( "hide" ).addClass("in");
+            //var scrollTop = $(window).scrollTop();
+            //$("#profile-update").css("top",scrollTop);
+        }
+
+    });
+
+    /**toggle for payment infos**/
+
+    $('input[type=radio]').live('click', function () {
+
+        var payment_type = $("input:radio[name ='payment_type']:checked").val();
+        var payinfo=$('input:radio[name=payinfo]:checked').val();
+
+        if (this.checked && $(this).val() == 'virement')
+        {
+            $("#c_out_france").show();
+
+        }
+        else if (this.checked && $(this).val() == 'paypal')
+        {
+            $("#c_out_france").hide();
+        }
+
+    });
+
+    function switchzipcode(country)
+    {
+        if(country==101)
+        {
+            $("#ukzipcode").show();
+            $("#otherzipcode").hide();
+        }
+        else
+        {
+            $("#ukzipcode").hide();
+            $("#otherzipcode").show();
+        }
+    }
+    /* added by naseer on 31-07-2015 */
+    function toggle_com_siren(){
+        if($("#com_country").val() == 38){
+            $("#com_siren_label").show();
+        }
+        else{
+            $("#com_siren_label").hide();
+        }
+    }
+
+    function toggle_details(val){
+        $(".details").hide();
+        $("#"+val).show();
+        $("#options_group").val('selected');
+    }
+    /*added by naseer on 04-11-2015*/
+    //this function will enable/disable respective inputs//
+    function toggle_software_details(self_id){
+        if($('#'+self_id).is(':checked'))
+        {
+            $('.'+self_id).prop("disabled",false);//enables textbox
+        }
+        else
+        {
+            $('.'+self_id).prop("disabled",true);//on unset checkbox disable textbox
+        }
+    }
+    /*end of added by naseer */
+</script>
+{/literal}
+<div class="container">
+    <!-- ajax use start -->
+    <div id="Cropimage" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="cropimageLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3 id="cropimageLabel">Redimensionner l'image</h3>
+        </div>
+        <div class="modal-body">
+            {include file="Contrib/profile_image_crop.phtml"}
+        </div>
+    </div>
+    <!-- ajax use end -->
+    <div class="row-fluid">
+        {if $actionmessages[0]}
+        <div class="alert alert-success"><button data-dismiss="alert" class="close" type="button">&times;</button>
+            <i class="icon-ok icon-white"></i> {$actionmessages[0]}.
+        </div>
+        {/if}
+        {if $selected_ao_count}
+        <div class="span12" style="color:#F47D31;"><h2>Modification du profil : Compl&eacute;tez votre profil pour acc&eacute;der &agrave; votre s&eacute;lection</h2></div>
+        {else}
+        <div class="span12"><h1>Modification du profil
+                <div class="pull-right">
+                    <a href="/contrib/private-profile" class="btn btn-small"><i class="icon-arrow-left"></i> Retour &agrave; mon profil priv&eacute;</a>
+                    {if $cv_exists eq 'yes'}
+                    <a class="btn btn-small" href="/contrib/download-file?type=cv"><i class="icon-briefcase"></i> Mon CV</a>
+                    {/if}
+                </div>
+            </h1>
+        </div>
+        {/if}
+    </div>
+
+    <section id="skills-form">
+        <form class="form-horizontal" method="POST" action="/contrib/save-profile/" id="contribProfile">
+            <div class="mod">
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label class="control-label span2 offset1" for=""><strong>Mon adresse email <span class="error">*</span></strong></label>
+                        <div class="controls span8">
+                            <div class="form">
+                                <label><input type="text" disabled placeholder="email" class="inline input-large" value="{$email}" name="email" id="email"></label>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label span2 offset1" for=""><strong>Mon mot de passe <span class="error">*</span></strong></label>
+                        <div class="controls span8">
+                            <div class="form">
+                                <label><input type="password" placeholder="password" class="inline input-large" value="{$password}" name="password" id="password"></label>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label span2 offset1" for=""><strong>Confirmation du mot de passe <span class="error">*</span></strong></label>
+                        <div class="controls span8">
+                            <div class="form">
+                                <label><input type="password" placeholder="password" class="inline input-large" value="{$password}" name="password2" id="password2"></label>
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- identity -->
+                    <div class="control-group">
+                        <label class="control-label span2 offset1" for=""><strong>Mon identit&eacute; <span class="error">*</span></strong></label>
+                        <div class="controls span8">
+                            <div class="form">
+                                <label>
+                                    <select class="select-large" name="initial" id="initial">
+                                        <option value="">Je suis</option>
+                                        <option value="mr" {if $civ=='mr'} selected{/if}>un homme</option>
+                                        <option value="ms" {if $civ=='mrs' || $civ=='ms' } selected{/if}>une femme</option>
+                                    </select>
+                                </label>
+                                <label><input type="text" placeholder="Mon pr&eacute;nom" class="inline input-large" value="{$fname}" name="first_name" id="first_name"></label>
+                                <label><input type="text" placeholder="Mon nom" class=" input-large" value="{$lname}" name="last_name" id="last_name"></label>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- birthday -->
+
+                    <div class="control-group">
+                        <label class="control-label span2 offset1" for=""><strong>Ma date de naissance <span class="error">*</span></strong></label>
+                        <div class="controls span8">
+                            <div class="form-inline">
+                                <label>
+                                    {html_select_date end_year="1910" start_year='+0' field_order="DMY" time=$dob class="input-small" field_separator="</label>&nbsp;<label>"}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <!--Picture -->
+                    <div class="control-group">
+                        <label class="control-label span2 offset1" for=""><strong>Photo du profil</strong></label>
+                        <div class="controls span8 container-field">
+                            <div id="changePicture">
+                                <div class="span2">
+                                    <div class="editor-container pull-left">
+                                        <a href="javascript:void(0);" class="imgframe-large"><img id="profilepic" title="{$client_email}" src="{$profile_image}"></a>
+                                    </div>
+                                </div>
+                                <div class="span9 offset1">
+                                    <p>Mettre &agrave; jour votre photo :</p>
+                                    <input type="file" class="span9" name="file" id="filePJ">
+                                    <span id="file_name" class="help-block"></span>
+									<span class="help-block">Votre photo doit avoir une taille minimale de 300x300 pixels </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- about me -->
+                    <div class="control-group">
+                        <label class="control-label span2 offset1" for=""><strong>Texte de pr&eacute;sentation</strong></label>
+                        <div class="controls span8" id="mytongue-mod">
+                            <textarea class="span12" placeholder="100 caract&egrave;res min" name="self_details" id="self_details" >{$self_details}</textarea>
+                        </div>
+                    </div>
+                    <!-- added by naseer on 26.11.2015-->
+
+                    <div class="control-group">
+                        <label class="control-label span2 offset1" for=""><strong>Twitter ID <!--<span class="error">*</span>--></strong></label>
+                        <div class="controls span8">
+                            <div class="form">
+                                <label><input type="text" placeholder="Twitter ID" class="inline input-large" value="{$twitter_id}" name="twitter_id" ></label>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label span2 offset1" for=""><strong>Facebook ID <!--<span class="error">*</span>--></strong></label>
+                        <div class="controls span8">
+                            <div class="form">
+                                <label><input type="text" placeholder="Facebook ID" class="inline input-large" value="{$facebook_id}" name="facebook_id" ></label>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label span2 offset1" for=""><strong>Website/Blog <!--<span class="error">*</span>--></strong></label>
+                        <div class="controls span8">
+                            <div class="form">
+                                <label><input type="text" placeholder="Website/Blog" class="inline input-large" value="{$website}" name="website"></label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label span2 offset1" for=""><strong>Bloc Statut</strong></label>
+                        <div class="controls span8" id="mytongue-mod">
+                            <label class="checkbox">
+                                <input type="checkbox" {if $writer_preference == 'yes'}checked {/if} name="writer_preference">R&eacute;dacteur
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" {if $translator == 'yes'}checked {/if} name="translator">Traducteur
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <!-- Start, Languages module -->
+            <div class="mod">
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label class="control-label span2 offset1" for=""><strong>Langue maternelle<span class="error">*</span>
+                                <br><br> Autre(s) langue(s) parl&eacute;e(s)
+                            </strong></label>
+                        <div class="controls span8">
+                            <div class="addmore">
+                                <select class="span5" name="language" id="language">
+                                    <option value=''>Langue maternelle</option>
+                                    {html_options  options=$ep_language_list selected=$profile_mother_language}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="controls span8">
+                            {if $language_more|@count gt 0}
+                            {foreach from=$language_more key=lang item=percent name="moreLanguage}
+                            {assign var=lang_index value=$smarty.foreach.moreLanguage.index}
+                            <!-- Start, new language row -->
+                            <div class="addmore" id="language_more_{$lang_index}">
+                                <button  class="close" type="button" id="language_close_{$lang_index}" {if $language_more|@count lt 2} style="display:none"{/if}>&times;</button>
+                                <div class="span5">
+                                    <select class="span12 margintop" name="language_more[]">
+                                        <option value="">S&eacute;lectionnez une langue</option>
+                                        {html_options  options=$ep_language_list selected=$lang}
+                                    </select>
+                                </div>
+                                <div class="skillstat span5 offset1">
+                                    <div>
+                                        <label for="slider-language_number_{$smarty.foreach.moreLanguage.index}" class="muted">Votre niveau :</label>
+                                        <input type="text" id="slider-language_number_{$smarty.foreach.moreLanguage.index}" value="{$percent}" name="lang_slider_more[]"/>
+                                    </div>
+                                    <div id="slider-language_{$smarty.foreach.moreLanguage.index}" class="lang_slider">{$percent}</div>
+                                    <span class="pull-left legend muted">D&eacute;butant</span> <span class="pull-right legend muted">Bilingue</span>
+                                </div>
+                            </div>
+                            <!-- end, new language row -->
+                            {/foreach}
+
+                            {else}
+                            <!-- Start, new language row -->
+                            <div class="addmore" id="language_more_0">
+                                <div class="span5">
+                                    <select class="span12 margintop" name="language_more[]">
+                                        <option value="">S&eacute;lectionnez une langue</option>
+                                        {html_options  options=$ep_language_list}
+                                    </select>
+                                </div>
+                                <div class="skillstat span5 offset1">
+                                    <div>
+                                        <label for="slider-language_number_0" class="muted">Votre niveau :</label>
+                                        <input type="text" id="slider-language_number_0" name="lang_slider_more[]" value="50"/>
+                                    </div>
+                                    <div id="slider-language_0" class="lang_slider">50</div>
+                                    <span class="pull-left legend muted">D&eacute;butant</span> <span class="pull-right legend muted">Bilingue</span>
+                                </div>
+                            </div>
+                            <!-- end, new language row -->
+                            {/if}
+
+                            <!-- start, add language row button -->
+                            <p class="addmore-button" id="addmore_lang_link"><a  class="btn btn-link btn-small"><i class="icon-plus"></i> Ajouter une langue</a></p>
+                            <!-- end, add language row button -->
+                            <!-- end, add language row -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- End, Languages module -->
+
+
+            <!-- Start, Skills module -->
+            <div class="mod">
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label class="control-label span2 offset1" for=""><strong>Comp&eacute;tences &amp; niveau de maitrise <span class="error">*</span></strong></label>
+
+                        <div class="controls span8" >
+                            {if $category_more|@count gt 0}
+                            {foreach from=$category_more key=kcategory item=percent name="moreSkills}
+                            {assign var=skill_index value=$smarty.foreach.moreSkills.index}
+                            <!-- Start, new skill row -->
+                            <div class="addmore" id="skill_more_{$skill_index}">
+                                <button  class="close" type="button" id="skill_close_{$skill_index}" {if $category_more|@count lt 2} style="display:none"{/if}>&times;</button>
+                                <div class="span5">
+                                    <select class="required span12 margintop" name="ep_category[]" id="ep_category_{$smarty.foreach.moreSkills.index}">
+                                        <option value="">S&eacute;lectionnez une comp&eacute;tence</option>
+                                        {html_options  options=$ep_categories_list selected=$kcategory}
+                                    </select>
+                                </div>
+                                <div class="skillstat span5 offset1">
+                                    <div>
+                                        <label for="slider-skill_number_{$smarty.foreach.moreSkills.index}" class="muted">Votre niveau :</label>
+                                        <input type="text" id="slider-skill_number_{$smarty.foreach.moreSkills.index}" value="{$percent}" name="category_slider_more[]"/>
+                                    </div>
+                                    <div id="slider-skill_{$smarty.foreach.moreSkills.index}" class="skill_slider">{$percent}</div>
+                                    <span class="pull-left legend muted">D�butant</span> <span class="pull-right legend muted">Expert</span>
+                                </div>
+                            </div>
+                            <!-- end, new skill row -->
+                            {/foreach}
+                            {else}
+                            <!-- Start, new skill row -->
+                            <div class="addmore" id="skill_more_0">
+                                <div class="span5">
+                                    <select class="span12 margintop" name="ep_category[]" id="ep_category_0">
+                                        <option value="">S&eacute;lectionnez une comp&eacute;tence</option>
+                                        {html_options  options=$ep_categories_list selected=$category}
+                                    </select>
+                                </div>
+                                <div class="skillstat span5 offset1">
+                                    <div>
+                                        <label for="slider-skill_number_0" class="muted">Votre niveau :</label>
+                                        <input type="text" id="slider-skill_number_0" name="category_slider_more[]" value="50"/>
+                                    </div>
+                                    <div id="slider-skill_0" class="skill_slider">50</div>
+                                    <span class="pull-left legend muted">D�butant</span> <span class="pull-right legend muted">Expert</span>
+                                </div>
+                            </div>
+                            <!-- end, new skill row -->
+                            {/if}
+                            <!-- start, add language row button -->
+                            <p class="addmore-button" id="addmore_skill_link"><a  class="btn btn-link btn-small"><i class="icon-plus"></i> Ajouter une comp�tence</a></p>
+                            <!-- end, add language row button -->
+                            <!-- end, new skill row -->
+                        </div>
+                    </div>
+                </div>
+                <!-- End, Skills module -->
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label class="control-label span2 offset1" for=""><strong>Software Ownership and Experience Level</strong></label>
+                        <div class="controls span8">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <td></td>
+                                    <td>Beginner</td>
+                                    <td>Intermediate</td>
+                                    <td>Advanced</td>
+                                    <td>I own it</td>
+                                </tr>
+                                {assign var="previous_software" val=""}
+                                {foreach from=$ep_software_array key=softwarekey item=software name="SoftwareList"}
+                                {assign var=s_index value=$smarty.foreach.SoftwareList.index+1}
+                                    {if $previous_software neq $software[0]}
+                                        <tr style="background-color: #DDDDDD;">
+                                            <td><b>{$software[0]}</b></td>
+                                            <td colspan="4"></td>
+                                        </tr>
+                                    {/if}
+                                    <!--code to check if the value is saved in DB-->
+                                    {assign var=check value=0}
+                                    {assign var=condition value="false"}
+                                    {assign var=level value="false"}
+                                    {assign var=own value="false"}
+                                    {while $check < $software_list_count}
+                                        {if $software_list[$check][0] eq $softwarekey}
+                                            {assign var=condition value="true"}
+                                            {assign var=level value=$software_list[$check][1]}
+                                            {assign var=own value=$software_list[$check][2]}
+                                        {/if}
+                                        {assign var=check value=$check+1}
+                                    {/while}
+                                    <!-- end of code to check if the value is saved in DB -->
+                                    {if $condition eq "true"}
+                                        <tr>
+                                            <td>
+                                                <label class="checkbox">
+                                                    <input type="checkbox" name="software_name[{$s_index}]" id="software_{$s_index}" value="{$softwarekey}" checked onclick="toggle_software_details(this.id);" />{$software[1]}
+                                                </label>
+                                            </td>
+                                            <td><label class="radio "><input type="radio" name="software_level[{$s_index}]" class="software_{$s_index}" value="beginner" {if $level eq 'beginner'}checked{/if}/></label></td>
+                                            <td><label class="radio "><input type="radio" name="software_level[{$s_index}]" class="software_{$s_index}" value="intermediate" {if $level eq 'intermediate'}checked{/if}/></label></td>
+                                            <td><label class="radio "><input type="radio" name="software_level[{$s_index}]" class="software_{$s_index}" value="advanced" {if $level eq 'advanced'}checked{/if}/></label></td>
+                                            <td><label class="checkbox"><input type="checkbox" name="software_own[{$s_index}]" class="software_{$s_index}" {if $own eq "on"}checked{/if}/></label></td>
+                                        </tr>
+                                    {else}
+                                            <tr>
+
+                                                <td>
+                                                    <label class="checkbox">
+                                                        <input type="checkbox" name="software_name[{$s_index}]" id="software_{$s_index}" value="{$softwarekey}" onclick="toggle_software_details(this.id);"  />{$software[1]}
+                                                    </label>
+                                                </td>
+
+                                                <td><label class="radio "><input type="radio" name="software_level[{$s_index}]" class="software_{$s_index}" value="beginner" disabled/></label></td>
+                                                <td><label class="radio "><input type="radio" name="software_level[{$s_index}]" class="software_{$s_index}" value="intermediate" disabled/></label></td>
+                                                <td><label class="radio "><input type="radio" name="software_level[{$s_index}]" class="software_{$s_index}" value="advanced" disabled/></label></td>
+                                                <td><label class="checkbox"><input type="checkbox" name="software_own[{$s_index}]" class="software_{$s_index}" disabled/></label></td>
+                                            </tr>
+                                    {/if}
+                                    {*{/for}*}
+                                    {assign var="previous_software" value=$software[0]}
+                                {/foreach}
+
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Start, Job module -->
+            <div class="mod">
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label class="control-label span2 offset1" for=""><strong>Exp&eacute;riences professionnelles</strong>
+                            <br><span id="job_error"></span>
+                        </label>
+
+                        <div class="controls span8">
+                            {if $jobDetails|@count gt 0}
+                            {foreach from=$jobDetails item=job name="job_details"}
+                            {assign var=job_index value=$smarty.foreach.job_details.index+1}
+
+                            <!-- Start, job row -->
+                            <div class="addmore" id="job_more_{$job_index}">
+
+                                <button  class="close" type="button" id="job_close_{$job_index}" rel="{$job.identifier}"  {if $jobDetails|@count lt 2} style="display:none"{/if}>&times;</button>
+
+                                <label><input class="span5" id="JobName_{$job_index}" value="{$job.title}" name="job_title[]" placeholder="Intitul&eacute; du poste">{if $smarty.foreach.job_details.first}<span data-original-title="" data-content="ces informations sont optionnelles mais contribuent &agrave; valoriser votre profil de r&eacute;dacteur" rel="popover" data-trigger="hover" data-placement="right" data-html="true" class=""><i class="icon-info-sign"></i></span>{/if}</label>
+                                <label><input class="span5" id="CompanyName_{$job_index}" value="{$job.institute}" name="job_institute[]" placeholder="Nom de l'entreprise"></label>
+                                <select class="span5" name="ep_job[]" id="ep_job_{$job_index}">
+                                    <option value="">S&eacute;lectionner le type de contrat</option>
+                                    <!--<option value="cdi" {if $job.contract=='cdi'}selected{/if}>CDI</option>
+                                    <option value="cdd" {if $job.contract=='cdd'}selected{/if}>CDD</option>-->
+                                    <option value="freelance" {if $job.contract=='freelance'}selected{/if}>Freelance</option>
+                                    <!--	<option value="intern" {if $job.contract=='intern'}selected{/if}>Interim</option>-->
+                                    <option value="stage" {if $job.contract=='stage'}selected{/if}>Stage</option>
+                                    <option value="missionsalary" {if $job.contract=='missionsalary'}selected{/if}>Missions salari&eacute;es </option>
+                                </select>
+                                <div class="clearfix">
+                                    <div class="container-field span5">
+                                        <label>
+                                            <span class="span3">D&eacute;but</span>
+                                        </label>
+                                        <select class="input-small inline" name="start_month[]">
+                                            <option value="1" {if $job.from_month=='1'}selected{/if}>Janvier</option>
+                                            <option value="2" {if $job.from_month=='2'}selected{/if}>F&eacute;vrier</option>
+                                            <option value="3" {if $job.from_month=='3'}selected{/if}>Mars</option>
+                                            <option value="4" {if $job.from_month=='4'}selected{/if}>Avril</option>
+                                            <option value="5" {if $job.from_month=='5'}selected{/if}>Mai</option>
+                                            <option value="6" {if $job.from_month=='6'}selected{/if}>Juin</option>
+                                            <option value="7" {if $job.from_month=='7'}selected{/if}>Juillet</option>
+                                            <option value="8" {if $job.from_month=='8'}selected{/if}>Ao&ucirc;t</option>
+                                            <option value="9" {if $job.from_month=='9'}selected{/if}>Septembre</option>
+                                            <option value="10" {if $job.from_month=='10'}selected{/if}>Octobre</option>
+                                            <option value="11" {if $job.from_month=='11'}selected{/if}>Novembre</option>
+                                            <option value="12" {if $job.from_month=='12'}selected{/if}>D&eacute;cembre</option>
+                                        </select>
+                                        &nbsp;&nbsp;<input class="input-small inline" id="start_year_{$job_index}" placeholder="Ann&eacute;e" value="{$job.from_year}" name="start_year[]">
+
+                                        <div class="collapse {if $job.still_working !='yes'} in {/if}" id="stillWorkingThere_{$job_index}">
+                                            <label>
+                                                <span class="span3">Fin</span>
+                                            </label>
+                                            <select class="input-small inline" name="end_month[]">
+                                                <option value="1" {if $job.to_month=='1'}selected{/if}>Janvier</option>
+                                                <option value="2" {if $job.to_month=='2'}selected{/if}>F&eacute;vrier</option>
+                                                <option value="3" {if $job.to_month=='3'}selected{/if}>Mars</option>
+                                                <option value="4" {if $job.to_month=='4'}selected{/if}>Avril</option>
+                                                <option value="5" {if $job.to_month=='5'}selected{/if}>Mai</option>
+                                                <option value="6" {if $job.to_month=='6'}selected{/if}>Juin</option>
+                                                <option value="7" {if $job.to_month=='7'}selected{/if}>Juillet</option>
+                                                <option value="8" {if $job.to_month=='8'}selected{/if}>Ao&ucirc;t</option>
+                                                <option value="9" {if $job.to_month=='9'}selected{/if}>Septembre</option>
+                                                <option value="10" {if $job.to_month=='10'}selected{/if}>Octobre</option>
+                                                <option value="11" {if $job.to_month=='11'}selected{/if}>Novembre</option>
+                                                <option value="12" {if $job.to_month=='12'}selected{/if}>D&eacute;cembre</option>
+                                            </select>
+                                            &nbsp;&nbsp;<input class="input-small inline" id="end_year_{$job_index}" placeholder="Ann&eacute;e" value="{$job.to_year}" name="end_year[]">
+
+                                        </div>
+                                        <label class="checkbox">
+                                            <input type="checkbox" id="still_working_{$job_index}" data-target="#stillWorkingThere_1" data-toggle="collapse" {if $job.still_working =='yes'} checked {/if}  name="still_working[]">J'occupe toujours ce poste
+                                        </label>
+                                        <input type="hidden" name="job_identifier[]" value="{$job.identifier}">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- end, job row -->
+                            {/foreach}
+                            {else}
+                            <!-- Start, job row -->
+                            <div class="addmore" id="job_more_1">
+                                <label><input class="span5" id="JobName_1" name="job_title[]" placeholder="Intitul&eacute; du poste"><span data-original-title="" data-content="ces informations sont optionnelles mais contribuent &agrave; valoriser votre profil de r&eacute;dacteur" rel="popover" data-trigger="hover" data-placement="right" data-html="true" class=""><i class="icon-info-sign"></i></span></label>
+                                <label><input class="span5" id="CompanyName_1" name="job_institute[]" placeholder="Nom de l'entreprise"></label>
+                                <select class="span5" name="ep_job[]" id="ep_job_1">
+                                    <option value="">S&eacute;lectionner le type de contrat</option>
+                                    <option value="cdi">CDI</option>
+                                    <option value="cdd">CDD</option>
+                                    <option value="freelance">Freelance</option>
+                                    <option value="intern">Interim</option>
+                                    <option value="stage">Stage</option>
+                                </select>
+                                <div class="clearfix">
+                                    <div class="container-field span5">
+                                        <label>
+                                            <span class="span3">D&eacute;but</span>
+                                        </label>
+                                        <select class="input-small inline" name="start_month[]">
+                                            <option value="1" selected>Janvier</option>
+                                            <option value="2">F&eacute;vrier</option>
+                                            <option value="3">Mars</option>
+                                            <option value="4">Avril</option>
+                                            <option value="5">Mai</option>
+                                            <option value="6">Juin</option>
+                                            <option value="7">Juillet</option>
+                                            <option value="8">Ao&ucirc;t</option>
+                                            <option value="9">Septembre</option>
+                                            <option value="10">Octobre</option>
+                                            <option value="11">Novembre</option>
+                                            <option value="12">D&eacute;cembre</option>
+                                        </select>
+                                        &nbsp;&nbsp;<input class="input-small inline" id="start_year_1" placeholder="Ann&eacute;e" name="start_year[]">
+
+                                        <div class="collapse in" id="stillWorkingThere_1">
+                                            <label>
+                                                <span class="span3">Fin</span>
+                                            </label>
+                                            <select class="input-small inline" name="end_month[]">
+                                                <option value="1" selected>Janvier</option>
+                                                <option value="2">F&eacute;vrier</option>
+                                                <option value="3">Mars</option>
+                                                <option value="4">Avril</option>
+                                                <option value="5">Mai</option>
+                                                <option value="6">Juin</option>
+                                                <option value="7">Juillet</option>
+                                                <option value="8">Ao&ucirc;t</option>
+                                                <option value="9">Septembre</option>
+                                                <option value="10">Octobre</option>
+                                                <option value="11">Novembre</option>
+                                                <option value="12">D&eacute;cembre</option>
+                                            </select>
+                                            &nbsp;&nbsp;<input class="input-small inline" id="end_year_1" placeholder="Ann&eacute;e" name="end_year[]">
+
+                                        </div>
+                                        <label class="checkbox">
+                                            <input type="checkbox" id="still_working_1" data-target="#stillWorkingThere_1" data-toggle="collapse" name="still_working[]">J'occupe toujours ce poste
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- end, job row -->
+                            {/if}
+                            <p class="addmore-button" id="addmore_job_link"><a class="btn btn-link btn-small"><i class="icon-plus"></i> Ajouter une exp�rience</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End, Job -->
+            <!-- Start, Training module -->
+            <div class="mod">
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label class="control-label span2 offset1" for=""><strong>Formation</strong>
+                            <br><span id="edu_error"></span>
+                        </label>
+                        <div class="controls span8">
+                            {if $educationDetails|@count gt 0}
+                            {foreach from=$educationDetails item=education name="edu_details"}
+                            {assign var=edu_index value=$smarty.foreach.edu_details.index+1}
+                            <!-- Start, School row -->
+                            <div class="addmore" id="training_more_{$edu_index}">
+
+                                <button  class="close" type="button" id="training_close_{$edu_index}" rel="{$education.identifier}" {if  $educationDetails|@count lt 2} style="display:none"{/if}>&times;</button>
+
+                                <label><input class="span5" id="trainingName_{$edu_index}" value="{$education.title}" name="training_title[]" placeholder="Intitul&eacute; de la formation"><span data-original-title="" data-content="ces informations sont optionnelles mais contribuent &agrave; valoriser votre profil de r&eacute;dacteur" rel="popover" data-trigger="hover" data-placement="right" data-html="true" class=""><i class="icon-info-sign"></i></span></label>
+                                <label><input class="span5" id="trainingSchoolName_{$edu_index}" value="{$education.institute}" name="training_institute[]" placeholder="Ecole, universit&eacute;, etc..."></label>
+                                <div class="clearfix">
+                                    <div class="container-field span5">
+                                        <label>
+                                            <span class="span3">D&eacute;but</span>
+                                        </label>
+                                        <select class="input-small inline" name="start_train_month[]">
+                                            <option value="1" {if $education.from_month=='1'}selected{/if}>Janvier</option>
+                                            <option value="2" {if $education.from_month=='2'}selected{/if}>F&eacute;vrier</option>
+                                            <option value="3" {if $education.from_month=='3'}selected{/if}>Mars</option>
+                                            <option value="4" {if $education.from_month=='4'}selected{/if}>Avril</option>
+                                            <option value="5" {if $education.from_month=='5'}selected{/if}>Mai</option>
+                                            <option value="6" {if $education.from_month=='6'}selected{/if}>Juin</option>
+                                            <option value="7" {if $education.from_month=='7'}selected{/if}>Juillet</option>
+                                            <option value="8" {if $education.from_month=='8'}selected{/if}>Ao&ucirc;t</option>
+                                            <option value="9" {if $education.from_month=='9'}selected{/if}>Septembre</option>
+                                            <option value="10" {if $education.from_month=='10'}selected{/if}>Octobre</option>
+                                            <option value="11" {if $education.from_month=='11'}selected{/if}>Novembre</option>
+                                            <option value="12" {if $education.from_month=='12'}selected{/if}>D&eacute;cembre</option>
+                                        </select>
+                                        &nbsp;&nbsp;<input class="input-small inline" placeholder="Ann&eacute;e" id="start_train_year_{$edu_index}" value="{$education.from_year}" name="start_train_year[]">
+
+                                        <div class="collapse  {if $education.still_working !='yes'} in {/if}" id="stillTrainingThere_{$edu_index}">
+                                            <label>
+                                                <span class="span3">Fin</span>
+                                            </label>
+                                            <select class="input-small inline" name="end_train_month[]">
+                                                <option value="1" {if $education.to_month=='1'}selected{/if}>Janvier</option>
+                                                <option value="2" {if $education.to_month=='2'}selected{/if}>F&eacute;vrier</option>
+                                                <option value="3" {if $education.to_month=='3'}selected{/if}>Mars</option>
+                                                <option value="4" {if $education.to_month=='4'}selected{/if}>Avril</option>
+                                                <option value="5" {if $education.to_month=='5'}selected{/if}>Mai</option>
+                                                <option value="6" {if $education.to_month=='6'}selected{/if}>Juin</option>
+                                                <option value="7" {if $education.to_month=='7'}selected{/if}>Juillet</option>
+                                                <option value="8" {if $education.to_month=='8'}selected{/if}>Ao&ucirc;t</option>
+                                                <option value="9" {if $education.to_month=='9'}selected{/if}>Septembre</option>
+                                                <option value="10" {if $education.to_month=='10'}selected{/if}>Octobre</option>
+                                                <option value="11" {if $education.to_month=='11'}selected{/if}>Novembre</option>
+                                                <option value="12" {if $education.to_month=='12'}selected{/if}>D&eacute;cembre</option>
+                                            </select>
+                                            &nbsp;&nbsp;<input class="input-small inline" id="end_train_year_{$edu_index}" placeholder="Ann&eacute;e" value="{$education.to_year}" name="end_train_year[]" >
+
+                                        </div>
+                                        <label class="checkbox">
+                                            <input type="checkbox" id="still_training_{$edu_index}" data-target="#stillTrainingThere_{$edu_index}" name="still_training[]" data-toggle="collapse" {if $education.still_working =='yes'} checked {/if}>Je suis toujours en formation
+                                        </label>
+                                        <input type="hidden" name="training_identifier[]" value="{$education.identifier}">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- end, school row -->
+
+                            {/foreach}
+                            {else}
+                            <!-- Start, School row -->
+                            <div class="addmore" id="training_more_1">
+                                <label><input class="span5" id="trainingName_1" name="training_title[]" placeholder="Intitul&eacute; de la formation"><span data-original-title="" data-content="ces informations sont optionnelles mais contribuent &agrave; valoriser votre profil de r&eacute;dacteur" rel="popover" data-trigger="hover" data-placement="right" data-html="true" class=""><i class="icon-info-sign"></i></span></label>
+                                <label><input class="span5" id="trainingSchoolName_1" name="training_institute[]" placeholder="Ecole, universit&eacute;, etc..."></label>
+                                <div class="clearfix">
+                                    <div class="container-field span5">
+                                        <label>
+                                            <span class="span3">D&eacute;but</span>
+                                        </label>
+                                        <select class="input-small inline" name="start_train_month[]">
+                                            <option value="1" selected>Janvier</option>
+                                            <option value="2">F&eacute;vrier</option>
+                                            <option value="3">Mars</option>
+                                            <option value="4">Avril</option>
+                                            <option value="5">Mai</option>
+                                            <option value="6">Juin</option>
+                                            <option value="7">Juillet</option>
+                                            <option value="8">Ao&ucirc;t</option>
+                                            <option value="9">Septembre</option>
+                                            <option value="10">Octobre</option>
+                                            <option value="11">Novembre</option>
+                                            <option value="12">D&eacute;cembre</option>
+                                        </select>
+                                        &nbsp;&nbsp;<input class="input-small inline" id="start_train_year_1" placeholder="Ann&eacute;e" name="start_train_year[]">
+
+                                        <div class="collapse in" id="stillTrainingThere_1">
+                                            <label>
+                                                <span class="span3">Fin</span>
+                                            </label>
+                                            <select class="input-small inline" name="end_train_month[]">
+                                                <option value="1" selected>Janvier</option>
+                                                <option value="2">F&eacute;vrier</option>
+                                                <option value="3">Mars</option>
+                                                <option value="4">Avril</option>
+                                                <option value="5">Mai</option>
+                                                <option value="6">Juin</option>
+                                                <option value="7">Juillet</option>
+                                                <option value="8">Ao&ucirc;t</option>
+                                                <option value="9">Septembre</option>
+                                                <option value="10">Octobre</option>
+                                                <option value="11">Novembre</option>
+                                                <option value="12">D&eacute;cembre</option>
+                                            </select>
+                                            &nbsp;&nbsp;<input class="input-small inline" id="end_train_year_1" placeholder="Ann&eacute;e" name="end_train_year[]">
+                                            </label>
+                                        </div>
+                                        <label class="checkbox">
+                                            <input type="checkbox" id="still_training_1" data-target="#stillTrainingThere_1" name="still_training[]" data-toggle="collapse">Je suis toujours en formation
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- end, school row -->
+                            {/if}
+                            <p class="addmore-button" id="addmore_training_link"><a  class="btn btn-link btn-small"><i class="icon-plus"></i> Ajouter une formation</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End, Training module -->
+            <!-- Start, personal info module -->
+            <div class="mod">
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label class="control-label span2 offset1" for=""><strong>Informations personnelles <span class="error">*</span></strong></label>
+                        <div class="controls span8">
+                            <label>
+                                <select class="span5" name="nationality" id="nationality">
+                                    <option value="">Nationalit&eacute;</option>
+                                    {html_options  options=$ep_nationality_list selected=$nationality}
+                                </select>
+                            </label>
+                            <label><input class="span5" id="address" name="address" placeholder="Adresse" value="{$address}"></label>
+                            <label><input class="span5" id="phone_number" name="phone_number" placeholder="T&eacute;l&eacute;phone" value="{$phonenumber}"></label>
+                            <label><input class="span5" id="city" name="city" placeholder="Ville" value="{$city}"></label>
+                            <div id="ukzipcode" {if $country!=101}style="display:none"{/if}>
+                                <label>
+                                    <input class="span2" id="zipcode1" name="zipcode1" placeholder="Code postal" value="{$zipcode1}" maxlength="4"/>
+                                    <input class="span2" id="zipcode2" name="zipcode2" placeholder="Code postal" value="{$zipcode2}" maxlength="3"/>
+                                    <label for="zipcode1" generated="true" class="error"></label>
+                                    <label for="zipcode2" generated="true" class="error"></label>
+                                </label>
+                            </div>
+                            <div id="otherzipcode" {if $country==101}style="display:none"{/if}>
+                                <label>
+                                    <input class="span5" id="zipcode" name="zipcode" placeholder="Code postal" value="{$zipcode}" />
+                                </label>
+                            </div>
+
+                            <label>
+                                <select class="span5" name="country" id="country" Onchange="switchzipcode(this.value)">
+                                    <option value="">Pays</option>
+                                    {html_options  options=$ep_pays_list selected=$country}
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- End, personal info module -->
+            <!-- added by naseer on 31-07-2015 -->
+
+            <!-- -->
+            <!-- company details -->
+            <div class="mod">
+                <div class="row-fluid"  >
+                    <!-- passport and id card details-->
+                    <div class="control-group">
+                        <label class="radio controls span1 offset1">
+                            <input type="radio" type="radio" name="options_flag" id="reg_check" value="reg_check" onclick="toggle_details('reg_check_details');" {if $options_flag == 'reg_check'}checked{/if}>
+                        </label>
+                        <label class="span2" for="reg_check">
+                            <strong>Autre cas</strong>
+                        </label>
+                        <div class=" span3 ">
+                            <div id="reg_check_details" class="details {if $options_flag neq 'reg_check'}hide{/if}">
+                            <label ><input class="span9" id="passport_no" name="passport_no" placeholder="Num&eacute;ro de passeport" value="{$passport_no}"></label>
+                            <label><input class="span9" id="id_card" name="id_card" placeholder="Carte d'identit&eacute;" value="{$id_card}"></label>
+                            </div>
+                        </div>
+                        <div class=" span4">
+                            <div class="alert alert-info ">
+                                <i class="icon-arrow-right"></i>
+                                Attention ce statut &laquo; Autre cas &raquo; est un statut temporaire si vous n'&ecirc;tes ni une Soci&eacute;t&eacute;, ni un auto-entrepreneur. Il vous appartient de choisir un statut en vous mettant en conformit&eacute; avec la l&eacute;gislation de votre pays.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="radio controls span1 offset1">
+                            <input type="radio" type="radio" name="options_flag"  id="com_check" value="com_check" onchange="toggle_details('company_details');" {if $options_flag == 'com_check'}checked{/if}>
+                        </label>
+                        <label class="span2 " for="com_check">
+                            <strong>Soci&eacute;t&eacute; </strong>
+                        </label>
+
+                        <div class=" span5">
+                            <div id="company_details" class="details {if $options_flag neq 'com_check'}hide{/if}">
+                                <label><input class="span9" id="com_name" name="com_name" placeholder="D&eacute;nomination sociale" value="{$com_name}"><span class="error">*</span></label>
+                                <label><input class="span9" id="com_address" name="com_address" placeholder="Adresse" value="{$com_address}"><span class="error">*</span></label>
+                                <label><input class="span9" id="com_city" name="com_city" placeholder="Ville" value="{$com_city}"><span class="error">*</span></label>
+                                <label><input class="span9" id="com_zipcode" name="com_zipcode" placeholder="Code postal" value="{$com_zipcode}"><span class="error">*</span></label>
+                                <label>
+                                    <select class="span9" name="com_country" id="com_country" onchange="toggle_com_siren();">
+                                        <option value="">Pays</option>
+                                        {html_options  options=$ep_nationality_list selected=$com_country}
+                                    </select><span class="error">*</span>
+                                </label>
+                                <label id="com_siren_label"  {if $com_country neq "38"}style="display: none;"{/if}>
+                                    <input class="span9" name="com_siren" id="com_siren" placeholder="Siren" value="{$com_siren}" /><span class="error">*</span>
+                                </label>
+
+                                <label><input class="span9" id="com_tva_number" name="com_tva_number" placeholder="Num&eacute;ro de TVA Intracommunautaire" value="{$com_tva_number}"><span class="error">*</span></label>
+                                <label><input class="span9" id="com_phone" name="com_phone" placeholder="T&eacute;l&eacute;phone" value="{$com_phone}"><span class="error">*</span></label>
+                            </div>
+                        </div>
+                    </div>
+
+                {* <!--<div class="control-group">
+						<label class="control-label span2 offset1" for=""><strong>Num&eacute;ro SIREN<span class="error">*</span></strong></label>
+						<div class="controls span8">
+							<div class="form">
+								<label><input type="text" placeholder="Num&eacute;ro SIREN" class="inline input-large" value="{$siren_number}" name="siren_number" id="siren_number"></label>
+							</div>
+						</div>
+					</div> --> *}
+                <div class="control-group">
+
+                    <label class="radio controls span1 offset1">
+                        <input  type="radio" type="radio" name="options_flag" id="tva_check" value="tva_check" onchange="toggle_details('tva_details');"  {if $options_flag == 'tva_check'}checked{/if} >
+                    </label>
+                    <label class=" span2 " for="tva_check">
+                       <strong>Auto-entrepreneur</strong>
+                    </label>
+                    </label>
+                    <div class=" span5">
+                        <div id="tva_details" class="details {if $options_flag neq 'tva_check'}hide{/if}">
+                            <div id="tvanumber" >
+                                <label>
+                                    <input type="text" class="span9" placeholder="Num&eacute;ro de TVA Intracommunautaire" name="tav_number" id="tav_number" value="{$tva_number}">
+                                </label>
+                            </div>
+                            <span id="payinfo_error"></span>
+                        </div>
+                    </div>
+                </div>
+            {* <!-- <div class="control-group">
+						<label class="control-label span2 offset1" for=""><strong>D&eacute;nomination sociale<span class="error">*</span></strong></label>
+						<div class="controls span8">
+							<div class="form">
+								<label><input type="text" placeholder="D&eacute;nomination sociale" class="inline input-large" value="{$denomination_sociale}" name="denomination_sociale" id="denomination_sociale"></label>
+							</div>
+						</div>
+					</div> --> *}
+
+                    <div class="control-group" align="center">
+                        <input style="width:0px; height: 0px; border-color:#FFF; box-shadow: none;" type="text"  id="option_group" name="option_group"  value="">
+                    </div>
+            </div>
+        </div>
+<!-- company details ends here -->
+
+<!-- Start, payment info module -->
+<div class="mod">
+    <div class="row-fluid">
+        <div class="control-group">
+            <label class="control-label span2 offset1" for=""><strong>Choix de r&eacute;mun&eacute;ration {if $smarty.get.profile eq 'invoice'}<span class="error">*</span>{/if} </strong></label>
+            <div class="controls span8">
+                <label class="radio">
+                    <input type="radio" type="radio" value="paypal" {if $payment_type == 'paypal'}checked class="collapsed"{/if} name="payment_type" data-target="#paypalEmail" data-toggle="collapse">Paypal
+                </label>
+                <!-- if Payapl is true, display the input "paypal email" -->
+                <div id="paypalEmail" {if $payment_type=='paypal'} class="collapse in out" {else} class="collapse out" {/if} >
+                <i class="icon-arrow-right"></i> <input type="text" class="span4" placeholder="paypal email" name="paypal_id" id="paypal_id" value="{$paypal_id}">
+            </div>
+            {*<label class="radio" id="cheque_radio">
+                <input type="radio" value="cheque" {if $payment_type == 'cheque'}checked{/if} name="payment_type">Ch&egrave;que
+            </label>*}
+            <label class="radio">
+                <input type="radio" value="virement" {if $payment_type == 'virement'}checked{/if} name="payment_type">Virement bancaire
+            </label>
+            <!-- if virement is true, display the input "paypal email" -->
+            <div id="virementId" {if $payment_type=='virement'} class="collapse in out" {else} class="collapse in" {/if} >
+            <div id="c_out_france" {if $payment_type=='virement' }style="display:block"{else}style="display:none"{/if}>
+            <i class="icon-arrow-right"></i>
+            <input type="text" value="{$rib_id_6}" class="span3" placeholder="BIC" name="rib_id_6" id="rib_id_6"/>
+            <input type="text" value="{$rib_id_7}" class="span3" placeholder="IBAN" name="rib_id_7" id="rib_id_7"/>
+            <input type="text" value="{$bank_account_name}" class="span4" placeholder="Nom du b&eacute;n&eacute;ficiaire" name="bank_account_name" id="bank_account_name"/>
+        </div>
+    </div>
+    <br>
+    <span id="payment_error"></span>
+</div>
+</div>
+</div>
+</div>
+
+<!-- End, payment info module -->
+<!-- News letter/Auto email subscribe-->
+<div class="mod">
+    <div class="row-fluid">
+        <div class="control-group">
+            <label class="control-label span2 offset1" for=""><strong>Abonnements</strong></label>
+            <div class="controls span8">
+                <label class="checkbox">
+                    <input type="checkbox" {if $subscribe == 'yes'}checked {/if} name="subscribe">Newsletter
+                </label>
+                <label class="checkbox">
+                    <input type="checkbox" {if $alert_subscribe == 'yes'}checked {/if} name="alert_subscribe">Alertes par email
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
+<!--End  News letter/Auto email subscribe-->
+
+<input type="hidden" name="languageupdate" id="languageupdate" value="{$languageupdate}" />
+<div class="mod">
+    <div class="pull-right">
+        <button class="btn inline" id="cancel">Annuler</button>
+        <button class="btn btn-primary inline"><i class="icon-refresh icon-white"></i> Enregistrer</button>
+    </div>
+</div>
+</form>
+</section>
+</div>
+
+
+<!-- ajax use start -->
+<div id="profile-update" class="modal container hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3 id="myModalLabel">Modification du profil</h3>
+    </div>
+    <div class="modal-body">
+        <p>Le syst&egrave;me de facturation a chang&eacute;&nbsp;! </p>
+        <p>  Merci de renseigner sur votre fiche profil,  votre choix de r&eacute;mun&eacute;ration et si vous &ecirc;tes assujetti(e) &agrave; la TVA.</p>
+        <p>  Cordialement,</p>
+        <p>Toute l&rsquo;&eacute;quipe d&rsquo;Edit-place&nbsp;</p>
+    </div>
+</div>
+<!-- ajax use end -->

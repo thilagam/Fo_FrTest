@@ -1,0 +1,187 @@
+{literal}
+<script type="text/javascript">
+$("#menu_ongoing").addClass("active");
+$('body').removeClass('homepage');
+$('body').addClass('mission');
+</script>
+{/literal}
+<div class="container">
+<br>
+{if $missionDetails | @count gt 0}
+	{foreach from=$missionDetails item=article name=details}
+	<ul class="breadcrumb">
+		<li><a href="/contrib/home">Accueil</a> <span class="divider">/</span></li>
+		<li><a href="/contrib/ongoing">Mes participations</a> <span class="divider">/</span></li>
+		<li class="active">{$article.title}</li>
+	</ul> 
+	
+	<!-- start, Summary -->
+	<section id="summary">
+		<div class="row-fluid">
+			<div class="span8">
+				{if $article.price_corrector OR $article.crt_participate_id }
+					{if $article.missiontest eq 'yes'}
+						<span class="label label-test-mission">Mission de correction test</span>
+					{else}
+						<span class="label label-correction">Mission Correction</span>
+					{/if}
+				{elseif $article.ao_type eq 'premium'}
+					{if $article.missiontest eq 'yes'}
+						<span class="label label-test-mission"><i class="icon-star icon-white"></i>  Staffing</span>
+					{else}
+						<span class="label label-premium">Mission Premium</span>
+					{/if}
+				{else}	
+					{if $article.missiontest eq 'yes'}
+						<span class="label label-mission-test">Mission Test</span>
+					{else}
+						<span class="label label-quote">Mission Libert&eacute;</span>
+					{/if}
+				{/if}	
+				<h1>{$article.title}</h1>
+			</div>
+			<div class="span3 stat">
+				<p>Date de livraison</p>				
+				<p class="num-large less24">
+					Valid&eacute;e
+				</p>
+			</div>
+			{*<div class="span2 stat">
+				<p>Tarif</p>
+				{if $article.price_user!=''}
+					<p class="num-large">{$article.price_user|zero_cut:2} &euro;</p>
+				{elseif $article.price_corrector!=''}
+					<p class="num-large">{$article.price_corrector|zero_cut:2} &euro;</p>
+				{/if}	
+			</div>*}
+			<div class="span1 stat">
+				<div class="icon-comment-large new" id="comment_count"><a href="#comment" class="scroll">{$commentDetails|@count}</a></div>
+			<!--  to active if new comment, add classname "new" -->
+			<!--div class="icon-comment-large new"><a href="#comment">3</a></div-->
+			</div>
+		</div>
+	</section>
+	<!-- end, summary --> 
+ 
+	<div class="row-fluid"> 
+		<div class="span9">
+			<section id="file-management">				
+				<div class="row-fluid file-management-cont">                           
+					<table style="margin-left: 4%" class="table mod span11 offset1">
+						<thead>
+						<tr>
+							<th class="span6">Fichier</th>
+							<th class="span4" style="text-align:center">Date</th>
+							<th class="span2">Poids</th>
+						</tr>
+						</thead>
+						<tbody>
+							{if $AllVersionArticles | @count gt 0}
+								{foreach item=versionarticle from=$AllVersionArticles name=articledetails}
+									<tr><td class="span6"><i class="icon-file"></i>
+									<a href="{if $versionarticle.file_exists eq 'yes'}/contrib/download-version-article?processid={$versionarticle.id}{else}#{/if}">{$versionarticle.article_name}</a></td>
+									<td class="span4 muted" style="text-align:center">{$versionarticle.article_sent_at|date_format:"%d/%m/%Y %H:%M"}</td>
+									<td class="span2 muted">{$versionarticle.file_size}</td></tr>
+								{/foreach}
+							
+							{else}
+								<tr><td colspan="4"></td></tr>
+							{/if}	
+						</tbody>
+					</table>	
+					<!-- call to action set -->
+					<div class="pull-center btn-group">						
+						<a data-original-title="Aide" rel="tooltip" class="btn" href="/contrib/compose-mail?senduser=111201092609847"><i class="icon-question-sign"></i> Aide</a>
+					</div>
+				</div>
+			</section>
+			<section id="a_o">
+				<div class="mod">
+					<div class="summary clearfix">
+						<h4>D&eacute;tails du projet</h4>
+						<ul class="unstyled">
+							<li><strong>Appel &agrave; r&eacute;daction</strong> <span class="bullet">&#9679;</span></li>
+							<li> Langue : <img class="flag flag-{$article.language}" src="/FO/images/shim.gif"> <span class="bullet">&#9679;</span></li>
+							<li>Cat&eacute;gorie : {$article.category} <span class="bullet">&#9679;</span></li>
+							<li>Nb. mots : {$article.num_min} - {$article.num_max} / article
+							<!--<span class="bullet">&#9679;</span></li>
+							<li><a href="#comment" class="scroll" id="comment_count_1"><i class="icon-comment"></i> {$commentDetails|@count}</a></li>-->
+							{if $article.spec_exists eq 'yes'}
+								<li class="pull-right"><a href="/contrib/download-file?type=clientbrief&article_id={$article.article_id}" class="btn btn-small btn-success"><i class="icon-white icon-circle-arrow-down"></i> T&eacute;l&eacute;charger le brief client</a></li>
+							{/if}	
+						</ul>
+					</div>
+				</div>
+			</section>
+			{include file="Contrib/article-comments.phtml"}
+		</div>
+		<div class="span3">
+		<!--  right column  -->
+			<aside>
+				<div class="aside-bg">
+					<div class="editor-price">
+						<p class="quote-price">Royalties :<strong> 
+							{if $article.free_article=='yes'}
+								Free
+							{elseif $article.price_user!=''}
+								{$article.price_user|zero_cut:2} &euro;
+							{elseif $article.price_corrector!=''}
+								{$article.price_corrector|zero_cut:2} &euro;
+							{/if}</strong>
+						</p>
+						{if $article.ao_type neq 'premium'}
+							<ul class="unstyled stripe">
+								<li>Commission Edit-place inclus : {$article.ep_commission}%</li>
+								<li>  Prix total r&eacute;gl&eacute; par le client : {$article.final_price|zero_cut:2} &euro;</li>
+							</ul>
+						{/if}	
+					</div>
+					<div id="selected-editor" class="aside-block">
+						<div class="editor-container">
+							<h4>Votre client</h4>
+							<img src="{$article.client_pic}" title="{$article.company_name}">
+							<p class="editor-name">{$article.company_name}</p>
+							{if $article.ao_type eq 'premium'}
+								<a href="/contrib/compose-mail?senduser=110923143523902" class="btn btn-small">Contactez-nous</a>
+							{else}
+								<p>Tel : {$article.phone_number}</p> 
+								<!--<a href="/contrib/compose-mail?senduser={$article.article_id}" class="btn btn-small">Envoyer un message</a>-->
+								<p>Email : {$article.email}</p> 								
+							{/if}
+							
+						</div>
+					</div>
+					{if $article.ao_type neq 'premium'}
+					<div class="aside-block" id="liberte-guide" style="margin-top: 40px">
+						<h4>Guide du r&eacute;dacteur</h4>
+						<div class="pull-center inc"><span class="label label-quote">mission liberte</span></div>
+						<p><strong>Avant de d&eacute;marrer... </strong></p>
+						<ul>
+							<li>Contactez le client par email ou t&eacute;l&eacute;phone d&egrave;s que vous &ecirc;tes s&eacute;lectionn&eacute;(e).     </li>
+							<li>Demandez une confirmation du brief, du timing de rendu et du nombre d&rsquo;articles.</li>
+						</ul>
+						<p><strong>Une fois les articles r&eacute;dig&eacute;s...</strong></p>
+						<ul>
+							<li>T&eacute;l&eacute;chargez les &eacute;l&eacute;ments sur la plateforme.</li>
+							<li>N'envoyez jamais votre travail complet par email au client.</li>
+						</ul>
+						<hr>
+						<p class="pull-center"><a href="/contrib/download-file?type=guide_mission_liberte" class="btn btn-small"><i class="icon-download"></i> T&eacute;l&eacute;charger le guide complet</a></p>
+					</div>
+					{/if}
+					<div class="aside-block" id="garantee">
+						<h4>Vos garanties</h4>
+						<dl>
+							<dt><span class="umbrella"></span>edit-place est votre m&eacute;diateur</dt>
+							<dd>En cas de contestation (d&eacute;lai de livraison, reprise d&rsquo;articles, remboursement...)</dd>
+							<dt><span class="locked"></span>Paiement s&eacute;curis&eacute;</dt>
+							<dd>Notre solution de paiement en ligne vous garantit une transaction en toute tranquillit&eacute;</dd>
+						</dl>
+					</div>
+				</div>
+			</aside>  
+		</div>
+	</div>
+{/foreach}
+{/if}	
+</div>

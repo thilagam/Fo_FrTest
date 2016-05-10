@@ -1,0 +1,39 @@
+<div class="modal-header">
+	<button type="button" class="close" Onclick="dismissmodal();" aria-hidden="true">&times;</button>
+	<div class="center-block">
+		<h4>Nous avons trouvé des devis similaires</h4>
+		<!--<p>Les tarifs sont indiqu&eacute;s &agrave; titre indicatif et sont des tarifs par <b><u>{$type_array[$type]|upper}</u></b>. {if $aotype=='premium'}Vous recevrez bientôt votre devis personnalisé{/if}</p>-->
+		<p><p>Ces devis sont communiqu&eacute;s &agrave; titre indicatif. Vous recevrez bient&ocirc;t votre devis personnalis&eacute; {if $aotype!='premium'}en diffusant votre annonce sur notre site{/if}</p>
+	</div>
+</div>
+
+	<div class="center-block quote-pricing"> 
+		<div class="table-responsive">  
+			<table class="table table-bordered table-striped">
+				<tbody>
+				<tr><th></th><th>Tarif 1</th><th>Tarif 2</th><th>Tarif 3</th></tr>
+				{foreach from=$pricestats item=price}
+				<tr>
+					<td><img width="50" height="50" src="/FO/images/imageB3/ctype-{$price.type}.png" alt="Guides"><div class="title">{if $contype=="writing"}R&eacute;daction{else}Traduction{/if} {$type_array[$price.type]}<br> en {$lang_array[$language]}</div></td>
+						<td><div class="price">{$price.price1} €</div>Volume : {$price.num1}<br>Un acteur {$category_array[$category]}</td>
+					   <td><div class="price">{$price.price2} €</div>Volume : {$price.num2}<br>Un acteur {$category_array[$category]}</td>
+						<td><div class="price">{$price.price3} €</div>Volume : {$price.num3}<br>Un acteur {$category_array[$category]}</td>
+				</tr>
+				{/foreach}
+				</tbody>
+			</table>  
+		</div>
+	</div>
+
+<div class="modal-footer">
+	<p class="center-block alert-info"><span class="glyphicon glyphicon-plus"></span> 
+		{if $aotype=='premium'}
+			Un expert éditorial va vous contacter et vous proposez un devis personnalisé en moins de 24h
+		{else}
+			Vous allez bient&ocirc;t pouvoir compl&eacute;ter votre demande et diffuser votre annonce sur notre site
+		{/if}
+	</p>    
+	<button type="button" class="btn btn-default btn-lg" Onclick="dismissmodal();">Annuler</button>
+	<button class="btn btn-primary btn-lg" onClick="document.quotes1form.submit();">J'ai compris</button>
+</div>
+

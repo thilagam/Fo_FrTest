@@ -1,0 +1,32 @@
+<section id="quizz-ok">
+	<div class="row-fluid">
+		<div class="pull-center span10 offset1">
+			<i class="check"></i>
+			<h1>F&eacute;licitations !</h1>
+			<p class="text-success lead">Vous avez r&eacute;pondu correctement &agrave; {$num_correct} r&eacute;ponse(s) sur {$num_total}.</p>
+			<hr>
+			La mission premium<br><strong>{$article_title}</strong> <br>a &eacute;t&eacute; rajout&eacute;e &agrave; votre s&eacute;lection
+			<hr>
+			<div class="clearfix">
+				<a href="/contrib/aosearch" class="btn">Voir plus d'annonces</a>
+				<a class="btn btn-primary" href="/cart/cart-selection">Voir ma s&eacute;lection <span class="badge badge-warning">{$selected_ao_count}</span></a>
+			</div>
+
+		</div>
+	</div>
+</section>
+
+<a href="#brand" class="pull-right btn btn-small disabled anchor-top scroll"><i class="icon-arrow-up"></i></a>
+
+{literal}
+<script>
+$(".scroll").click(function(event){		
+		event.preventDefault();
+		$('html,body').animate({scrollTop:$(this.hash).offset().top}, 500);
+	});
+
+// tooltip activation
+    $("[rel=tooltip]").tooltip();
+	 $("[rel=popover]").popover();
+</script>
+{/literal}

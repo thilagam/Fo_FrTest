@@ -1,0 +1,186 @@
+<div class="container">
+	<br>
+{if $missionDetails | @count gt 0}
+	{foreach from=$missionDetails item=article name=details}	
+	<ul class="breadcrumb">
+	<li><a href="/contrib/home">Accueil</a> <span class="divider">/</span></li>
+	<li><a href="/contrib/ongoing">Mes participations</a> <span class="divider">/</span></li>
+	<li class="active">{$article.title}</li>
+	</ul> 
+	<div class="alert alert-success"><button data-dismiss="alert" class="close" type="button">&times;</button>
+		<i class="icon-ok icon-white"></i> Bravo {$client_email} ! Vous avez &eacute;t&eacute; s&eacute;lectionn&eacute; comme correcteur pour cette mission. Merci de tenir compte des d&eacute;lais impartis{if $article.status eq 'writing_ongoing'} une fois le fichier du r&eacute;dacteur re&ccedil;u{/if}.
+	</div>
+	<!-- start, Summary -->
+	<section id="summary">
+		<div class="row-fluid">
+			<div class="span7">
+				{if $article.missiontest eq 'yes'}
+					<span class="label label-test-mission">Mission de correction test</span>
+				{else}
+					<span class="label label-correction">Mission Correction</span>
+				{/if}
+				<h1>{$article.title}</h1>
+			</div>
+			<div class="span2 stat">
+				<p>Date de livraison</p>
+				<!-- add classname "less24" if time is < 24h  -->
+				<!-- p class="num-large less24">Livrée</p-->
+				{if $article.status eq 'bid' OR $article.status eq 'disapproved' }
+					<p class="num-large less24">
+						<span id="dtime_{$article.article_id}_{$article.corrector_submit_expires}">
+							<span id="dtext_{$article.article_id}_{$article.corrector_submit_expires}">{$article.corrector_submit_expires}</span>
+						</span>
+					</p>
+				{else}
+					<p class="num-large less24" style="font-size:18px">{$article.status_trans}</p>
+				{/if}	
+			</div>
+			<div class="span2 stat">
+				<p>Tarif</p>
+				<p class="num-large">{$article.price_corrector} &euro;</p>
+			</div>
+			<div class="span1 stat">
+				<div class="icon-comment-large new"><a href="#comment" class="scroll" id="comment_count">{$commentDetails|@count}</a></div>
+				<!--  to active if new comment, add classname "new" -->
+				<!--div class="icon-comment-large new"><a href="#comment">3</a></div-->
+			</div>
+		</div>
+	</section>
+	<!-- end, summary --> 
+	<div class="row-fluid"> 
+		<div class="span9">
+			<section id="corrector">
+				<div class="mod pull-center">
+					<div class="icon_corrector"></div>
+					<h4>Bienvenue dans votre espace de correction </h4>
+					{if $article.status eq 'writing_ongoing'}
+						<p>Le  r&eacute;dacteur n'a pas encore soumis son fichier. Vous serez alert&eacute; une fois le fichier disponible pour correction.</p>
+					{else}	
+						<p>Pensez &agrave; bien lire les diff&eacute;rents briefs avant de d&eacute;marrer</p>
+					{/if}	
+					<div class="row-fluid file-management-cont"> 
+						<div class="row-fluid">  
+							<table class="table well span11 offset1" style="margin-left: 4%">
+								<thead>
+									<tr>
+										<th class="span6">Article &agrave; corriger</th>
+										<th class="span1">R&eacute;dacteur</th>
+										<th class="span3" style="text-align:center">Modification</th>
+										<th class="span1">Poids</th>
+										<th class="span1"></th>
+
+									</tr>
+								</thead>
+								<tbody>
+								{foreach item=varticle from=$AllVersionArticles name=articledetails}
+									<tr>
+										<td class="span6"><i class="icon-file"></i> <a href="/contrib/download-version-article?processid={$varticle.id}">{$varticle.article_name}</a></td>										
+										<td class="span1">{$varticle.first_name}</td>
+										<td class="span3" style="text-align:center">{$varticle.article_sent_at|date_format:"%d/%m/%Y %H:%M"}</td>
+										<td class="span1 muted">{$varticle.file_size}</td>
+										<td class="span1"><a href="/contrib/download-version-article?processid={$varticle.id}" data-original-title="T&eacute;l&eacute;charger" rel="tooltip" class="btn btn-small"><i class="icon-download"></i></a></td>
+
+                                    </tr>
+								{/foreach}									
+								</tbody>
+							</table> 
+						</div>
+						{if $article.status eq 'bid' OR $article.status eq 'disapproved'}
+						<a class="btn btn-primary" data-target="#fix-article" data-toggle="modal" role="button" href="/contrib/corrector-article-popup?cparticipation_id={$CorrectorParticipationId}&article_id={$article.article_id}"><i class="icon-pencil icon-white"></i> Corriger l'article</a>
+						{/if}
+					</div>					
+				</div>
+			</section>
+			<section id="a_o">
+				<div class="mod">
+					<div class="summary clearfix">
+						<h4>D&eacute;tails du projet</h4>
+						<ul class="unstyled">
+							<li><strong>Correction</strong> <span class="bullet">&#9679;</span></li>
+							<li> Langue : <img src="/FO/images/shim.gif" class="flag flag-{$article.language}"> <span class="bullet">&#9679;</span></li>
+							<li>Cat&eacute;gorie : {$article.category} <span class="bullet">&#9679;</span></li>
+							<li>Nb. mots : {$article.num_min} - {$article.num_max} / article
+							<!--<span class="bullet">&#9679;</span></li>
+							<li><a class="scroll" href="#comment"><i class="icon-comment"></i> {$commentDetails|@count}</a></li>-->
+							{if $article.spec_exists eq 'yes'}
+								<li class="pull-right"><a href="/contrib/download-file?type=correctionbrief&article_id={$article.article_id}" class="btn btn-small btn-success"><i class="icon-white icon-circle-arrow-down"></i> T&eacute;l&eacute;charger le brief client</a></li>
+							{/if}
+						</ul>
+					</div>
+				</div>
+			</section>
+			{include file="Contrib/article-comments.phtml"}
+		</div>
+		<div class="span3">
+		<!--  right column  -->
+			<aside>
+				<div class="aside-bg">
+					<div id="selected-editor" class="aside-block">
+						<div class="editor-container">
+							<h4>Le r&eacute;dacteur</h4>
+							<a href="/contrib/public-profile?user_id={$article.writer}" data-target="#viewProfile-ajax" data-toggle="modal" role="button"><img src="{$article.writer_pic_profile}" alt="{$article.writer_name}"></a>							
+							<p class="editor-name">{$article.writer_name}</p>
+						</div>
+					</div>
+
+
+					<div class="aside-block" id="garantee">
+						<h4>Vos garanties</h4>
+						<dl>
+							<dt><span class="umbrella"></span>edit-place est votre m&eacute;diateur</dt>
+							<dd>En cas de contestation (d&eacute;lai de livraison, reprise d&rsquo;articles, remboursement...)</dd>
+							<dt><span class="locked"></span>Paiement s&eacute;curis&eacute;</dt>
+							<dd>Notre solution de paiement en ligne vous garantit une transaction en toute tranquillit&eacute;</dd>
+						</dl>
+					</div>
+				</div>
+			</aside>
+		</div>
+	</div>
+	{/foreach}
+{/if}
+</div>
+<link rel="stylesheet" type="text/css" href="{$livesite}/FO/css/common/bootstrap-wysihtml5.css"></link>
+<script src="{$livesite}/FO/script/common/wysihtml5-0.3.0.min.js"></script>
+<script src="{$livesite}/FO/script/common/bootstrap-wysihtml5.js"></script> 
+<script src="{$livesite}/FO/script/common/locales/bootstrap-wysihtml5.fr-FR.js"></script>
+<!--  ratings -->
+<script type="text/javascript" charset="utf-8" src="{$livesite}/FO/script/common/jquery.raty.min.js"></script>
+{literal}
+<script type="text/javascript">
+var cur_date=0,js_date=0,diff_date=0;
+cur_date={/literal}{$smarty.now}{literal};
+js_date=(new Date().getTime())/ 1000;
+diff_date=Math.floor(js_date-cur_date);
+	$("#menu_ongoing").addClass("active");
+	startMissionTimer('dtime','dtext');
+function refreshModel(cpartid, artid)
+{   //alert('hey');
+    var href="/contrib/corrector-article-popup?cparticipation_id="+cpartid+"&article_id="+artid+" ";
+    $("#fix-article").removeData('modal');
+    $('#fix-article .modal-body').load(href);
+    $("#fix-article").modal();
+    $(".modal-backdrop:gt(0)").remove();
+}
+</script>
+{/literal}
+<!-- ***** Modal collections -->
+<!-- ajax use start -->
+<div id="fix-article" class="modal container hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h3 id="myModalLabel">Correction d'article</h3>
+	</div>
+	<div class="modal-body">
+	</div>
+</div>
+	<!-- ajax use start -->
+	<div id="viewProfile-ajax" class="modal container hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			<h3 id="myModalLabel">Profil public</h3>
+			</div>
+		<div class="modal-body">
+		</div>
+	</div>
+	<!-- ajax use end -->

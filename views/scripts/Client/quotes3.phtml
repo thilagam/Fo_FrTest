@@ -1,0 +1,101 @@
+<section class="quoteform" id="step3">
+	<div class="container padding">
+		<div class="center-block">
+			<div class="alert alert-success">Merci ! Nous avons bien enregistré votre demande de devis.</div>
+			<h2>Un responsable client va prendre contact avec vous</h2>
+		</div>
+		<div class="content-block quotelist">
+			<h4>Votre devis</h4>
+			<div class="table-responsive">     
+				<table class="table table-striped">
+					<tr> 
+						<th>Produit</th>
+						<th></th>
+						<th>Volume</th>
+						<th>Secteur</th>
+						<th>Langues</th>
+						<th>Objectif</th>
+					</tr>
+					{foreach from=$statarray item=quote}
+					<tr>
+						<td><img src="/FO/images/imageB3/ctype-{$quote.type}.png" width="50" height="50"></td>
+						<td>{$quote.typetext}</td>
+						<td>{if $quote.num==""}N/A{else}{$quote.num}{/if}</td>
+						<td>{$category_array[$category]}</td>
+						<td>{$lang_array[$quote.translation_from]},{$lang_array[$quote.translation_to]}</td>
+						<td>{$quote.objectives}</td>
+					</tr>
+					{/foreach}
+				</table>
+			</div>
+		</div>
+
+		{if $categorywriters|@count gt 0}
+		<div class="content-block recap-profile">
+			<h4>Des rédacteurs du secteur voyage</h4>
+			<ul style="margin-right:40px">
+				{foreach from=$categorywriters item=contrib}
+					<li>
+						<span class="contrib-frame"><img src="/FO/profiles/contrib/pictures/{$contrib.user_id}/{$contrib.user_id}_h.jpg" class="media-object"></span>
+						<div class="contrib-name clearfix">{$contrib.last_name}</div>
+					</li>
+				{/foreach}
+			</ul>        
+		</div>
+		{/if}
+		
+		<div class="content-block quote-pricing">
+			<div class="center-block">
+				<h4>Nous avons trouvé des devis similaires</h4>
+				<!--<p>Les tarifs sont indiqu&eacute;s &agrave; titre indicatif et sont des tarifs par <b><u>{$type_array[$type]|upper}</u></b>. Vous recevrez bientôt votre devis personnalisé</p>-->
+				<p>Ces devis sont communiqués à titre indicatif. Vous recevrez bientôt votre devis personnalisé {if $aotype!='premium'}en diffusant votre annonce sur notre site{/if}</p>
+				<div class="table-responsive">  
+					<table class="table table-bordered table-striped">
+						<tbody>
+						<tr><th></th><th>Tarif 1</th><th>Tarif 2</th><th>Tarif 3</th></tr>
+					{foreach from=$pricestats item=price}
+					<tr>
+						<td><img width="50" height="50" src="/FO/images/imageB3/ctype-{$price.type}.png" alt="Guides"><div class="title">{if $contype=="writing"}R&eacute;daction{else}Traduction{/if} {$type_array[$price.type]}<br> en {$lang_array[$language]}</div></td>
+							<td><div class="price">{$price.price1} €</div>Volume : {$price.num1}<br>Un acteur {$category_array[$category]}</td>
+						   <td><div class="price">{$price.price2} €</div>Volume : {$price.num2}<br>Un acteur {$category_array[$category]}</td>
+							<td><div class="price">{$price.price3} €</div>Volume : {$price.num3}<br>Un acteur {$category_array[$category]}</td>
+					</tr>
+					{/foreach}
+						
+					</tbody></table>  
+				</div>
+			</div>
+		</div>
+		
+	</div>
+</section>
+
+<section class="dashit"  id="strategy-teasing">
+	<div class="container padding">
+		<div class="center-block">
+			<h2>L'expertise Edit-place, c'est aussi...</h2>
+		</div>
+		<div class="row">
+			<div class="col-xs-12 col-md-6 wow fadeInLeft">
+				<h4>Stratégie éditoriale</h4>
+				<ul>
+					<li>Sélection de sujets originaux</li>
+					<li>Détection des meilleurs mots-clés à travailler</li>
+					<li>Proposition de formats élaborés pour les réseaux sociaux</li>
+					<li>Analyse et suivi des résultats (partages, rankings) </li>
+				</ul>
+			</div> 
+			<div class="col-xs-12 col-md-6 wow fadeInRight">
+				<h4>Solutions éditoriales complémentaires</h4>
+				<ul>
+					<li>Intégration / curation de contenu</li>
+					<li>Community management</li>
+					<li>Reprise / correction de textes existants</li>
+					<li>Veille de presse </li>
+				</ul>
+			</div> 
+		</div>   
+	</div>
+</section>
+
+

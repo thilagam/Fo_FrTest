@@ -1,0 +1,36 @@
+<section id="contributorBadge">
+	<div class="metroline">
+		{if $profile_type eq 'sub-junior'}
+			<div class="leveltext  active">
+				<div class="contrib-profile">
+					<img src="{$profile_pic}" />
+					Vous ! 
+				</div>
+		{else}<div class="leveltext">{/if}			
+			<span class="label label-level"><i class="icon-bookmark"></i>D&eacute;butant</span>
+			<p class="muted">Vous n'avez aucun article<br /> valid&eacute; par Edit-place</p>
+		</div>
+
+		{if $profile_type eq 'junior'}
+			<div class="leveltext  active">
+				<div class="contrib-profile">
+					<img src="{$profile_pic}" />
+					Vous ! 
+				</div>
+		{else}<div class="leveltext">{/if}
+			<span class="label label-level"><i class="icon-bookmark"></i>Junior</span>
+			<p class="muted">Vous avez au moins eu 1 article<br />valid&eacute; sur Edit-place</p>
+		</div>
+		{if $profile_type eq 'senior'}
+		<div class="leveltext  active">
+				<div class="contrib-profile">
+					<img src="{$profile_pic}" />
+					Vous ! 
+				</div>
+		{else}<div class="leveltext">{/if}
+			<span class="label label-level"><i class="icon-bookmark"></i>S&eacute;nior</span>
+			<p class="muted">*Vous &ecirc;tes un r&eacute;dacteur <br />confirm&eacute;</p>
+		</div>
+		<p class="muted"><small>*Statut obtenu sur d&eacute;cision discr&eacute;tionnaire d'Edit-place.</small></p>
+	</div>
+</section>

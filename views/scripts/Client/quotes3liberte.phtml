@@ -1,0 +1,113 @@
+<section class="quoteform" id="step3">
+	<div class="container padding">
+		<div class="center-block">
+			<div class="alert alert-success">Merci ! Nous avons bien pris en compte votre demande de devis.</div>
+			<p>Date de diffusion maximum : <span class="label label-warning" style="font-size:14px">{$time48}</span></p>
+			<p>Votre annonce sera  diffusée auprès de nos rédacteurs experts {$category_array[$category]}.</p>  
+			<p>Vous recevrez un email de confirmation sur l'adresse : <em>{$client_email}</em>.</p>
+		</div>
+		<div class="content-block quotelist">     
+			<h4><strong>Nom du projet</strong> <br>
+			{$missiontitle}</h4>      
+			<div class="table-responsive">     
+				<table class="table table-striped">
+					<tr> 
+						<th>Produit</th>
+						<th></th>
+						<th>Volume</th>
+						<th>Secteur</th>
+						<th>Langues</th>
+						<th>Objectif</th>
+					</tr>
+					{foreach from=$statarray item=quote}
+					<tr>
+						<td><img src="/FO/images/imageB3/ctype-{$quote.type}.png" width="50" height="50"></td>
+						<td>{$quote.typetext}</td>
+						<td>{if $quote.num==""}N/A{else}{$quote.num}{/if}</td>
+						<td>{$category_array[$category]}</td>
+						<td>{$lang_array[$quote.writing_lang]}</td>
+						<td>{$quote.objectives}</td>
+					</tr>
+					{/foreach}
+				</table>
+			</div>
+			<p><a href="/client/home?type=new" class="btn btn-default">Plus de détails</a></p> 
+		</div>
+
+		{if $categorywriters|@count gt 0}
+		<div class="row">
+			<div class="col-xs-12 col-md-8">
+				<div class="content-block recap-profile">
+					<h4>Des rédacteurs du secteur {$category_array[$category]}</h4>
+					<ul style="padding-right:10px">
+						{foreach from=$categorywriters item=contrib}
+						<li>
+							<span class="contrib-frame"><img src="/FO/profiles/contrib/pictures/{$contrib.user_id}/{$contrib.user_id}_h.jpg" class="media-object"></span>
+							<div class="contrib-name clearfix">{$contrib.last_name}</div>
+						</li>
+						{/foreach}
+					</ul>        
+				</div>
+			</div>
+			<div class="col-xs-12 col-md-4">
+				<div class="content-block">
+					<h4><span class="glyphicon glyphicon-info-sign"></span> A propos des tarifs</h4>
+					Edit-place prend une <strong>commission de 35%</strong> sur chaque mission réalisée par un rédacteur.
+					Pensez à bien intégrer cette composante lorsque vous négociez votre tarif avec le rédacteur.
+				</div>
+			</div>
+		</div>
+		{/if}
+	</div>  
+</section>
+
+<section class="dashit"  id="garantee">
+	<div class="container padding">
+		<div class="center-block">
+			<h2>La garantie Edit-place</h2>
+		</div>
+		<div class="row">
+			<div class="col-xs-12 col-md-4 col-md-offset-1 wow fadeInLeft">
+				<div class="center-block"><img src="/FO/images/mediateur.png" width="67" height="75" alt="Moderateur">
+					<h4>Edit-place est votre médiateur</h4>
+					<p>En cas de contestation (délai de livraison, reprise d'articles, remboursement...)</p>
+				</div>
+			</div> 
+			<div class="col-xs-12 col-md-4 col-md-offset-2 wow fadeInRight">
+				<div class="center-block">
+					<img src="/FO/images/secured.png" width="75" height="75" alt="Paiement sécurisé">
+					<h4>Paiement sécurisé</h4>
+					<p>Notre solution de paiement en ligne vous garantit une transaction en toute tranquillité</p>
+				</div> 
+			</div>
+		</div>   
+	</div>
+</section>
+
+<section class="dashit"  id="strategy-teasing">
+	<div class="container padding">
+		<div class="center-block">
+			<h2>L'expertise Edit-place, c'est aussi...</h2>
+		</div>
+		<div class="row">
+			<div class="col-xs-12 col-md-6 wow fadeInLeft">
+				<h4>Stratégie éditoriale</h4>
+				<ul>
+					<li>Sélection de sujets originaux</li>
+					<li>Détection des meilleurs mots-clés à travailler</li>
+					<li>Proposition de formats élaborés pour les réseaux sociaux</li>
+					<li>Analyse et suivi des résultats (partages, rankings) </li>
+				</ul>
+			</div> 
+			<div class="col-xs-12 col-md-6 wow fadeInRight">
+				<h4>Solutions éditoriales complémentaires</h4>
+				<ul>
+					<li>Intégration / curation de contenu</li>
+					<li>Community management</li>
+					<li>Reprise / correction de textes existants</li>
+					<li>Veille de presse </li>
+				</ul>
+			</div> 
+		</div>   
+	</div>
+</section>

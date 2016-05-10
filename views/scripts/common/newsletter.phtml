@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+	<body>
+		<input type="hidden" id="name" value="{$wrname}" />
+		<input type="hidden" id="ptype" value="{$wrprofile}" />
+		
+		<input type="hidden" id="nlid" value="{$nl_id}" />
+		<input type="hidden" id="user" value="{$user}" />
+		<input type="hidden" id="writer" value="{$smarty.get.wrid}" />
+		<input type="hidden" id="password" value="{$password}" />
+		<input type="hidden" id="type" value="{$type}" />
+		<input type="hidden" id="todaydate" value="{$todaydate}" />
+		<input type="hidden" id="showlink" value="{$showlink}" />
+	</body>
+</html>
+
+{literal}
+	<script>
+		document.getElementById("htmllink").innerHTML="";
+		
+		var name=document.getElementById("name").value;
+		document.getElementById("wrname").innerHTML=name;
+
+		var profiletype=document.getElementById("ptype").value;
+		document.getElementById("wrprofile").src=profiletype;
+		
+		var user=document.getElementById("user").value;
+		var writer=document.getElementById("writer").value;
+		document.getElementById("unsublink").href='http://mmm-new.edit-place.com/user/unsubscribe?unsid='+writer;
+		
+		var newslid=document.getElementById("nlid").value;
+		var user=document.getElementById("user").value;
+		var password=document.getElementById("password").value;
+		var type=document.getElementById("type").value;
+		var todaydate=document.getElementById("todaydate").value;
+		//$(".loginlink").attr('href','http://mmm-new.edit-place.com/user/email-login?user='+user+'&hash='+password+'&type='+type+'&nl=1&utm_source=Newsletter&utm_medium=e-mail&utm_campaign=Newsletter&newsletter_id='+newslid);
+		var href1='http://mmm-new.edit-place.com/user/email-login?user='+user+'&hash='+password+'&type='+type+'&nl=1&utm_source=Newsletter&utm_medium=e-mail&utm_campaign=Newsletter&newsletter_id='+newslid+'&sent_at='+todaydate;
+		document.getElementById("premiumlink").href=href1;
+		document.getElementById("libertelink").href=href1;
+		document.getElementById("devislink").href=href1;
+		
+		var showlink=document.getElementById("showlink").value;
+		if(showlink=='')
+			document.getElementsByTagName('a').href="#";
+	</script>
+{/literal}

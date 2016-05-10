@@ -1,0 +1,276 @@
+{literal}
+<script language="javascript" src="/FO/script/common/jquery.dataTables.js"></script>
+<script language="JavaScript" type="text/javascript" src="/FO/script/common/chosen/chosen.jquery.min.js"></script>
+<link href="/FO/css/common/jquery.dataTables.css" type="text/css" rel="stylesheet" />
+<link href="/FO/script/common/chosen/chosen.css" type="text/css" rel="stylesheet" />
+
+<script language="javascript">
+	$(function(){ 
+		
+		$('#scltable').dataTable({
+			"iDisplayLength": 25,
+			"sPaginationType": "full_numbers",
+			"bLengthChange": false,
+			"bSortClasses": false,
+			"oLanguage": {
+				"oPaginate": {
+					"sFirst": "Premier", 
+					"sPrevious": "Pr&eacute;c&eacute;dent",
+					"sNext": "Suivant", 
+					"sLast": "Dernier" 
+				},
+				"sSearch": "Recherche:",
+			}
+		});
+		
+		$("#site").chosen({ allow_single_deselect: true,search_contains: true });  
+		$("#status").chosen({ allow_single_deselect: true,search_contains: true });  
+		$("#language").chosen({ allow_single_deselect: true,search_contains: true });  
+		$("#ep_incharge").chosen({ allow_single_deselect: true,search_contains: true });  
+			
+		var articlecount=$("#articlecount").val();
+		
+		$('a[id^="popover_"]').live('click', function(){ 
+			var id=$(this).attr('id'); 
+			$('#'+id).popover('show');
+			for(var i=0; i<articlecount; i++)
+			{ 
+				var popid='popover_'+i;
+				if(popid!=id)
+				{
+					$('#'+popid).popover('hide');
+				}
+			}
+		});
+	});
+	
+	function closepopover(ind)
+	{
+		$('#popover_'+ind).popover('hide');
+	}	
+	
+	function submitForm()
+	{
+		$("#filterform").submit();
+	}
+	
+	function loadaohistory(ao,article)
+	{
+		var target_page = "/suivi-de-commande/history?id="+ao+"&article_id="+article;
+			
+			$.post(target_page, function(data){  //alert(data);
+				$("#aohistory").html(data);
+			});
+	}
+	
+	function publishedao(article)
+	{
+		var target_page = "/suivi-de-commande/aopublished?article_id="+article;
+
+			$.post(target_page, function(data){  // alert(data);
+				$("#ao_published").html(data);
+			});
+	}
+	
+	function validateao(article)
+	{
+		var target_page = "/suivi-de-commande/aovalidate?article_id="+article;
+
+			$.post(target_page, function(data){  // alert(data);
+				$("#ao_validate").html(data);
+			});
+	}
+	
+	function mailincharge(email,article)
+	{
+		$.ajax({
+			type: "POST",
+			url: "/suivi-de-commande/sendmailincharge",
+			data: {email:email,articleid:article},
+			
+			success: function(data) {
+				   $("#ao_sendmail").html(data);
+				}
+			
+			
+		});   
+	
+	}
+	
+</script>
+{/literal}
+
+<div id="marketing" style="padding-bottom:0px;" align="center">
+	<div class="container" >
+		<form name="filterform" id="filterform" method="POST" action="/suivi-de-commande/index">
+		<table cellpadding="5" cellspacing="5" width="">
+			<tr>
+				<td colspan="5">&nbsp;</td>
+			</tr>
+			<tr {if $usertype=='client'}style="display:none;"{/if}>
+				<td style="color:#ffffff">Site</td>
+				<td>
+					<select name="site[]" id="site" multiple class="chzn_a" data-placeholder="Site">  
+						<option value="">Site</option>
+						{foreach from=$sites item=site}
+							<option value="{$site.user_id}" {if in_array($site.user_id,$selectedsite)}selected{/if}>{$site.company_name}</option>
+						{/foreach}   
+					</select>
+				</td>
+				<td width="10%">&nbsp;</td>
+				<td style="color:#ffffff">Statut</td>
+				<td>
+					<select name="status[]" id="status" multiple class="chzn_a" data-placeholder="Statut">
+						<option value="">Statut</option>
+						{foreach from=$status item=stat key=statkey}
+							<option value="{$statkey}" {if in_array($statkey,$selectedstatus)}selected{/if}>{$stat}</option>
+						{/foreach}
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td style="color:#ffffff">Langue</td>
+				<td>
+					<select name="language[]" id="language" multiple class="chzn_a" data-placeholder="Langue">
+						<option value="">Langue</option>
+						{foreach from=$language item=lang key=langkey}
+							<option value="{$langkey}" {if in_array($langkey,$selectedlanguage)}selected{/if}>{$lang}</option>
+						{/foreach}
+					</select>
+				</td>
+				<td width="10%">&nbsp;</td>
+				<td style="color:#ffffff">Personne en charge (Edit-Place)</td>
+				<td>
+					<select name="ep_incharge[]" id="ep_incharge" data-placeholder="Personne en charge" multiple class="chzn_a">
+						<option value="">Personne en charge</option>
+						{foreach from=$epincharge item=ep}
+							<option value="{$ep.user_id}"  {if in_array($ep.user_id,$selectedep_incharge)}selected{/if}>{$ep.epname}</option>
+						{/foreach}
+					</select>
+				</td>
+			</tr>
+			<tr> 
+				<td></td>  
+				<td></td>
+				<td width="10%">&nbsp;</td>
+				<td></td>
+				<td align="right"><input type="submit" class="btn btn-primary" name="searchsc" id="searchsc" value="Rechercher" onClick="submitForm();" /></td>
+			</tr>
+		</table>
+		</form>
+	</div>
+</div>
+
+<section id="quote-listing-table">
+	<div class="mod"> 
+		<table id="scltable">
+			<thead>
+				<tr>
+					<th>Site</th>
+					<th>Langue</th>
+					<th>Titre de l'article</th> 
+					<th>Date de lancement</th> 
+					<th>Rédacteur</th>
+					<th>Correcteur</th>
+					<th>Historique</th>
+					<th>Statut</th>
+					<th>Personne en charge	</th>
+				</tr>
+			</thead>
+
+			{foreach from=$articlelist item=article name=articleloop}
+				<tr>
+					<td>{$article.company_name}</td>
+					<td>{$lang_array[$article.language]}</td>
+					<td>
+						{if $article.lot=='yes'}
+							<a href="javascript:void();" data-placement="bottom" id="popover_{$smarty.foreach.articleloop.index}"  rel="popover" data-html="true" data-original-title="{$article.title} <button type=button class=close onClick=closepopover('{$smarty.foreach.articleloop.index}') aria-hidden=true>&times;</button>"
+								data-content="{$article.lotlist}" >
+								{$article.title}
+							</a>
+						{else}
+							{$article.title}
+						{/if}
+					</td>
+					<td>{$article.created_at|date_format:"%d/%m/%Y - %H:%M"}</td>
+					<td>{$article.writer}</td>
+					<td>{$article.corrector}</td>
+					<td><a href="javascript:void();" onClick="loadaohistory('{$article.delivery_id}','{$article.id}')" role="button" data-target="#ao_history" data-toggle="modal"><img src="/FO/images/history.png"></a></td>
+					<td><!-- $article.participation_expires>$now || ($article.participation_expires>$now && $article.participationcount=='0') -->
+						{if $article.status=='bid' && $article.article_submit_expires>$now}  
+							Rédaction en cours
+						{elseif $article.status=='time_out' || ($article.status=='bid' && $now>$article.article_submit_expires)}
+							{if array_key_exists('time_out',$status)}
+								Article non envoyé
+							{else}
+								Rédaction en cours
+							{/if}	
+						{elseif $article.attendcount>0}
+							En attente de sélection
+						{elseif $article.status=='time_out' || ($article.status=='bid' && $now>$article.article_submit_expires)}
+							Article non envoyé
+						{elseif $article.status=='plag_exec'} 
+							{if array_key_exists('plag_exec',$status)}
+								Vérification du non plagiat
+							{else}
+								Rédaction en cours
+							{/if}
+						{elseif $article.status=='disapproved'}	
+							Article en reprise
+						{elseif $article.current_stage=='corrector' || $article.current_stage=='stage1' || $article.status=='disapproved_temp'}		
+							Correction en cours
+						{elseif $article.current_stage=='stage2'}	
+							En attente de validation (EP)
+						{elseif $article.current_stage=='client' && ($article.status=='published' || $article.status=='under_study') && $article.client_validated==""}		
+							<a onClick="validateao('{$article.id}')" href="" role="button" data-target="#ao_validate" data-toggle="modal">En attente de validation (Client)</a>
+						{elseif $article.current_stage=='client' &&  $article.status=='published' && $article.client_validated=="approve"}	  
+							<a onClick="publishedao('{$article.id}')" href="" role="button" data-target="#ao_published" data-toggle="modal">Validé</a>
+						{elseif $article.current_stage=='client' &&  $article.status=='closed_client_temp' && $article.client_validated=="refuse"}	
+							Refusé (client)
+						{elseif $article.status=='closed'}	
+							Fermé
+						{elseif $article.participation_expires>$now} 
+							Participations en cours
+						{elseif $article.participationcount=='0'}
+							No Participation	
+						{/if}
+					</td>
+					<td>
+						{if $article.first_name!=""}
+							<img src="/FO/images/inbox_icon.png"/> <a href="javascript:void(0);" role="button" data-target="#ao_sendmail" data-toggle="modal" onClick="mailincharge('{$article.email}','{$article.id}')">{$article.first_name}&nbsp;{$article.last_name}</a> 
+						{else}
+							-
+						{/if}
+					</td> 	
+				</tr>
+				
+			{/foreach}
+			<input type="hidden" name="articlecount" id="articlecount" value="{$articlelist|@count}" />
+		</table>
+	</div>
+</section>	
+<!--<div class="span12">
+	<div class="pagination pull-right">
+		{include file="Client/pagination.phtml"}
+	</div>	
+</div>-->
+
+<div class="modal container hide fade" id="ao_history" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="margin-top:55px;"> 
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Historique</h3>
+    </div>
+    <div class="modal-body" id="aohistory"> 
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+<div class="modal hide fade" id="ao_published" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="margin-top:55px;width:600px;"> 
+</div>
+
+<div class="modal hide fade" id="ao_validate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="margin-top:55px;width:600px;"> 
+</div>
+
+<div class="modal hide fade" id="ao_sendmail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="margin-top:55px;width:600px;"> 
+</div>

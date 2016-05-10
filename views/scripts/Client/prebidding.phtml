@@ -1,0 +1,12 @@
+<section id="prebidding" class="clearfix">
+	<div class="span9 offset1">
+		<h2>{$participationcount} rédacteurs vous ont proposé un tarif</h2>
+		<h3 class="sectiondivider pull-center"><span>Ils ont rédigé pour...</span></h3>
+		<br />
+			{foreach from=$customerstrust item=clogo key=ckey}
+				<img src="{$clogo}" rel="tooltip" data-original-title="{$ckey|utf8_decode}" data-placement="top">
+			{/foreach}
+		<hr /><br>
+		<button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Voir les devis</button>
+	</div>
+</section>

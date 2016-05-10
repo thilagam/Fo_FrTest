@@ -1,0 +1,504 @@
+<div class="public solution">
+<section id="intro">
+    <div class="container">
+
+        <ul class="breadcrumb">
+            <li>
+                <a href="#">Accueil</a><span class="divider">/</span>
+            </li>
+            <li>
+                <a href="premium.html">Solutions PREMIUM</a><span class="divider">/</span>
+            </li>
+            <li class="active">
+                {if $selLang eq ''}
+                        {$selCat}
+                {else}
+                    Traduction en {$selLang}
+                {/if}
+            </li>
+        </ul>
+
+        <h1>Service de traduction de contenu {if $selLang eq ''}{$selCat}{else}en {$selLang}{/if}</h1>
+        <hr>
+        <div class="span8 fo-text">
+            <p>{$fo_text1}{if $fo_text2 neq '<p></p>'}<span data-target="#suite" data-toggle="collapse">...</span>{/if}</p>
+            <div class="collapse" id="suite">{$fo_text2}</div> 
+        </div>
+        <hr>
+		
+		<!------------------------------ Filters ---------------------------------------->
+		<div class="dropdown" id="typedropdown" style="float:left;width:200px">
+			<a href="#" class="btn dropdown-toggle" data-toggle="dropdown">
+				{if $smarty.get.type=="translation"}
+					Translation
+				{else}
+					Redaction
+				{/if}
+				<span class="caret"></span>
+			</a>
+			<ul class="lang-list dropdown-menu" role="menu" aria-labelledby="dLabel" style="width:170px;overflow:hidden">
+				<li>
+					<a href="javascript:void(0);" onclick="pre_trans_page('redaction','{$smarty.get.product}','{$smarty.get.lang}');">Redaction</a>
+				</li>
+				<li>
+					<a href="javascript:void(0);" onclick="pre_trans_page('translation','{$smarty.get.product}','{$smarty.get.lang}');">Translation</a>
+				</li>
+			</ul>
+		</div>
+		
+		<div class="dropdown" id="typedropdown" style="float:left;width:150px">
+			<a href="#" class="btn dropdown-toggle" data-toggle="dropdown">
+				{if $smarty.get.product=="article_seo"}
+					d'articles seo
+				{elseif $smarty.get.product=="guide"}
+					de guides
+				{elseif $smarty.get.product=="descriptif_produit"}
+					de descriptifs produit
+				{elseif $smarty.get.product=="article_de_blog"}
+					d'articles de blog
+				{else}
+					de news
+				{/if}
+				<span class="caret"></span>
+			</a>
+			<ul class="lang-list dropdown-menu" role="menu" aria-labelledby="dLabel" style="width:170px;overflow:hidden">
+				<li>
+					<a href="javascript:void(0);" onclick="pre_trans_page('{$smarty.get.type}','news','{$smarty.get.lang}');">de news</a>
+				</li>
+				<li>
+					<a href="javascript:void(0);" onclick="pre_trans_page('{$smarty.get.type}','article_seo','{$smarty.get.lang}');">d'articles seo</a>
+				</li>
+				<li>
+					<a href="javascript:void(0);" onclick="pre_trans_page('{$smarty.get.type}','guide','{$smarty.get.lang}');">de guides</a>
+				</li>
+				<li>
+					<a href="javascript:void(0);" onclick="pre_trans_page('{$smarty.get.type}','descriptif_produit','{$smarty.get.lang}');">de descriptifs produit</a>
+				</li>
+				<li>
+					<a href="javascript:void(0);" onclick="pre_trans_page('{$smarty.get.type}','article_de_blog','{$smarty.get.lang}');">d'articles de blog</a>
+				</li>
+			</ul>
+		</div>
+		<div style="float:left;width:50px;"><label>en</label></div>
+		<div class="dropdown" id="langdropdown" style="float:left">
+			<a href="#" class="btn dropdown-toggle" data-toggle="dropdown">
+				{if $smarty.get.lang!=""}
+					{foreach from=$langArr item=lang key=langkey}
+						{if $smarty.get.lang eq $langkey}
+							<img class="flag flag-{if $smarty.get.lang eq ''}gb{else}{$smarty.get.lang}{/if}" src="/FO/images/shim.gif">{$lang}
+						{/if}
+					{/foreach}  
+				{else}
+					<li>
+						<img class="flag flag-fr" src="/FO/images/shim.gif">Français 
+					</li>
+				{/if}
+				<span class="caret"></span>  
+			</a>
+			<ul class="lang-list dropdown-menu" role="menu" aria-labelledby="dLabel" style="width:170px;overflow:hidden;overflow-y:scroll">
+				{foreach from=$langArr item=lang key=langkey}
+					{if $selLangKey neq $langkey}
+					<li>
+						<a href="javascript:void(0);" onclick="pre_trans_page('{$smarty.get.type}','{$smarty.get.product}','{$langkey}');"> <img class="flag flag-{$langkey}" src="/FO/images/shim.gif">{$lang} </a>
+					</li>
+					{/if}
+				{/foreach}       
+			</ul>
+		</div>
+	</div>
+</section>
+
+<section id="activity">
+    <div class="container">
+        <div class="row-fluid">
+            <div class="span8">
+                <!-- bloc left -->
+                <div class="simulator-container">
+                    <time class="pull-right">
+                        <span class="icon-time"></span> 14:54:39
+                    </time>
+                    <h2>Tarifs <span>premium</span> relev&#233;s sur Edit-place</h2>
+                    <div id="simulator">
+                        <div class="h">
+                            <img alt="En direct" class="pull-right" src="/FO/images/direct.png">
+                            <h4>Simulateur de tarifs</h4>
+                            <span>Obtenez une 1&#232;re estimation aupr&#232;s des r&#233;dacteurs</span>
+                        </div>
+
+                        <div class="c clearfix">
+
+                            <div class="row-fluid">
+                                <div id="filters" class="span6">
+                                    <div class="f-c">
+                                        <span class="tooltip1"></span>
+                                        <div id="word_counter">
+                                            <div class="name">
+                                                nb. mots
+                                            </div>
+                                        </div>
+                                        <input type="text" id="word_counter_value" style="width:50px;display: {$dbg}"/>
+                                        <input type="text" id="shipping_date_value" style="margin-left: 62px;width:50px;display: {$dbg}"/>
+                                        <input type="text" id="oput" style="width:150px;display: {$dbg}"/>
+                                        <!--<label for="word_counter_value" id="word_counter_val"></label>-->
+                                        <span class="pull-left legend muted"> <span>&bull;</span> < 100</span><span class="pull-right legend muted">> 10 000 <span>&bull;</span></span>
+                                        <div class="clearfix"></div>
+                                        <span class="tooltip2"></span>
+                                        <div id="shipping_date">
+                                            <div class="name">
+                                                Date de livraison
+                                            </div>
+                                        </div>
+                                        <!--<label for="shipping_date_value" id="shipping_date_val"></label>-->
+                                        <br>
+                                        <span class="pull-left legend muted"> <span>&bull;</span> Normal</span><span class="pull-right legend muted">Urgent <span>&bull;</span></span>
+
+                                    </div>
+                                </div>
+
+                                <div id="results" class="span6">
+                                    <div class="btn-group">
+										
+                                    </div>	
+
+                                    <div class="price clearfix" style="width:100%;">
+                                        <div class="big" style="width:100%;text-align:center;">
+                                            <span id="priceMotDiv"></span>
+                                            <span class="small" style="left:inherit; width:20px;line-height:0;top:2px;margin-left: 2px;">
+                                                &#8364;
+                                                <span class="word" style="margin-top: 28px;float: left;">
+                                                    /mots
+                                                </span>
+                                            </span>                                            
+                                        </div>
+                                        <div class="feuillet" style="width:100%;text-align:center;">
+                                            Soit <span id="priceDiv"></span> &#8364; le feuillet
+                                        </div>
+
+                                    </div>
+                                    
+                                    <h5>*Tarif moyen de traduction en anglais sur Edit-place</h5>
+                                </div>
+                            </div>
+
+                            <section id="premium">
+
+                                <h4>Avec Edit-place <span>Premium</span>, gagnez du temps en nous confiant  la gestion de vos traductions {$selProduct}en {$selLang}</h4>
+                                <ul class="unstyled">
+                                    <li>
+                                        <span class="more">+</span>Nous s&#233;lectionnons les meilleurs journalistes natifs {if $selLang eq ''}{$selCat}{else}{$selLang}{/if}.
+                                    </li>
+                                    <li>
+                                        <span class="more">+</span>Nous s&#233;lectionnons l'&#233;quipe de r&#233;daction la mieux adapt&#233;e &#224; la r&#233;daction de votre besoin en contenu
+                                    </li>
+                                    <li>
+                                        <span class="more">+</span>Exclusivit&#233; et originalit&#233; du contenu garantis
+                                    </li>
+                                    <li>
+                                        <span class="more">+</span>Optimisation SEO
+                                    </li>
+                                </ul>
+                                <div id="presentation">
+                                    <div class="call_us">
+                                        <h4>Besoin d'un devis rapidement ? contactez-nous</h4>
+                                        <a href="contact.html"><i class="img-circle"><span class="icon-email-us"></span></i></a><i class="img-circle"><span class="icon-call"></span></i>
+                                        <div class="call" itemtype="http://schema.org/LocalBusiness" itemscope="">
+                                            <span itemprop="telephone"><a href="tel:+33177686461">01 85 08 40 13</a></span>
+                                            <div class="notabene">
+                                                Service client, prix d'un tarif local
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <h4><span class="icon-arrow-right"></span> Demandez un devis personnalis&eacute; en direct sur notre platforme</h4> Notre &eacute;quipe commerciale vous recontacte une fois vos besoins d&eacute;finis ou les r&eacute;dacteurs vous envoient leur devis directement. <a href="/client/liberte1">Demandez un devis gratuitement</a>
+
+                                </div>
+
+                            </section>
+
+                        </div>
+
+                    </div>
+                </div>
+                <!-- end block left -->
+
+            </div>
+            <div class="span4">
+			{if $latest_translations|@count gt 0}
+                <div class="aside-block" id="story">
+                    <h4>Derni&#232;res traductions</h4>
+                    
+                    {foreach from=$latest_translations item=latest_translation key=latest_translation_key}
+                    <div class="story clearfix 1">
+                        <img src="{$latest_translation.pic}" class="client pull-left">
+                        <div class="price" style="top:0px">
+                            <div class="big">
+                                {$latest_translation.avg_price}
+                            </div>
+                            <div class="small">
+                                &#8364;
+                                <div class="word">
+                                    /mots
+                                </div>
+                                <div class="details">
+                                    {$latest_translation.total_article} articles  &bull;  {$CatArr[$latest_translation.category]}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {/foreach}
+                </div>
+			{/if}
+			{if $contribs|@count gt 0}
+                <div id="people" class="aside-block clearfix">
+                    <h4>Nos r&#233;dacteurs bilingues
+                    <br>
+                    fran&#231;ais / anglais</h4>
+                    <ul class="media-list">
+                        {foreach from=$contribs item=contrib key=contribkey}
+                        <li class="media pull-left">
+                            <a data-target="#viewProfile-ajax" data-toggle="modal" role="button" href="#" class="pull-left imgframe"><img src="{$contrib.contribpic}" class="media-object"> </a>
+                        </li>
+                        {/foreach}
+                        {if $contribs_autres neq ''}
+                        <li class="media pull-left all">
+                            <div>
+                                <em>+{$contribs_autres}</em> autres
+                            </div>
+                            </a>
+                        </li>
+                        {/if}
+                    </ul>
+                </div>
+			{/if}
+            </div>
+		</div>
+	</div>
+</section>
+
+<section id="brands">
+    <div class="container">
+        <h3 class="sectiondivider pull-center"><span>Ils nous font confiance</span></h3>
+        <ul class="unstyled row-fluid">
+            <li class="offset1 span2"><img width="120" height="30" src="/FO/images/partner/accor-gray.png" alt="accor">
+            </li>
+            <li class="span2"><img src="/FO/images/partner/skiset-gray.png" width="120" height="30" alt="Skiset">
+            </li>
+            <li class="span2"><img src="/FO/images/partner/netbooster-gray.png" width="120" height="30" alt="Netbooster">
+            </li>
+            <li class="span2"><img src="/FO/images/partner/menlook-gray.png" width="120" height="30" alt="Menlook">
+            </li>
+            <li class="span2"><img src="/FO/images/partner/kelkoo-gray.png" width="120" height="30" alt="Kelkoo">
+            </li>
+        </ul>
+    </div>
+</section>
+
+<section id="about">
+    <div class="container">
+        <h3 class="sectiondivider pull-center"><span>Des journalistes multilingues</span></h3>
+        <p class="lead pull-center">
+            Des journalistes natifs en 17 langues pour vos devis multilingues
+        </p>
+        <div class="row-fluid">
+            <span class="span8">
+                <h4>Des journalistes / r&#233;dacteurs au hasard </h4>
+                <div class="row-fluid">
+                    <div class="span6">
+                                    <ul class="media-list">
+
+                                        {foreach from=$Carousel1List item=list1 name="carousel_loop1"}
+
+                                        {if $list1.profilepic!=""}
+                                        {if $smarty.foreach.carousel_loop1.index==3}
+                                    </ul>
+                                </div>
+                                <div class="span6">
+                                    <ul class="media-list">
+                                        {/if}
+
+                                        <li class="media">
+                                            <a style="cursor:auto;" class="pull-left imgframe"> <img src="{$list1.profilepic}" class="media-object"> </a>
+                                            <div class="media-body">
+                                                <h4 class="media-heading">{$list1.first_name}</h4>
+                                                <div class="muted">
+                                                    {$list1.category|truncate:100:"...":true}
+                                                </div>
+                                                <div class="speaking">
+                                                    <a rel="tooltip" data-original-title="{$list1.languagetitle}" ><img src="/FO/images/shim.gif" class="flag flag-{$list1.language}"></a>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        {/if}
+                                        {/foreach}
+
+                                    </ul>
+                    </div>
+
+                </div>
+                <hr>
+                <a href="/client/liberte1" class="btn btn-small btn-primary pull-right"><i class="icon-edit icon-white"></i> Demander un devis</a> 
+                <h4><i class="icon-arrow-right"></i> Choisissez et recrutez un journaliste pour votre projet</h4>
+            </span>
+
+            <span class="span4 well"> <h4>Liste des langues</h4>
+                <table class="table">
+                    <tr>
+                        <td class="span6">Fran&#231;ais</td><td class="span6">Anglais US</td>
+                    </tr>
+                    <tr>
+                        <td class="span6">Anglais</td><td class="span6">Allemand</td>
+                    </tr>
+                    <tr>
+                        <td class="span6">Portugais</td><td class="span6">Portugais (br&#233;silien)</td>
+                    </tr>
+                    <tr>
+                        <td class="span6">Russe</td><td class="span6">Polonais</td>
+                    </tr>
+                    <tr>
+                        <td class="span6">Danois</td><td class="span6">Finlandais</td>
+                    </tr>
+                    <tr>
+                        <td class="span6">Su&#233;dois</td><td class="span6">Italien</td>
+                    </tr>
+                    <tr>
+                        <td class="span6">Espagnol</td><td class="span6">Japonais</td>
+                    </tr>
+                    <tr>
+                        <td class="span6">Chinois</td><td class="span6">Norv&#233;gien</td>
+                    </tr>
+                </table>
+            </span>
+        </div>
+    </div>
+</section>
+</div>
+
+{literal}
+<script>
+	function get(n) {
+		var half = location.search.split('&' + n + '=')[1];
+		if (!half) half = location.search.split('?' + n + '=')[1];
+		return half !== undefined ? decodeURIComponent(half.split('&')[0]) : null;
+	}
+	var lang=get('lang'); 
+	var prod=get('product'); 
+	var type=get('type'); 
+	
+	// tooltip activation
+    $("[rel=tooltip]").tooltip();
+    $("[rel=popover]").popover();
+    
+    var ttip = 30, step1 = 1, min1 = 1, max1 = 100, val1 = 1, 
+        priceval,  step2 = 1, min2 = 1, max2 = 100, val2 = 1 ;
+    var margl1 = (ttip / (max1/val1)), margl2 = (ttip / (max2/val2)), mCond ;
+
+    jQuery(function() {
+        jQuery( "#word_counter" ).slider({
+            range: "min",
+            value: val1,
+            min: min1,
+            step: step1,
+            max: max1,
+            change: function( event, ui ) {
+                margl1 = (ttip / (max1/ui.value)) ;
+                mCond = $('#mnth_value').val();
+                jQuery('.tooltip1').css('margin-left', "-" + margl1 +"px");
+                //jQuery('.tooltip1').css('left', ui.value +"%").text(((ui.value == 101) ? ">" : "<")+(((ui.value == 101) ? (ui.value - 1) : ui.value)*100));
+                jQuery('.tooltip1').css('left', ui.value +"%").text((ui.value)*100);
+                $.post(
+                    "/client/prem-cal?words=" + (ui.value)+"&urgency="+($('#shipping_date_value').val())+"&lang="+lang+"&type="+type+"&product="+prod,
+                    function(data,status){//
+                        $('#word_counter_value').val(ui.value);
+                        var data1 = data.split("#");
+                        //alert(data1);alert(data1[0]);alert(data1[1]);
+                        $('#priceDiv').text(data1[1]);
+                        $('#priceMotDiv').text(data1[0]);
+                    }
+                );
+            }
+        });//alert($('#mnthdpdn').text());
+        var counter1 = jQuery( "#word_counter" ).slider( "value" ) ;
+        $('#word_counter_value').val(counter1);
+        jQuery('.tooltip1').css('left', counter1 +"%");
+        jQuery('.tooltip1').css('margin-left', "-" + margl1 +"px");
+        //jQuery('.tooltip1').text("<"+counter1);
+        jQuery('.tooltip1').css('left', counter1 +"%").text(counter1*100);
+        
+        jQuery( "#shipping_date" ).slider({
+            range: "min",
+            value: val2,
+            min: min2,
+            step: step2,
+            max: max2,
+            change: function( event, ui ) {
+                margl2 = (ttip / (max2/ui.value)) ;
+                mCond = $('#mnth_value').val();
+                jQuery('.tooltip2').css('margin-left', "-" + margl2 +"px");
+                jQuery('.tooltip2').css('left', ui.value +"%").text(""+ui.value);
+                
+                $.post(
+                    "/client/prem-cal?words=" + ($('#word_counter_value').val())+"&urgency="+(ui.value)+"&lang="+lang+"&type="+type+"&product="+prod,
+                    function(data,status){
+                        $('#shipping_date_value').val(ui.value);
+                        var data1 = data.split("#");
+                        //alert(data1);alert(data1[0]);alert(data1[1]);
+                        $('#priceDiv').text(data1[1]);
+                        $('#priceMotDiv').text(data1[0]);
+                    }
+                );
+            }
+        });
+        var counter2 = jQuery( "#shipping_date" ).slider("value") ;
+        $('#shipping_date_value').val(counter2);
+        jQuery('.tooltip2').css('left', counter2 +"%");
+        jQuery('.tooltip2').css('margin-left', "-" + margl2 +"px");
+        jQuery('.tooltip2').text(""+counter2);
+       
+		$.post(
+            "/client/prem-cal?words=" + counter1+"&urgency="+counter2+"&lang="+lang+"&type="+type+"&product="+prod,
+            function(data,status){
+                var data1 = data.split("#");
+                
+                $('#priceDiv').text(data1[1]);
+                $('#priceMotDiv').text(data1[0]);
+            }
+        );
+    });
+ 
+ function pre_trans_page(typ, product, lang)
+ {
+     var url = '/client/premium-translation?' ;
+     url = url + 'type=' + typ + '&product=' + product + '&lang=' +lang;
+     window.location = url ;
+ }
+    </script>
+<style>
+    .ui-widget-content {background: none repeat scroll 0 0 #eee;border: none;box-shadow: 0 1px 2px rgba(0, 0, 0, 0.086) inset;olor: #404040;}.ui-slider-horizontal {height: 12px;}
+    #langdropdown .dropdown-menu {
+         max-height: 200px;
+         overflow: auto;
+         top: 33px;
+         box-shadow: none;
+     }
+     #word_counter_val, #shipping_date_val{color: #fff;font-size: 11px;}
+    .tooltip1, .tooltip2 {
+        background-color: #FFFFFF;
+        border: 1px solid #FFFFFF;
+        border-radius: 3px;
+        box-shadow: 1px 1px 2px 0 rgba(0, 0, 0, 0.3);
+        color: #000000;
+        display: block;
+        font-size: 9px;
+        font-weight:bold;
+        height: 18px;
+        position: absolute;
+        text-align: center;
+        width: 30px;
+    }
+    .fo-text{margin-left:0 !important;margin-right:400px;width:auto;float:none;}
+    #story.aside-block{height:auto;}
+    .tooltip1 {top: 18px; z-index: 1;}
+    .tooltip2 {top: 100px; z-index: 1;}
+    .solution .f-c #shipping_date .name, .solution .f-c #word_counter .name {z-index: 0;}
+</style>
+{/literal}

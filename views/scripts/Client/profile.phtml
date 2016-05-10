@@ -1,0 +1,421 @@
+{literal}
+<script language="javascript">
+	$("#menu_profile").addClass("active");
+	
+	(function($,W,D)
+	{
+		var JQUERY4U = {};
+
+		JQUERY4U.UTIL =
+		{
+			setupFormValidation: function()
+			{
+				//form validation rules
+				$("#profileform").validate({
+					onkeyup:false,
+					rules: {
+						first_name: "required",
+						last_name: "required",
+						phone_number: "required",
+						company_name: "required",
+						address: "required",
+						city: "required",
+						zipcode: "required",
+						country: "required",
+						rcs: "required",
+						vat: "required",
+					},
+					messages: {
+						first_name: "Nom obligatoire",
+						last_name: "Pr&eacute;nom obligatoire",
+						phone_number: "Num&eacute;ro de t&eacute;l&eacute;phone obligatoire",
+						company_name: "Merci d'indiquer le nom de votre entreprise",
+						address: "Adresse obligatoire",
+						city: "Ville obligatoire",
+						zipcode: "Code postal obligatoire",
+						country: "Choix du pays obligatoire",
+						rcs: "RCS obligatoire",
+						vat: "Merci d'indiquer votre num&eacute;ro de TVA",
+					},
+					debug:true,
+					submitHandler: function(form) { 
+						var errornum=0;
+											
+						$("[id^=firstname_]" ).each(function(z) {
+							var idtype=this.id.split("_");
+								
+							if($("#firstname_"+idtype[1]).val()=="")
+							{
+								$("#firstname_"+idtype[1]).addClass("boxerror");  
+								errornum++;
+							}
+							else
+								$("#firstname_"+idtype[1]).removeClass("boxerror");  
+								
+							if($("#lastname_"+idtype[1]).val()=="")
+							{
+								$("#lastname_"+idtype[1]).addClass("boxerror");  
+								errornum++;
+							}
+							else
+								$("#lastname_"+idtype[1]).removeClass("boxerror");  
+								
+							if($("#email_"+idtype[1]).val()=="")
+							{
+								$("#email_"+idtype[1]).addClass("boxerror");  
+								errornum++;
+							}
+							else
+							{
+								var filter = new RegExp(/^[+a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i);
+								var emmail=$("#email_"+idtype[1]).val();
+								if (!filter.test(emmail)) {
+									$("#email_"+idtype[1]).addClass("boxerror"); 
+									$("#emailexists_"+idtype[1]).html("");  	
+									errornum++;
+								}
+								else
+								{
+									$.ajax({
+										url: "/client/checkuseremailexists",
+										global: false,
+										type: "POST",
+										data: ({email : $("#email_"+idtype[1]).val()}),
+										dataType: "html",
+										async:false,
+										success: function(msg){
+											if(msg=="false" && $("#identifier_"+idtype[1]).val()==""){
+												$("#email_"+idtype[1]).addClass("boxerror");  
+												$("#emailexists_"+idtype[1]).html("Cet email correspond d&eacute;j&agrave; &agrave; un compte");  
+												errornum++;
+											}
+											else
+											{
+												$("#email_"+idtype[1]).removeClass("boxerror");  
+												$("#emailexists_"+idtype[1]).html("");  
+											}
+											
+										}
+									});
+								}
+							}
+							if($("#password_"+idtype[1]).val()=="")
+							{
+								$("#password_"+idtype[1]).addClass("boxerror");  
+								errornum++;
+							}
+							else
+								$("#password_"+idtype[1]).removeClass("boxerror");  
+						});
+						
+						if(errornum>0)
+						{
+							return false;
+						}
+						else
+						{
+							form.submit();
+						}
+					}
+					
+				});
+			}
+		}
+
+		//when the dom has loaded setup form validation rules
+		$(D).ready(function($) {
+			JQUERY4U.UTIL.setupFormValidation();
+		});
+
+	})(jQuery, window, document); 
+	
+		
+</script>
+
+<style>
+	.boxerror {border:1px solid red !important;}  
+</style>
+
+{/literal}	 
+
+<div class="container">
+	<div class="row">
+		<div class="span12">
+			<h1>Mes param&egrave;tres</h1>
+		</div>
+	</div>
+
+	<div class="row">   
+		<form name="profileform" id="profileform" method="POST" action="/client/profile"  enctype="multipart/form-data" >
+		<div class="span9">
+			<section id="profile-form">
+				<div class="mod">
+					<div class="row-fluid">
+						<div class="control-group">
+							<label for="" class="control-label span3 offset1"><strong>Informations de contact</strong></label>    
+							<div class="controls span8">
+								<label><input type="text" placeholder="Nom" name="first_name" id="first_name"  value="{$user_details[0].first_name}" class="span6"></label>
+								<label><input type="text" placeholder="Pr&eacute;nom" name="last_name" id="last_name" value="{$user_details[0].last_name}" class="span6"></label>
+								<label><input type="text" placeholder="T&eacute;l&eacute;phone" name="phone_number" id="phone_number" value="{$user_details[0].phone_number}" class="span6"></label>
+								<label><input type="text" name="email" id="email" class="span6" disabled value="{$user_details[0].email}"></label>
+								<a onclick="modifyusersetting('{$user_details[0].user_id}}');" role="button" data-toggle="modal" data-target="#useSettingModal" style="cursor:pointer;" >Modifier mon mot de passe</a>
+							</div>
+						</div> 
+						<div class="control-group">
+							<label for="" class="control-label span3 offset1"><strong>Abonnement emails automatiques</strong></label> 
+							<div class="controls span8">
+								<label class="radio inline"><input type="radio" name="alert_subscribe"  value="yes" {if $user_details[0].alert_subscribe=="yes"}checked{/if}> Oui&nbsp;</label>
+								<label class="radio inline"><input type="radio" name="alert_subscribe"  value="no" {if $user_details[0].alert_subscribe=="no"}checked{/if}> Non</label>
+							</div>
+						</div>
+						
+						<div id='add_more' style='clear:both;'>
+						{if $clientSubAcc_details | @count gt 0}
+							{foreach item=user from=$clientSubAcc_details name=clientSubAcc_details key=k}
+								<div class="control-group">
+									<label for="" class="control-label span3 offset1"><strong>Informations de contact {$smarty.foreach.clientSubAcc_details.index+1}</strong></label>    
+									<div class="controls span8">
+										<label><input type="text" placeholder="Nom" name="first_name_contact[{$k}]" id="firstname_{$k+1}"  value="{$user.first_name}" class="span6"></label>
+										<label><input type="text" placeholder="Pr&eacute;nom" name="last_name_contact[{$k}]" id="lastname_{$k+1}" value="{$user.last_name}" class="span6"></label>
+										<label><input type="text" name="email_contact[{$k}]" id="email_{$k+1}" class="span6" readonly value="{$user.email}"></label>
+										<label><input type="password" name="password_contact[{$k}]" id="password_{$k+1}" class="span6" value="{$user.password}" placeholder="Mot de passe"></label>
+										<input type="hidden" id="identifier_{$k+1}" name="identifier_contact[{$k}]" value="{$user.identifier}" />
+									</div>
+								</div> 
+							{/foreach}
+						{/if}	
+						<input type="hidden" id="fieldcount" name="fieldcount" value="{$clientSubAcc_details|@count}" />
+						</div>
+						<div class="control-group" style='clear:both;'>
+							<label for="" class="control-label span3 offset1"><a id="add_more_btn" href='#'><strong>Ajouter un contact</strong></a></label>
+							<input type='hidden' name='ext_contact' id='ext_contact' value='0'> 
+						</div>
+					</div>
+				</div>
+				<div class="mod">
+					<div class="row-fluid">
+						<div class="control-group">
+							<label for="" class="control-label span3 offset1"><strong>D&eacute;tails de la soci&eacute;t&eacute;</strong></label>    
+							<div class="controls span8">
+								<label><input type="text" name="company_name" id="company_name" value="{$user_details[0].company_name}" class="span6" placeholder="" value="Topito"></label>
+								<div class="row-fluid" id="company-logo">
+									<div class="span6">
+										<label>
+											<div id="fileupload">  
+												<input type="file" class="span9" name="file" id="file">
+												<span class="help-block" id="file_name"></span>  
+											</div>
+										</label>
+									</div>
+									<div class="span3 offset3">
+										<img src="{$user_details[0].logopath}" id="clientlogo" style="padding:5px;">
+									</div> 
+								</div>
+								<label><textarea type="text" placeholder="Adresse" name="address" id="address" class="span6">{$user_details[0].address}</textarea></label>
+								<label><input type="text" placeholder="Ville" name="city" id="city" value="{$user_details[0].city}" class="span6"></label>
+								<label><input type="text" placeholder="Code postal" name="zipcode" id="zipcode" value="{$user_details[0].zipcode}" class="span6"></label>
+								<label>
+									<select name="country" id="country" class="span6">
+										 {html_options  options=$country_array selected=$user_details[0].country}
+									</select>
+								</label>
+								<label><input type="text" placeholder="RCS" name="rcs" id="rcs" value="{$user_details[0].rcs}" class="span6"></label>
+								<label><input type="text" placeholder="TVA Intracommunautaire" name="vat" id="vat" value="{$user_details[0].vat}" class="span6"></label>
+								<label><input type="text" placeholder="Fax" name="fax_number" id="fax_number" value="{$user_details[0].fax_number}" class="span6"></label>
+							</div>
+						</div> 
+					</div>
+				</div>
+				<input type="hidden" name="frompage" id="frompage" value="{$smarty.get.from}" />
+				<input type="hidden" name="article" id="article" value="{$smarty.get.article}" />
+			<div class="mod">
+				<div class="pull-right">
+					<button class="btn inline">Annuler</button> 
+					<button type="submit" name="update_profile" value="update" class="btn btn-primary inline"><i class="icon-refresh icon-white"></i> Enregistrer</button>
+				</div>
+			</div>
+			</section>
+		</div>
+		
+		<div class="span3">
+			<!--  right column  -->
+			<aside>
+				<div class="aside-bg">
+					<div id="quote-ongoing" class="aside-block">
+						<h4>Vos devis en cours</h4>
+						<ul class="nav nav-tabs nav-stacked {if $quotes|@count>9}pre-scrollable{/if}"> 
+							{if $quotes|@count>0}
+								{foreach from=$quotes item=quote}
+									<li>
+										{if $quote.title|@strlen > 28}
+											<a href="/client/quotes?id={$quote.id}" rel="tooltip" data-original-title="{$quote.title}" data-placement="left">
+												{if $quote.valid=='yes'}
+													<span class="badge pull-right badge-warning">1</span>
+												{else}	
+													<span class="badge pull-right">{$quote.participations}</span>
+												{/if}
+											{$quote.title|truncate:28:"...":true}
+											</a>
+										{else}
+											<a href="/client/quotes?id={$quote.id}">	
+												{if $quote.valid=='yes'}
+													<span class="badge pull-right badge-warning">1</span>
+												{else}	
+													<span class="badge pull-right">{$quote.participations}</span>
+												{/if}
+
+											{$quote.title}</a>
+										{/if}	
+									</li>
+								{/foreach}
+							{else} 
+								<li><b>Pas de devis en cours</b></li>
+							{/if}
+						</ul>
+						<ul class="nav nav-tabs nav-stacked">
+							<li><a href="/client/liberte1"><i class="icon-edit"></i> <strong>Demander un nouveau devis</strong></a></li>
+						</ul>
+					</div>
+					<div class="aside-block" id="garantee">
+						<h4>Vos garanties</h4>
+						<dl>
+							<dt><span class="umbrella"></span>edit-place est votre m&eacute;diateur</dt>
+							<dd>En cas de contestation (d&eacute;lai de livraison, reprise d�articles, remboursement...)</dd>
+							<dt><span class="locked"></span>Paiement s&eacute;curis&eacute;</dt>
+							<dd>Notre solution de paiement en ligne vous garantit une transaction en toute tranquillit&eacute;</dd>
+						</dl>
+					</div>
+				</div>
+			</aside>  
+		</div>
+		</form>
+	</div>
+</div>
+
+
+	{if $writerscount>0}
+	<section id="known-users">
+		<div class="container">
+			<div class="row">
+				<h3 class="sectiondivider pull-center"><span>Ils ont d&eacute;j&agrave; collabor&eacute; avec vous !</span></h3>
+				
+				{foreach from=$writers item=writer}
+					<div class="span3">
+						<div class="editor-container">
+							<a  class="imgframe-large" onclick="loadcontribprofile('{$writer.user_id}');" role="button" data-toggle="modal" data-target="#viewContribProfile" style="cursor:pointer;">
+								<img src="{$writer.profileimage}">
+							</a>
+							<p class="editor-name"><a onclick="loadcontribprofile('{$writer.user_id}');" role="button" data-toggle="modal" data-target="#viewContribProfile" style="cursor:pointer;">{$writer.name|ucfirst}</a></p>
+						</div>
+					</div>
+				{/foreach} 
+			</div>
+		</div>
+	</section>
+	{/if}
+
+	<!-- contrib profile -->
+	<div id="viewContribProfile" class="modal container hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			<h3 id="myModalLabel">Profil du r&eacute;dacteur</h3> 
+		</div>
+		<div class="modal-body">
+			<div id="userprofile">
+		
+			</div>
+		</div>
+	</div>
+	
+	<!-- profile settings modify--> 
+	<div id="useSettingModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	</div>
+	
+	
+{literal}
+<script language="javascript">
+ $(function(){
+
+ 		var MaxInputs       = 8; //maximum input boxes allowed
+		var InputsWrapper   = $("#add_more"); //Input boxes wrapper ID
+		var AddButton       = $("#add_more_btn"); //Add button ID
+
+		//var x = InputsWrapper.length; //initlal text box count
+		var x = $('#fieldcount').val(); //initlal text box count
+		var FieldCount=$('#fieldcount').val(); //to keep track of text box added
+		
+
+		$(AddButton).click(function (e)  //on add input button click
+		{
+		        if(x <= MaxInputs) //max input box allowed
+		        {
+		            FieldCount++; //text box added increment
+		            //add input box
+		            $(InputsWrapper).append('<div class="control-group"><label for="" class="control-label span3 offset1"><strong>Informations de contact '+ FieldCount +'</strong></label><div class="controls span8"><label><input type="text" placeholder="Nom" name="first_name_contact['+(FieldCount-1)+']" id="firstname_'+FieldCount +'"  value="" class="span6"></label><label><input type="text" placeholder="Pr&eacute;nom" name="last_name_contact['+(FieldCount-1)+']" id="lastname_'+ FieldCount +'" value="" class="span6"></label><label><input type="text" placeholder="Email"  name="email_contact['+(FieldCount-1)+']" id="email_'+ FieldCount +'" class="span6" value=""><br/><span id="emailexists_'+ FieldCount +'" class="error"></span></label><label><input type="password" placeholder="Mot de passe"  name="password_contact['+(FieldCount-1)+']" id="password_'+ FieldCount +'" class="span6" value=""></label></div><div class="span5"></div><a href="#" class="removeclass">Supprimer</a></div><input type="hidden" id="identifier_'+FieldCount+'" name="identifier_contact['+(FieldCount-1)+']" value="" /> </div>');
+		            x++; //text box increment
+		            $('#ext_contact').val(x);
+
+		        }
+		return false;
+		});
+
+		$("body").on("click",".removeclass", function(e){ //user click on remove text
+		        if( x > 1 ) {
+		                $(this).parent('div').remove(); //remove text box
+		                x--; //decrement textbox
+						FieldCount--;
+		                $('#ext_contact').val(x);
+		        }
+		return false;
+		}) 
+
+		var btnUpload=$('#fileupload'); 
+		var status=$('#file_name');
+		new AjaxUpload(btnUpload, {
+			action: 'uploadclientgloballogo',
+			name: 'uploadfile',
+			onSubmit: function(file, ext){
+				 if (! (ext && /^(jpg|jpeg|png|gif)$/.test(ext))){ 
+                    // extension is not allowed 
+					status.text('Uploadez uniquement des fichiers JPEG, GIF ou PNG').css('color','#FF0000');
+					return false;
+				}
+				
+				status.html('<div align="center"><img src="/FO/images/loading-b.gif" /></div>'); 
+			},
+			onComplete: function(file, response){//alert(response); 
+			//On completion clear the status
+				status.text('');
+				$('#file_name').html('');
+				
+				//Add uploaded file to list
+				var obj = $.parseJSON(response);
+				var approot="/FO/";
+				
+				if(obj.status=="success"){
+							
+					var profilepic=approot+obj.path+obj.identifier+"_global."+obj.ext+ '?' + (new Date()).getTime();
+					$("#clientlogo").attr("src",profilepic);
+					
+					$('.customfile-feedback').val(file.substr(0,25)+" Uploaded");
+				}
+				else if(obj.status=="smallfile"){
+				
+					$('#file_name').html("Error in upload, image too small. L\'image est trop petite, merci d\'en uploader une autre.").css('color','#FF0000');
+				}
+				else{
+					$('#file_name').html('Error in upload').css('color','#FF0000');
+				}
+			}
+		});
+		jQuery('img').each(function(){
+			jQuery(this).attr('src',jQuery(this).attr('src')+ '?' + (new Date()).getTime());
+		});	
+		});
+	 
+			//image file upload
+	$('#file').customFileInput({ 
+        button_position : 'left'
+    });
+</script>
+{/literal}

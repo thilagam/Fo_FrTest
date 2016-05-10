@@ -1,0 +1,16 @@
+  <div class="modal-header" align="center">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Refuse mail</h3>
+    </div>
+    <div class="modal-body" id="aocomment">
+		<form  action="" method="POST" id="mailForm" name="mailForm" enctype="multipart/form-data" action="/suivi-de-commande/index">
+			<textarea name="scobject" id="scobject" placeholder="Texte..." style="width: 500px; height: 117px;"></textarea>
+			<br>
+			<input type="file" name="mailfile" id="mailfile" value="Parcourir..." />
+			<input type="hidden" id="email" name="email" value="{$email}" />
+			<br>
+			<input type="submit" name="submitmail" id="submitmail" value="Envoyer" class="btn btn-small btn-success pull-right" />
+		</form>
+    </div>
+    <div class="modal-footer">
+    </div>

@@ -1,0 +1,10 @@
+<div class="span3">
+	<aside>
+		<p><a id="menu_compose" class="btn btn-small btn-primary btn-block" href="/contrib/compose-mail">Nouveau message</a></p>
+		<ul class="nav nav-tabs nav-stacked">
+			<li id="menu_inbox"><a href="/contrib/inbox">{if $unreadCount gt 0}<span class="badge pull-right">{$unreadCount}</span>{/if}Boite de r&eacute;ception</a></li>
+			<li id="menu_sentbox"><a href="/contrib/sentbox"><i id="sent_icon" style="display:none" class="icon-chevron-right pull-right"></i>Messages envoy&eacute;s</a></li>
+			<li id="menu_classifybox"><a href="/contrib/classifybox">{if $class_ticket_count gt 0}<span class="badge pull-right">{$class_ticket_count}</span>{/if}Messages class&eacute;s</a></li>
+		</ul>	
+	</aside>
+</div>
