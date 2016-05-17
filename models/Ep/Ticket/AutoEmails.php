@@ -801,6 +801,19 @@ class Ep_Ticket_AutoEmails extends Ep_Db_Identifier
         }
     }
 
+    /**Author:Thilagam**/
+    /**Date:17/5/2016**/
+    /**Function:To send the Emial to PM **/
+    function sendMailToPM($body,$subject)
+    {
+        $mail_from='work@edit-place.com';
+        $mail = new Zend_Mail();
+        $mail->setBodyHtml($body)->setFrom($mail_from,'Workplace')->addTo("thilagam@edit-place.com")->setSubject($subject);
+        if($mail->send())
+        {
+           return true;
+        }
+    }
 
 }
 

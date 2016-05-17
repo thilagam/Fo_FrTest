@@ -1518,6 +1518,20 @@ public function getDupCronArticleList(){
             return "NO";
     }
 
-
+    /**Author:Thilagam**/
+    /**Date:17/5/2016**/
+    /**Function:To get the list of articles which are validated in stage 0**/
+    public function getArticleFromStage0Validated()
+    {
+        $query = "SELECT UserPlus.`first_name`,UserPlus.`last_name`,Article.`title`,ArticleProcess.`article_name` FROM User
+            INNER JOIN UserPlus on User.`identifier` = UserPlus.`user_id`
+            INNER JOIN Participation on Participation.`user_id` = User.`identifier`
+            INNER JOIN Article on Article.`id` = Participation.`article_id`
+            INNER JOIN ArticleProcess on ArticleProcess.`participate_id` = Participation.`id`
+            WHERE ArticleProcess.`stage` = 's1' and ArticleProcess.`status` = 'approved'
+        ";
+        $result = $this->getQuery($query);
+        return $result;
+    }
 
 }

@@ -2,6 +2,14 @@
 <project version="4">
   <component name="PublishConfigData" autoUpload="Always" serverName="Fo_FrTest">
     <serverData>
+      <paths name="Bo_FrTest">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+            <mapping local="" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="Fo_FrTest">
         <serverdata>
           <mappings>

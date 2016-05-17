@@ -6781,49 +6781,4 @@ class CronController extends Ep_Controller_Action
         }
 
     }
-	/**Author:Thilagam**/
-    /**Date:17/5/2016**/
-    /**Reason:To send email to the project manager when the article passes the stage 0(CRON)**/
-            
-    public function stage0MailAction()
-    {
-        $article_obj = new Ep_Article_Article();
-        $email_obj =  new Ep_Ticket_AutoEmails;
-        $data=$article_obj->getArticleFromStage0Validated();
-        $msg="";
-        if(!empty($data))
-        {
-        	$msg .= "<p>Following is the list of articles which are validated from stage 0 to stage 1.</p>";
-        	/*$msg .= "<table>";
-        		$msg .= "<tr>";
-        			$msg .= "<th>Name</th>";
-        			$msg .= "<th>Article title</th>";
-        			$msg .= "<th>Article name</th>"
-        		$msg .= "</tr>";
-        		foreach($data as $data1):
-        			$msg .= "<tr>";
-        				$msg .= "<td>".$data1->first_name." ".$data1->last_name."</td>";
-        				$msg .= "<td>".$data1->title. "</td>";
-        				$msg .= "<td>".$data1->article_name. "</td>";
-        			$msg .= "</tr>";
-        		endforeach;
-
-        	$msg .= "</table>";*/
-        	foreach($data as $data1)
-        	{
-        		$msg.= "<p>Contributor:</p> ".$data1->first_name." ".$data1->last_name." <p>Article Title:</p> ".$data1->title." <p>Article Name:</p> ".$data1->article_name;
-        		$msg .= "<br>";
-        	}
-        	
-        }
-        else
-        {
-        	$msg .= "No articles are validated in stage 0";
-        }
-        $message=$msg;
-        $subject="Articles validated in S0 stage";
-        $to="thilagam@edit-place.com";
-        $email_obj->sendMail($to,$subject,$message);
-    }
-
 }
