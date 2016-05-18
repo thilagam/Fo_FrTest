@@ -1,0 +1,488 @@
+{if $page eq 'loadOngoingAjaxRecentAoOffers'}
+
+    <span class="pull-right icon-waiting-quote" data-original-title="Vite, r�pondez en envoyant votre devis" rel="tooltip"></span>
+
+    <h4>Ces missions pourraient vous int�resser...</h4>
+
+    <table class="table table-hover">
+
+        {if $recent_AO_Offers|@count gt 0}
+
+        {foreach item=offer from=$recent_AO_Offers}
+
+        <tr>
+
+            {if $offer.ao_type eq 'correction'}
+
+            <td>
+
+                {if $offer.missiontest eq 'yes'}
+
+                <span class="label label-test-mission" data-original-title="Garanteed long-term Mission" rel="tooltip" data-placement="right">Mission de correction test</span>
+
+                {else}
+
+                <span class="label label-correction" data-original-title="Mission garantie par Edit-place" rel="tooltip" data-placement="right">Mission Correction</span>
+
+                {/if}
+
+            </td>
+
+            <td class="title"><a href="/contrib/article-details?misson_type=correction&mission_identifier={$offer.articleid}" role="button" data-toggle="modal" data-target="#viewOffer-ajax"><span {if $offer.title|strlen gt 75} rel="tooltip" align="top" data-original-title="{$offer.title|stripslashes}"{/if}>{$offer.title|truncate:75:"...":true|stripslashes}</span> {$offer.picon}</a></td>
+
+            {elseif $offer.ao_type eq'poll_premium'}
+
+            <td><span class="label label-quote-premium" data-original-title="Cette annonce est susceptible de devenir une mission Premium" rel="tooltip" data-placement="right">Devis premium</span></td>
+
+            <td class="title"><a href="/contrib/article-details?misson_type=poll_premium&mission_identifier={$offer.pollId}" role="button" data-toggle="modal" data-target="#viewOffer-ajax"><span {if $offer.title|strlen gt 75} rel="tooltip" align="top" data-original-title="{$offer.title|stripslashes}"{/if}>{$offer.title|truncate:75:"...":true|stripslashes}</span></a></td>
+
+            {elseif $offer.ao_type eq'poll_nopremium'}
+
+            <td><span class="label label-quote" data-original-title="Vous travaillerez en direct avec le client" rel="tooltip" data-placement="right">Devis Libert&eacute;</span></td>
+
+            <td class="title"><a href="/contrib/article-details?misson_type=poll_nopremium&mission_identifier={$offer.pollId}" role="button" data-toggle="modal" data-target="#viewOffer-ajax"><span {if $offer.title|strlen gt 75} rel="tooltip" align="top" data-original-title="{$offer.title|stripslashes}"{/if}>{$offer.title|truncate:75:"...":true|stripslashes}</span></a></td>
+
+            {elseif $offer.premium_option}
+
+            <td>
+
+                {if $offer.missiontest eq 'yes'}
+
+                <span class="label label-test-mission" data-original-title="Garanteed long-term Mission" rel="tooltip" data-placement="right"> <i class="icon-star icon-white"></i> Staffing</span>
+
+                {else}
+
+                <span class="label label-premium" data-original-title="Mission garantie par Edit-place" rel="tooltip" data-placement="right">Mission Premium</span>
+
+                {/if}
+
+            </td>
+
+            <td class="title">
+
+                {if $offer.missiontest eq 'yes'}
+
+                <a href="/recruitment/participation-challenge?recruitment_id={$offer.deliveryid}"><span {if $offer.title|strlen gt 55} rel="tooltip" align="top" data-original-title="{$offer.title|stripslashes}"{/if}>
+
+                    <b>{$offer.title|truncate:70:"...":true|stripslashes}</b>
+
+                </a>
+
+                {else}
+
+                <a href="/contrib/article-details?misson_type=premium&mission_identifier={$offer.articleid}" role="button" data-toggle="modal" data-target="#viewOffer-ajax"><span {if $offer.title|strlen gt 70} rel="tooltip" align="top" data-original-title="{$offer.title|stripslashes}"{/if}>{$offer.title|truncate:70:"...":true|stripslashes}</span> {$offer.picon} {$offer.qicon}</a>
+
+                {/if}
+
+            </td>
+
+            {elseif !$offer.premium_option}
+
+            <td>
+
+                {if $offer.missiontest eq 'yes'}
+
+                <span class="label label-test-mission" data-original-title="Garanteed long-term Mission" rel="tooltip" data-placement="right"> <i class="icon-star icon-white"></i>  Staffing</span>
+
+                {else}
+
+                <span class="label label-quote" data-original-title="Vous travaillerez en direct avec le client" rel="tooltip" data-placement="right">Mission Libert&eacute;</span>
+
+                {/if}
+
+            </td>
+
+            <td class="title"><a href="/contrib/article-details?misson_type=nopremium&mission_identifier={$offer.articleid}" role="button" data-toggle="modal" data-target="#viewOffer-ajax"><span {if $offer.title|strlen gt 75} rel="tooltip" align="top" data-original-title="{$offer.title|stripslashes}"{/if}>{$offer.title|truncate:75:"...":true|stripslashes}</span> {$offer.picon} {$offer.qicon}</a></td>
+
+            {/if}
+
+            <td class="countdown">
+
+                {if $offer.ao_type eq 'correction'}
+
+                    <span id="time_{$offer.articleid}-correction_{$offer.timestamp}">
+
+                        <span id="text_{$offer.articleid}-correction_{$offer.timestamp}">{$offer.timestamp}</span>
+
+                    </span>
+
+                {else}
+
+                    <span id="time_{$offer.articleid}_{$offer.timestamp}">
+
+                        <span id="text_{$offer.articleid}_{$offer.timestamp}">{$offer.timestamp}</span>
+
+                    </span>
+
+                {/if}
+
+
+
+            </td>
+
+        </tr>
+
+
+
+        {/foreach}
+
+        {/if}
+
+    </table>
+
+    {if $recent_AO_Offers|@count gt 0}
+
+    <a href="/contrib/aosearch"><div class="btn btn-block btn-small">Voir toutes les annonces</div></a>
+
+    {/if}
+
+{elseif $page eq 'loadOngoingAjaxPublishedArticles'}
+
+    <h4>Toutes mes r&eacute;alisations</h4>
+
+    <ul class="nav nav-tabs nav-stacked">
+
+        {if $publishedArticles | @count gt 0}
+
+
+
+        {foreach item=article from=$publishedArticles name=publishedarticle}
+
+        {if $smarty.foreach.publishedarticle.index lt 100}
+
+        <li>
+
+            {if $article.missiontest eq 'yes'}
+
+            {if $article.crt_participate_id}
+
+            <a href="/contrib/mission-published?{if $article.crt_participate_id}type=correction&{/if} 	article_id={$article.article_id}">
+
+                <span {if $article.title|strlen gt 40} data-original-title="{$article.title}" rel="tooltip" data-placement="top"{/if}>
+
+                <span data-placement="right" rel="tooltip" data-original-title="Garanteed long-term Mission" class="label label-test-mission"><i class="icon-star icon-white"></i> Mission de correction test</span>
+
+                {$article.title|truncate:40:"...":true|stripslashes}</span>
+
+            </a>
+
+            {else}
+
+            <a href="/contrib/mission-published?{if $article.crt_participate_id}type=correction&{/if} article_id={$article.article_id}">
+
+                <span {if $article.title|strlen gt 40} data-original-title="{$article.title}" rel="tooltip" data-placement="top"{/if}>
+
+                <span data-placement="right" rel="tooltip" data-original-title="Garanteed long-term Mission" class="label label-test-mission"><i class="icon-star icon-white"></i>  Staffing</span>
+
+                {$article.title|truncate:40:"...":true|stripslashes}</span>
+
+            </a>
+
+            {/if}
+
+            {else}
+
+            <a href="/contrib/mission-published?{if $article.crt_participate_id}type=correction&{/if} article_id={$article.article_id}">
+
+                <span {if $article.title|strlen gt 40} data-original-title="{$article.title}" rel="tooltip" data-placement="top"{/if}>
+
+                {$article.title|truncate:40:"...":true|stripslashes}</span>
+
+            </a>
+
+            {/if}
+
+        </li>
+
+        {/if}
+
+        {/foreach}
+
+        {else}
+
+
+
+        <li>
+
+            <span class="no-data">Il n'y a pas d'articles publi&eacute;s</span>
+
+        </li>
+
+
+
+        {/if}
+
+    </ul>
+
+{elseif $page eq 'loadOngoingAjaxEncoursArticles' }
+
+    {if $encoursArticles | @count gt 0}
+
+    {foreach item=article from=$encoursArticles name=ongoingarticle}
+
+
+
+    <div class="aside-block mission">
+
+        <div class="row-fluid">
+
+            {if $article.ao_type eq 'correction'}
+
+            <div class="span7">
+
+                {if $article.missiontest eq 'yes'}
+
+                <span data-placement="right" rel="tooltip" data-original-title="Garanteed long-term Mission" class="label label-test-mission"><i class="icon-star icon-white"></i> Mission de correction test</span>
+
+                {/if}
+
+                <a href="/contrib/mission-corrector-deliver?article_id={$article.article_id}"><strong><span {if $article.title|strlen gt 60} data-original-title="{$article.title}" rel="tooltip" data-placement="top"{/if}>{$article.title|truncate:60:"...":true|stripslashes}</span></strong></a></div>
+
+
+
+            {else}
+
+            <div class="span7">
+
+                {if $article.missiontest eq 'yes'}
+
+                <span data-placement="right" rel="tooltip" data-original-title="Garanteed long-term Mission" class="label label-test-mission"><i class="icon-star icon-white"></i>  Staffing</span>
+
+                {if $article.contract_signed eq '' || $article.contract_signed eq 'no' }
+
+                <a href="/recruitment/participation-challenge?recruitment_id={$article.id}&article_id={$article.article_id}#sign-contract"><strong><span {if $article.title|strlen gt 60} data-original-title="{$article.title}" rel="tooltip" data-placement="top"{/if}>{$article.title|truncate:60:"...":true|stripslashes}</span></strong></a>
+
+                {else}
+
+                <a href="/contrib/mission-deliver?article_id={$article.article_id}"><strong><span {if $article.title|strlen gt 60} data-original-title="{$article.title}" rel="tooltip" data-placement="top"{/if}>{$article.title|truncate:60:"...":true|stripslashes}</span></strong></a>
+
+                {/if}
+
+            </div>
+
+            {else}
+
+            <a href="/contrib/mission-deliver?article_id={$article.article_id}"><strong><span {if $article.title|strlen gt 60} data-original-title="{$article.title}" rel="tooltip" data-placement="top"{/if}>{$article.title|truncate:60:"...":true|stripslashes}</span></strong></a>
+
+        </div>
+
+        {/if}
+
+        {/if}
+
+
+
+        {if $article.status eq 'bid' OR $article.status eq 'disapproved' OR $article.status eq 'disapprove_client' }
+
+        <div class="span4 btn-group btn-group-vertical">
+
+            {if $article.ao_type eq 'correction'}
+
+            <a href="/contrib/mission-corrector-deliver?article_id={$article.article_id}"  class="btn btn-small" data-placement="left" data-original-title="Statut" rel="tooltip">
+
+                {if $article.status eq 'bid'}
+
+                &agrave; corriger
+
+                {else}
+
+                {$article.status_trans}
+
+                {/if}
+
+            </a>
+
+            {else}
+
+            {if $article.missiontest eq 'yes'}
+
+            {if $article.contract_signed eq ''}
+
+            <a href="/recruitment/participation-challenge?recruitment_id={$article.id}&article_id={$article.article_id}#sign-contract"  class="btn btn-small" data-placement="left" data-original-title="Statut" rel="tooltip"> {$article.status_trans}</a>
+
+            {else}
+
+            <a href="/contrib/mission-deliver?article_id={$article.article_id}"  class="btn btn-small" data-placement="left" data-original-title="Statut" rel="tooltip"> {$article.status_trans}</a>
+
+            {/if}
+
+            {else}
+
+            <a href="/contrib/mission-deliver?article_id={$article.article_id}"  class="btn btn-small" data-placement="left" data-original-title="Statut" rel="tooltip"> {$article.status_trans}</a>
+
+            {/if}
+
+            {/if}
+
+            <a  class="btn btn-small def-cur" data-placement="left" data-original-title="Delivery date" rel="tooltip"><i class=" icon-time"></i>
+
+                {if $article.ao_type eq 'correction'}
+
+                                                    <span id="time_{$smarty.foreach.ongoingarticle.index}_{$article.corrector_submit_expires}">
+
+                                                        <span id="text_{$smarty.foreach.ongoingarticle.index}_{$article.corrector_submit_expires}"></span>
+
+                                                    </span>
+
+                {else}
+
+                    {if $article.missiontest eq 'yes'}
+
+                        {if $article.article_submit_expires >0 }
+
+                                                                    <span id="time_{$smarty.foreach.ongoingarticle.index}_{$article.article_submit_expires}">
+
+                                                                        <span id="text_{$smarty.foreach.ongoingarticle.index}_{$article.article_submit_expires}"></span>
+
+                                                                    </span>
+
+                        {else}
+
+                                                                    <span id="time_{$smarty.foreach.ongoingarticle.index}_{$article.participation_expires}">
+
+                                                                        <span id="text_{$smarty.foreach.ongoingarticle.index}_{$article.participation_expires}"></span>
+
+                                                                    </span>
+
+                        {/if}
+
+                    {else}
+
+                                                            <span id="time_{$smarty.foreach.ongoingarticle.index}_{$article.article_submit_expires}">
+
+                                                                <span id="text_{$smarty.foreach.ongoingarticle.index}_{$article.article_submit_expires}"></span>
+
+                                                            </span>
+
+                    {/if}
+
+                {/if}
+
+
+
+            </a>
+
+        </div>
+
+        {else}
+
+        <div class="span4 btn-group">
+
+            {if $article.ao_type eq 'correction'}
+
+            <a  href="/contrib/mission-corrector-deliver?article_id={$article.article_id}" class="btn btn-small" data-placement="left" data-original-title="Statut" rel="tooltip">{$article.status_trans}</a>
+
+            {else}
+
+            {if $article.missiontest eq 'yes'}
+
+            <a href="/recruitment/participation-challenge?recruitment_id={$article.article_id}"  class="btn btn-small" data-placement="left" data-original-title="Statut" rel="tooltip"> {$article.status_trans}</a>
+
+            {else}
+
+            <a  href="/contrib/mission-deliver?article_id={$article.article_id}" class="btn btn-small" data-placement="left" data-original-title="Statut" rel="tooltip">{$article.status_trans}</a>
+
+            {/if}
+
+            {/if}
+
+        </div>
+
+        {/if}
+
+    </div>
+
+    </div>
+
+
+
+    {/foreach}
+
+    {else}
+
+    <div class="aside-block mission">
+
+        <div class="row-fluid">
+
+            <span class="no-data">Il n'y a pas d'articles en cours</span>
+
+        </div>
+
+    </div>
+
+    {/if}
+    <!--Author: Thilagam-->
+    <!--Date: 18/5/2016-->
+    <!--Reason:To load the awaiting articles through ajax-->
+{elseif $page eq 'loadOngoingAjaxAwatingArticles' }
+<h4>Missions en attente d'attribution <span class="badge">{$awaitingArticles|@count}</span></h4>
+                    <table class="table table-hover">
+                        {if $awaitingArticles | @count gt 0}
+                            {foreach item=article from=$awaitingArticles name=articledetails}
+                            <tr>
+                                {if $article.ao_type eq 'correction'}
+                                    <td>
+                                        {if $article.missiontest eq 'yes'}
+                                            <span class="label label-test-mission" data-original-title="Garanteed long-term Mission" rel="tooltip" data-placement="right">Mission de correction test</span>
+                                        {else}
+                                            <span class="label label-correction" data-original-title="Mission garantie par Edit-place" rel="tooltip" data-placement="right">Mission Correction</span>
+                                        {/if}
+                                    </td>
+                                    <td class="title"><a href="/contrib/article-details?req_from=ongoing&misson_type=correction&mission_identifier={$article.article_id}" role="button" data-toggle="modal" data-target="#viewOffer-ajax"><span {if $article.title|strlen gt 75} rel="tooltip" align="top" data-original-title="{$article.title|stripslashes}"{/if}>{$article.title|truncate:75:"...":true|stripslashes}</span> {$article.picon} </a></td>
+                                {elseif $article.ao_type eq'poll_premium'}
+                                        <td><span class="label label-quote-premium" data-original-title="Cette annonce est susceptible de devenir une mission Premium" rel="tooltip" data-placement="right">Devis premium</span></td>
+                                        <td class="title"><a href="/contrib/article-details?req_from=ongoing&misson_type=poll_premium&mission_identifier={$article.pollId}" role="button" data-toggle="modal" data-target="#viewOffer-ajax"><span {if $article.title|strlen gt 75} rel="tooltip" align="top" data-original-title="{$article.title|stripslashes}"{/if}>{$article.title|truncate:75:"...":true|stripslashes}</span></a></td>
+                                {elseif $article.ao_type eq'poll_nopremium'}
+                                    <td><span class="label label-quote" data-original-title="Vous travaillerez en direct avec le client" rel="tooltip" data-placement="right">Devis Libert&eacute;</span></td>
+                                    <td class="title"><a href="/contrib/article-details?req_from=ongoing&misson_type=poll_nopremium&mission_identifier={$article.pollId}" role="button" data-toggle="modal" data-target="#viewOffer-ajax"><span {if $article.title|strlen gt 75} rel="tooltip" align="top" data-original-title="{$article.title|stripslashes}"{/if}>{$article.title|truncate:75:"...":true|stripslashes}</span></a></td>
+                                {elseif $article.premium_option}
+                                    <td>
+                                        {if $article.missiontest eq 'yes'}
+                                            <span class="label label-test-mission" data-original-title="Garanteed long-term Mission" rel="tooltip" data-placement="right"><i class="icon-star icon-white"></i>  Staffing</span>
+                                        {else}
+                                            <span class="label label-premium" data-original-title="Mission garantie par Edit-place" rel="tooltip" data-placement="right">Mission Premium</span>
+                                        {/if}
+                                    </td>
+                                    <td class="title"><a href="/contrib/article-details?req_from=ongoing&misson_type=premium&mission_identifier={$article.article_id}" role="button" data-toggle="modal" data-target="#viewOffer-ajax"><span {if $article.title|strlen gt 75} rel="tooltip" align="top" data-original-title="{$article.title|stripslashes}"{/if}>{$article.title|truncate:75:"...":true|stripslashes}</span> {$article.picon} {$article.qicon}</a></td>
+                                {else}
+                                    <td>
+                                        {if $article.missiontest eq 'yes'}
+                                            <span class="label label-test-mission" data-original-title="Garanteed long-term Mission" rel="tooltip" data-placement="right"> <i class="icon-star icon-white"></i> Staffing</span>
+                                        {else}
+                                            <span class="label label-quote" data-original-title="Vous travaillerez en direct avec le client" rel="tooltip" data-placement="right">Mission Libert&eacute;</span>
+                                        {/if}
+                                    </td>
+                                    <td class="title"><a href="/contrib/article-details?req_from=ongoing&misson_type=nopremium&mission_identifier={$article.article_id}" role="button" data-toggle="modal" data-target="#viewOffer-ajax"><span {if $article.title|strlen gt 75} rel="tooltip" align="top" data-original-title="{$article.title|stripslashes}"{/if}>{$article.title|truncate:75:"...":true|stripslashes}</span> {$article.picon} {$article.qicon}</a></td>
+                                {/if}
+
+                                <td class="countdown">
+                                    {if $article.ao_type eq 'correction'}
+                                        <span id="time_{$article.article_id}-correction_{$article.correction_participationexpires}">
+                                            <span id="text_{$article.article_id}-correction_{$article.correction_participationexpires}">{$article.correction_participationexpires}</span>
+                                        </span>
+                                    {elseif $article.ao_type eq 'poll_nopremium' || $article.ao_type eq 'poll_premium' }
+                                        <span id="time_{$article.articleid}_{$article.timestamp}">
+                                            <span id="text_{$article.articleid}_{$article.timestamp}">{$article.timestamp}</span>
+                                        </span>
+                                    {else}
+                                        <span id="time_{$article.article_id}_{$article.participation_expires}">
+                                            <span id="text_{$article.article_id}_{$article.participation_expires}">{$article.participation_expires}</span>
+                                        </span>
+                                    {/if}
+                                </td>
+                            </tr>
+                            {/foreach}
+                        {else}
+                            <tr>
+                                <td colspan="3">
+                                    <span class="no-data">Il n'y a pas d'articles en attente d'attribution</span>
+                                </td>
+                            </tr>
+                        {/if}
+                    </table>
+
+{else}
+
+    ERROR!!!!
+
+{/if}
