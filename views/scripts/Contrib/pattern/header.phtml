@@ -45,7 +45,7 @@
 				  <li><a href="/contrib/aosearch" id="menu_aosearch" >Les annonces</a></li>
 				  <li><a href="/contrib/ongoing" id="menu_ongoing">Mes participations</a></li>
 				  <li><a href="/contrib/private-profile" id="menu_profile">Mon compte</a></li>
-				  <li><a href="/contrib/inbox" id="menu_mailbox">Messagerie {if $unreadCount gt 0} <span class="badge badge-warning">{$unreadCount}</span>{/if}</a> </li>
+				  <li><a href="/contrib/inbox" id="menu_mailbox">Messagerie {*{if $unreadCount gt 0} <span class="badge badge-warning">{$unreadCount}</span>{/if}*}</a> </li>
 				  <li><a href="/contrib/royalties" id="menu_royalties">Mes royalties</a></li>
 			   
 				</ul>
@@ -56,3 +56,26 @@
 		</div>
 	</div>
 </header>
+{literal}
+<script>
+    $(document).ready(function(){
+       loadHeaderAjaxMessageCount();
+    });
+    function
+    loadHeaderAjaxMessageCount(){
+        console.log('initiated loadHeaderAjaxMessageCount');
+        $.ajax({
+            type: 'POST',
+            url: '/contrib/load-header-ajax-message-count',
+            success: function (data) {
+                var msgCount = data.trim()
+                if(msgCount !== '0')
+                    msgCount = '<span class="badge badge-warning">'+msgCount+'</span>';
+                else
+                    msgCount = '';
+                $("#menu_mailbox").html('Messagerie '+msgCount);
+            }
+        });
+    }
+</script>
+{/literal}

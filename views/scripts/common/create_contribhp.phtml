@@ -16,17 +16,18 @@ function userlogin()
 		dataType: "html",
 		async:false,
 		success: function(msg){
+            console.log(msg);
 			if (msg == "NO") {
 				$('#passerr').html("Email ou mot de passe incorrect!")
 				return false;
 			}
 			else if(msg=='client')
 			{
-			window.location = "/client/profile";
+			window.location = "/client/home";
 				}
 			else if(msg=='contributor')
 			{
-				window.location = "/contrib/modify-profile";
+				window.location = "/contrib/home";
 			}
 			else
 			{
@@ -239,7 +240,7 @@ function switchloginform(opt)
 				<div class="form-group">
 					<label class="col-sm-4 control-label"></label>	
 					<div class="col-xs-12 col-md-6">
-						<a data-target="#lost-password" data-toggle="modal" class="killcurrentmodal">Mot de passe oublié ?</a>
+						<a data-target="#lost-password" data-toggle="modal" class="killcurrentmodal">Mot de passe oubliï¿½ ?</a>
 					</div>
 				</div>
 				</div>

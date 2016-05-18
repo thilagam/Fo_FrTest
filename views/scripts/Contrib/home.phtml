@@ -5,6 +5,50 @@ cur_date={/literal}{$smarty.now}{literal};
 js_date=(new Date().getTime())/ 1000;
 diff_date=Math.floor(js_date-cur_date); 
 $("#menu_home").addClass("active");
+    $(document).ready(function(){
+        //call this funcion to load Recent Ao offers on the page using ajax//
+        loadHomeAjaxRecentAoOffers();
+        //function will load the progress bar related to percentage of profile filled/progress_status
+        loadHomeAjaxCalculateProfilePercentage();
+        //func to load count of upcoming delivereies
+        loadHomeAjaxUpcomingCount();
+    });
+    function loadHomeAjaxRecentAoOffers(){
+        console.log('initiated loadHomeAjaxRecentAoOffers');
+        $.ajax({
+            type: 'POST',
+            url: '/contrib/load-home-ajax-recent-ao-offers',
+            success: function (data) {
+                $("#quick-classified").html(data);
+            }
+        });
+    }
+    function loadHomeAjaxCalculateProfilePercentage(){
+        console.log('initiated loadHomeAjaxCalculateProfilePercentage');
+        $.ajax({
+            type: 'POST',
+            url: '/contrib/load-home-ajax-calculate-profile-percentage',
+            success: function (data) {
+                //console.log(data);
+                $("#progress_status").html(data);
+            }
+        });
+    }
+    function loadHomeAjaxUpcomingCount(){
+        console.log('initiated loadHomeAjaxUpcomingCount');
+        $.ajax({
+            type: 'POST',
+            url: '/contrib/load-home-ajax-upcoming-count',
+            success: function (data) {
+                //console.log(data);
+                $("#upcoming_count").html(data.trim());
+            }
+        });
+    }
+$( document ).ajaxComplete(function() {
+    console.log( "Triggered ajaxComplete handler." );
+    starttimmer();
+});
 </script>
 {/literal}
 <div class="container">
@@ -38,12 +82,12 @@ $("#menu_home").addClass("active");
 							<h3>{$client_email}</h3>
 						</div>
 						
-						<div class="span3 stat">
-							<div class="progress progress-success">
-							<div class="bar" style="width: {$profile_percentage}%"></div>
-							</div>
-							Votre profil est rempli &agrave; <strong>{$profile_percentage}%</strong>
-							<div class="btn-link"><a href="/contrib/modify-profile">Mettre &agrave; jour</a></div>
+						<div class="span3 stat" id="progress_status">
+							<!-- Loading...-->
+							<!--Author: Thilagam-->
+							<!--Date: 18/5/2016-->
+							<!--Reason:To replace the text with image-->
+                            <img src="/FO/images/loading-data.gif" alt="Loading..">
 						</div>
 
 						<div class="span2 stat">
@@ -62,126 +106,11 @@ $("#menu_home").addClass("active");
 				<div class="span8">
 
 					<section id="quick-classified">
-						<div class="mod">
-							<span class="pull-right icon-waiting-quote" data-original-title="Plus de temps � perdre ! Faites une offre, vite" rel="tooltip"></span>
-							<h4>R&eacute;pondez &agrave; ces nouvelles annonces</h4>
-							<table class="table table-hover">
-								{if $recent_AO_Offers|@count gt 0}
-									{foreach item=offer from=$recent_AO_Offers}										
-										<tr>
-											{if $offer.ao_type eq 'correction'}
-												<td>
-													{if $offer.missiontest eq 'yes'}
-														<span class="label label-test-mission" data-original-title="Garanteed long-term Mission" rel="tooltip" data-placement="right"><i class="icon-star icon-white"></i> Mission de correction test</span>
-													{else}
-														<span class="label label-correction" data-original-title="Mission garantie par Edit-place" rel="tooltip" data-placement="right">Mission Correction</span>
-													{/if}	
-												{if $offer.view_to eq 'sc'}
-													<span data-original-title="Niveau Senior" data-content="Je suis un contributeur confirm&eacute; chez Edit-place." rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>S</span>
-												{elseif $offer.view_to eq 'jc'}
-													<span data-original-title="Accessible au Junior" data-content="Au moins 1 article valid&eacute; sur Edit-place" rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>J</span>
-												{elseif $offer.view_to eq 'jc0'}
-													<span data-original-title="Accessible au D&eacute;butant" data-content="Aucun article encore valid&eacute; sur Edit-place" rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>D</span>	
-												{/if}
-												</td>
-												<td class="title"><a href="/contrib/article-details?misson_type=correction&mission_identifier={$offer.articleid}" role="button" data-toggle="modal" data-target="#viewOffer-ajax"><span {if $offer.title|strlen gt 70} rel="tooltip" align="top" data-original-title="{$offer.title|stripslashes}"{/if}>{$offer.title|truncate:70:"...":true|stripslashes}</span> {$offer.picon} </a></td>
-											
-											{elseif $offer.ao_type eq 'poll_premium'}
-												<td><span class="label label-quote-premium" data-original-title="Cette annonce est susceptible de devenir une mission Premium" rel="tooltip" data-placement="right">Devis premium</span>
-												{if $offer.contributors eq '0'}
-													<span data-original-title="Niveau Senior" data-content="Je suis un contributeur confirm&eacute; chez Edit-place." rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>S</span>
-												{elseif $offer.contributors eq '1'}
-													<span data-original-title="Accessible au Junior" data-content="Au moins 1 article valid&eacute; sur Edit-place" rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>J</span>
-												{elseif $offer.contributors eq '3'}
-													<span data-original-title="Accessible au D&eacute;butant" data-content="Aucun article encore valid&eacute; sur Edit-place" rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>D</span>	
-												{/if}
-												</td>
-												<td class="title"><a href="/contrib/article-details?misson_type=poll_premium&mission_identifier={$offer.pollId}" role="button" data-toggle="modal" data-target="#viewOffer-ajax"><span {if $offer.title|strlen gt 70} rel="tooltip" align="top" data-original-title="{$offer.title|stripslashes}"{/if}>{$offer.title|truncate:70:"...":true|stripslashes}</span></a></td>
-											{elseif $offer.ao_type eq 'poll_nopremium'}
-												<td><span class="label label-quote" data-original-title="Vous travaillerez en direct avec le client" rel="tooltip" data-placement="right">Devis Libert&eacute;</span>
-												{if $offer.contributors eq '0'}
-													<span data-original-title="Niveau Senior" data-content="Je suis un contributeur confirm&eacute; chez Edit-place." rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>S</span>
-												{elseif $offer.contributors eq '1'}
-													<span data-original-title="Accessible au Junior" data-content="Au moins 1 article valid&eacute; sur Edit-place" rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>J</span>
-												{elseif $offer.contributors eq '3'}
-													<span data-original-title="Accessible au D&eacute;butant" data-content="Aucun article encore valid&eacute; sur Edit-place" rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>D</span>	
-												{/if}
-												</td>
-												<td class="title"><a href="/contrib/article-details?misson_type=poll_nopremium&mission_identifier={$offer.pollId}" role="button" data-toggle="modal" data-target="#viewOffer-ajax"><span {if $offer.title|strlen gt 70} rel="tooltip" align="top" data-original-title="{$offer.title|stripslashes}"{/if}>{$offer.title|truncate:70:"...":true|stripslashes}</span></a></td>	
-											{elseif $offer.premium_option}	
-												<td>
-													{if $offer.missiontest eq 'yes'}
-														<span class="label label-test-mission" data-original-title="Garanteed long-term Mission" rel="tooltip" data-placement="right"><i class="icon-star icon-white"></i>  Staffing</span>
-													{else}
-														<span class="label label-premium" data-original-title="Mission garantie par Edit-place" rel="tooltip" data-placement="right">Mission Premium</span>
-													{/if}
-
-													
-												{if $offer.view_to eq 'sc'}
-													<span data-original-title="Niveau Senior" data-content="Je suis un contributeur confirm&eacute; chez Edit-place." rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>S</span>
-												{elseif $offer.view_to eq 'jc'}
-													<span data-original-title="Accessible au Junior" data-content="Au moins 1 article valid&eacute; sur Edit-place" rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>J</span>
-												{elseif $offer.view_to eq 'jc0'}
-													<span data-original-title="Accessible au D&eacute;butant" data-content="Aucun article encore valid&eacute; sur Edit-place" rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>D</span>	
-												{/if}
-												</td>
-												<td class="title">
-													{if $offer.missiontest eq 'yes'}
-														<a href="/recruitment/participation-challenge?recruitment_id={$offer.deliveryid}"><span {if $offer.title|strlen gt 55} rel="tooltip" align="top" data-original-title="{$offer.title|stripslashes}"{/if}>
-															<b>{$offer.title|truncate:70:"...":true|stripslashes}</b>
-															{*<div class="muted">Vous &eacute;crirez {$offer.mission_volume} {$offer.product_type_name} d'achats en {$offer.language_name}</div>*}
-														</a>
-													{else}
-														<a href="/contrib/article-details?misson_type=premium&mission_identifier={$offer.articleid}" role="button" data-toggle="modal" data-target="#viewOffer-ajax"><span {if $offer.title|strlen gt 70} rel="tooltip" align="top" data-original-title="{$offer.title|stripslashes}"{/if}>{$offer.title|truncate:70:"...":true|stripslashes}</span> {$offer.picon} {$offer.qicon}</a>
-													{/if}	
-												</td>
-											{elseif !$offer.premium_option}			
-												<td>
-													{if $offer.missiontest eq 'yes'}
-														<span class="label label-test-mission" data-original-title="Garanteed long-term Mission" rel="tooltip" data-placement="right"><i class="icon-star icon-white"></i>  Staffing</span>
-													{else}
-														<span class="label label-quote" data-original-title="Vous travaillerez en direct avec le client" rel="tooltip" data-placement="right">Mission Libert&eacute;</span>	
-													{/if}	
-													{if $offer.view_to eq 'sc'}
-														<span data-original-title="Niveau Senior" data-content="Je suis un contributeur confirm&eacute; chez Edit-place." rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>S</span>
-													{elseif $offer.view_to eq 'jc'}
-														<span data-original-title="Accessible au Junior" data-content="Au moins 1 article valid&eacute; sur Edit-place" rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>J</span>
-													{elseif $offer.view_to eq 'jc0'}
-														<span data-original-title="Accessible au D&eacute;butant" data-content="Aucun article encore valid&eacute; sur Edit-place" rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>D</span>	
-													{/if}
-												</td>
-												<td class="title"><a href="/contrib/article-details?misson_type=nopremium&mission_identifier={$offer.articleid}" role="button" data-toggle="modal" data-target="#viewOffer-ajax"><span {if $offer.title|strlen gt 70} rel="tooltip" align="top" data-original-title="{$offer.title|stripslashes}"{/if}>{$offer.title|truncate:70:"...":true|stripslashes}</span> {$offer.picon} {$offer.qicon}</a></td>
-											{/if}
-											<td class="countdown">
-												{if $offer.ao_type eq 'correction'}
-													<span id="time_{$offer.articleid}-correction_{$offer.timestamp}">
-														<span id="text_{$offer.articleid}-correction_{$offer.timestamp}">{$offer.timestamp}</span>
-													</span>
-												{else}
-													<span id="time_{$offer.articleid}_{$offer.timestamp}">
-														<span id="text_{$offer.articleid}_{$offer.timestamp}">{$offer.timestamp}</span>
-													</span>
-												{/if}	
-												
-											</td>
-										</tr>
-										
-									{/foreach}
-								{else}	
-									<tr>
-										<td colspan="3">
-											<span class="no-data">Il n'y a pas d'appels d'offres pour l'instant</span>
-										</td>	
-									</tr>	
-								{/if}					
-
-							</table>
-							
-							{if $recent_AO_Offers|@count gt 0}
-								<a href="/contrib/aosearch"><div class="btn btn-block btn-small">Voir toutes les annonces</div></a>
-							{/if}	
-							
-						</div>
+						<!-- Loading...-->
+						<!--Author: Thilagam-->
+						<!--Date: 18/5/2016-->
+						<!--Reason:To replace the text with image-->
+						<img src="/FO/images/loading-data.gif" alt="Loading..">
 
 					 </section>
 			 
@@ -210,7 +139,13 @@ $("#menu_home").addClass("active");
 								<div class="pull-center">
 									<h4 class="date"><span>Demain,</span> {$publish_date} <i class="icon-calendar icon-white"></i></h4>
 									<div class="main">
-										<span class="nb"><a href="/contrib/aosearch#soon">{$upcoming_count}</a></span><a href="/contrib/aosearch#soon"> nouvelles annonces ouvertes � participation</a>
+										<span class="nb"><a href="/contrib/aosearch#soon" id="upcoming_count">
+										<!-- Loading...-->
+										<!--Author: Thilagam-->
+										<!--Date: 18/5/2016-->
+										<!--Reason:To replace the text with image-->
+										<img src="/FO/images/loading-data.gif" alt="Loading..">
+										</a></span><a href="/contrib/aosearch#soon"> nouvelles annonces ouvertes � participation</a>
 									</div>
 								</div>
 								Vous pouvez d&egrave;s maintenant : 

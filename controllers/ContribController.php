@@ -33,9 +33,9 @@ class ContribController extends Ep_Controller_Action
         else if($this->EP_Contrib_reg->clientemail!='')
             $this->_view->client_email=strtolower($this->EP_Contrib_reg->clientemail);
 
-        /**Unread message count in inbox**/
-        $ticket=new Ep_Ticket_Ticket();
-        $this->_view->unreadCount=$ticket->getUnreadCount('contributor',$contrib_identifier);
+///*high*/        /**Unread message count in inbox**/
+//        $ticket=new Ep_Ticket_Ticket();
+//        $this->_view->unreadCount=$ticket->getUnreadCount('contributor',$contrib_identifier);
 
         /**cache for statistics && config**/
         $this->EP_Cache->clean(Zend_Cache::CLEANING_MODE_ALL);
@@ -142,14 +142,13 @@ class ContribController extends Ep_Controller_Action
         Zend_Session::destroy('EP_Contrib_Quiz');
         header("location:/index");
     }
+    /* *** optimized on 13.05.2016 *** */
     /**Home action **/
-    public function homeAction()
-    {
+    public function homeAction(){
         if($this->_helper->EpCustom->checksession())
         {
             //redirecting to the URL accessed
-            if(isset($_SESSION['target']))
-            {
+            if(isset($_SESSION['target'])){
                 $prevurl= $_SESSION['target'];
                 unset($_SESSION['target']);
                 $this->_redirect($prevurl);
@@ -164,41 +163,46 @@ class ContribController extends Ep_Controller_Action
 
             /**profile IMage*/
             $this->_view->contrib_home_picture=$this->getPicPath($this->EP_Contrib_reg->clientidentifier);
-            /**Total Royalties**/
-            $royalty_obj=new Ep_Royalty_Royalties();
-            $totalRoyalty=$royalty_obj->getTotalRoyalty($this->EP_Contrib_reg->clientidentifier);
-            if(!$totalRoyalty)
-                $totalRoyalty=0;
-            $this->_view->userRoyalty=$totalRoyalty;
+//            /**Total Royalties**/
+//            $royalty_obj=new Ep_Royalty_Royalties();
+//            $totalRoyalty=$royalty_obj->getTotalRoyalty($this->EP_Contrib_reg->clientidentifier);
+//            if(!$totalRoyalty)
+//                $totalRoyalty=0;
+//            $this->_view->userRoyalty=$totalRoyalty;
 
             /**get Recent Ao Offers**/
-            $this->_view->recent_AO_Offers=$this->recentAoOffers();
+///*high*/             $this->_view->recent_AO_Offers=$this->recentAoOffers();
             //print_r($recent_AO_Offers);
-            /**Contributor Ongoing Articles**/
-            $participation=new Ep_Participation_Participation();
-            $participation_ongoing=$participation->ongoingArticles($this->EP_Contrib_reg->clientidentifier);
-            $participation_corrector=new Ep_Participation_CorrectorParticipation();
-            $ongoingCorrectorArticles=$participation_corrector->ongoingArticles($this->EP_Contrib_reg->clientidentifier);
-            $participation_Count=count($participation_ongoing)+count($ongoingCorrectorArticles);
-            if($participation_Count>0)
-            {
-                $latestParticipation=$participation_ongoing[0]['title'];
-            }
-            $this->_view->participation_Count=$participation_Count;
-            $this->_view->latestParticipation=$latestParticipation;
+//            /**Contributor Ongoing Articles**/
+//            $participation=new Ep_Participation_Participation();
+//            $participation_ongoing=$participation->ongoingArticles($this->EP_Contrib_reg->clientidentifier);
+//            $participation_corrector=new Ep_Participation_CorrectorParticipation();
+//            $ongoingCorrectorArticles=$participation_corrector->ongoingArticles($this->EP_Contrib_reg->clientidentifier);
+//            $participation_Count=count($participation_ongoing)+count($ongoingCorrectorArticles);
+//            if($participation_Count>0)
+//            {
+//                $latestParticipation=$participation_ongoing[0]['title'];
+//            }
+//            $this->_view->participation_Count=$participation_Count;
+//            $this->_view->latestParticipation=$latestParticipation;
 
             /**profile completion percentage*/
-            $this->_view->profile_percentage=$this->calculateProfilePercentage();
+///*high*/            $this->_view->profile_percentage= $this->calculateProfilePercentage();
 
 
             //upcoming count for next day
-            $articleParams['cnt_nextday']=true;
+//            $articleParams['cnt_nextday']=true;
+///*high*/             $upcoming_count=count($this->upcomingDeliveries($articleParams));
+//            $this->_view->upcoming_count=$upcoming_count;
 
-            $upcoming_count=count($this->upcomingDeliveries($articleParams));
-
+            $home_obj = new EP_Contrib_Home();
+            //function to load total royalties and participation count on home page//
+            $loadResult = $home_obj->loadTotalRoyaltyAndParticipationCount($this->EP_Contrib_reg->clientidentifier);
+            $this->_view->participation_Count=$loadResult['participation_Count'];
+            if(!$totalRoyalty)
+                $totalRoyalty=0;
+            $this->_view->userRoyalty=$loadResult['totalRoyalty'];
             $this->_view->publish_date=strftime("%d %B",getDateNextDays(1));
-            $this->_view->upcoming_count=$upcoming_count;
-
             $this->render("Contrib_home");
         }
     }
@@ -323,10 +327,7 @@ class ContribController extends Ep_Controller_Action
                 $recruitmentDetails[$r]['product_type_name']= $this->producttype_array[$recruitment['type']];
                 $recruitmentDetails[$r]['language_name']= $this->getLanguageName($recruitment['language']);
 
-        }    
-
-
-
+        }
         //echo "<pre>";print_r($recruitmentDetails);exit;
         /**poll AOs**/
 
@@ -352,7 +353,6 @@ class ContribController extends Ep_Controller_Action
                 $flag1 = fasle;
                 foreach($language_more1 as $key => $value){
                     if($key === $corr_offer['language_source'] && (int)$value >= 50){
-
                         $flag1 = true;//false true if the source launge is in lang more of contributor
                     }
                 }
@@ -395,9 +395,6 @@ class ContribController extends Ep_Controller_Action
 
         //echo "<pre>";print_r($recentAds);
         return $recent_AO_Offers[0];
-
-
-
     }
     //get all Poll AO details
     public function pollAoSearch($poll_search_params=NULL,$limit=NULL)
@@ -493,16 +490,14 @@ class ContribController extends Ep_Controller_Action
         {
 
             $ContributorIdentifier=$this->contrib_identifier;
-            $participation=new Ep_Participation_Participation();
-            $ongoingArticles=$participation->ongoingArticles($ContributorIdentifier);
-            if($this->_helper->FlashMessenger->getMessages()) {
+            /**Author:Thilagam**/
+            /**Date:18/5/2016**/
+            /**Reason:The below code is commented in order to load the data through ajax**/
+            /*$participation=new Ep_Participation_Participation();
+            $ongoingArticles=$participation->ongoingArticles($ContributorIdentifier);*/
+            /*if($this->_helper->FlashMessenger->getMessages()) {
                 $this->_view->actionmessages=$this->_helper->FlashMessenger->getMessages();
             }
-
-            //echo "<prE>";print_r($ongoingArticles);exit;
-
-            $encoursArticles=array();
-            $encoursCorrectorArticles=array();
             $awaitingArticles=array();
             $awaitingCorrectorArticles=array();
             $awaitingPolls=array();
@@ -513,60 +508,123 @@ class ContribController extends Ep_Controller_Action
                 $await_cnt=0;
                 foreach($ongoingArticles as $Article)
                 {
-
-                    /**encours Articles**/
-                    if((($Article['status']=='bid' || $Article['status']=='under_study' || $Article['status']=='disapproved' || $Article['status']=='disapprove_client') && $Article['article_submit_expires']>0) OR ($Article['status']=='disapproved_temp' || $Article['status']=='closed_temp' || $Article['status']=='closed' || $Article['status']=='closed_client' || $Article['status']=='closed_client_temp' || $Article['status']=='plag_exec' || $Article['status']=='time_out') OR ( $Article['missiontest']=='yes'))
+                    //awaiting award articles
+                    if($Article['status']=='bid_premium' || $Article['status']=='bid_nonpremium' || $Article['status']=='bid_temp' || $Article['status']=='bid_refused_temp')
                     {
-                        $encoursArticles[$en_cnt]=$ongoingArticles[$cnt];
-                        if($Article['status']=='on_hold' || $Article['status']=='disapproved_temp' || $Article['status']=='closed_temp' || $Article['status']=='closed_client_temp' || $Article['status']=='plag_exec')
+                        $awaitingArticles[$await_cnt]=$ongoingArticles[$cnt];
+                        //private icon
+                        if($awaitingArticles[$await_cnt]['AOtype']=='private')
                         {
-                            $Article['status']='under_study';
-                        }
+                            $private_icon=$this->private_icon;
+                            $writers_count=count(explode(",",$awaitingArticles[$await_cnt]['contribs_list']));
+                            if($writers_count>1)
+                                $toolTitle=$this->ptoolTitleMulti;
+                            else
+                                $toolTitle=$this->ptoolTitle;
 
+                            $toolTitle=str_replace('X',$writers_count,$toolTitle);
+                            $private_icon=str_replace('$toolTitle',$toolTitle,$private_icon);
 
-                        if($Article['status']=='disapprove_client')
-                        {
-                            $Article['status']='disapproved';
-                        }
-
-
-                        $current_time=time();
-                        $time_expires=$Article['article_submit_expires'];
-                        $timestap_diff= $current_time - $time_expires;
-
-                        if($Article['missiontest']=='yes')
-                        {
-                            $participation_expires=$Article['participation_expires'];
-                            if($time_expires >0)
-                            {
-                                if($Article['status']=='bid' && $timestap_diff > 0)
-                                {
-                                    $encoursArticles[$en_cnt]['status']='time_out';
-                                    $Article['status']='time_out';
-                                }
-                            }
-                            else{
-                                if($Article['status']=='bid' && $participation_expires < time())
-                                {
-                                    $encoursArticles[$en_cnt]['status']='time_out';
-                                    $Article['status']='time_out';
-                                }
-                            }
+                            $awaitingArticles[$await_cnt]['picon']=$private_icon;
 
                         }
-                        else if($Article['status']=='bid' && $timestap_diff > 0 )
-                        {
-                            $encoursArticles[$en_cnt]['status']='time_out';
-                            $Article['status']='time_out';
-                        }
+                        else
+                            $awaitingArticles[$await_cnt]['picon']='';
 
+                        //quiz icon
+                        if($awaitingArticles[$await_cnt]['link_quiz']=='yes' && $awaitingArticles[$await_cnt]['quiz'] && !in_array($awaitingArticles[$await_cnt]['quiz'],$this->qualifiedQuiz))
+                            $awaitingArticles[$await_cnt]['qicon']=$this->quiz_icon;
+                        else
+                            $awaitingArticles[$await_cnt]['qicon']='';
 
-                        $encoursArticles[$en_cnt]['status_trans']=$this->getAOStatus($Article['status']);
-
-
-
-                        $en_cnt++;
+                        $await_cnt++;
                     }
+
+                    $cnt++;
+                }
+            }
+
+            //Corrector Ongoing Articles
+            $participation_corrector=new Ep_Participation_CorrectorParticipation();
+            $ongoingCorrectorArticles=$participation_corrector->ongoingArticles($ContributorIdentifier);
+            if(count($ongoingCorrectorArticles)>0)
+            {
+                $crcnt=0;
+                $en_crcnt=0;
+                $await_crcnt=0;
+                foreach($ongoingCorrectorArticles as $CArticle)
+                {
+                    //awaiting award Corrector articles
+                    if($CArticle['status']=='bid_corrector' || $CArticle['status']=='bid_temp' || $CArticle['status']=='bid_refused_temp')
+                    {
+                        $awaitingCorrectorArticles[$await_crcnt]=$ongoingCorrectorArticles[$crcnt];
+                        $awaitingCorrectorArticles[$await_crcnt]['ao_type']='correction';
+
+                        if($awaitingCorrectorArticles[$await_crcnt]['correction_type']=='private')
+                        {
+                            $private_icon=$this->private_icon;
+                            $writers_count=count(explode(",",$awaitingCorrectorArticles[$await_crcnt]['corrector_privatelist']));
+                            if($writers_count>1)
+                                $toolTitle=$this->ptoolTitleMulti;
+                            else
+                                $toolTitle=$this->ptoolTitle;
+
+                            $toolTitle=str_replace('X',$writers_count,$toolTitle);
+                            $private_icon=str_replace('$toolTitle',$toolTitle,$private_icon);
+
+                            $awaitingCorrectorArticles[$await_crcnt]['picon']=$private_icon;
+
+                        }
+                        else
+                            $awaitingCorrectorArticles[$await_crcnt]['picon']='';
+                        $cnt++;
+                        $await_crcnt++;
+                    }
+                    $crcnt++;
+                }
+            }
+
+            //Ongoing Poll Details
+            $poll_params['req_from']='ongoing';
+            $ongoingPollDetails=$this->pollAoSearch($poll_params);
+            $ongoingPollCount=count($ongoingPollDetails);
+
+            if($ongoingPollCount > 0)
+            {
+                $await_pollcnt=0;
+                foreach($ongoingPollDetails as $key=>$pollDetails)
+                {
+                    if($pollDetails['action']=='update')
+                    {
+                        $awaitingPolls[$await_pollcnt]=$pollDetails;
+                        $await_pollcnt++;
+                    }
+                }
+            }
+            $awaitingArticles=array_merge($awaitingArticles,$awaitingCorrectorArticles,$awaitingPolls);
+            $this->_view->awaitingArticles=$awaitingArticles;*/
+            $this->_view->meta_title="Contributor-contributor participation";
+            $this->_view->ContributorIdentifier=$ContributorIdentifier;
+            $this->render("Contrib_ongoing");
+        }
+    }
+    /**Author:Thilagam**/
+    /**Date:18/5/2016**/
+    /**Function:To get the list of awaiting articles**/
+    public function getAwaitingArticles()
+    {
+        $participation=new Ep_Participation_Participation();
+        $ongoingArticles=$participation->ongoingArticles($this->EP_Contrib_reg->clientidentifier);
+        $awaitingArticles=array();
+            $awaitingCorrectorArticles=array();
+            $awaitingPolls=array();
+            if(count($ongoingArticles)>0)
+            {
+                $cnt=0;
+                $en_cnt=0;
+                $await_cnt=0;
+                foreach($ongoingArticles as $Article)
+                {
                     /**awaiting award articles**/
                     if($Article['status']=='bid_premium' || $Article['status']=='bid_nonpremium' || $Article['status']=='bid_temp' || $Article['status']=='bid_refused_temp')
                     {
@@ -605,7 +663,7 @@ class ContribController extends Ep_Controller_Action
 
             //Corrector Ongoing Articles
             $participation_corrector=new Ep_Participation_CorrectorParticipation();
-            $ongoingCorrectorArticles=$participation_corrector->ongoingArticles($ContributorIdentifier);            
+            $ongoingCorrectorArticles=$participation_corrector->ongoingArticles($ContributorIdentifier);
             if(count($ongoingCorrectorArticles)>0)
             {
                 $crcnt=0;
@@ -613,45 +671,6 @@ class ContribController extends Ep_Controller_Action
                 $await_crcnt=0;
                 foreach($ongoingCorrectorArticles as $CArticle)
                 {
-
-                    // && $CArticle['corrector_submit_expires']>0
-                    /**encours Corrector Articles**/
-                    if((($CArticle['status']=='bid' || $CArticle['status']=='under_study' || $CArticle['status']=='disapproved' )) || ($CArticle['status']=='time_out'))
-                    {
-                        $encoursCorrectorArticles[$en_crcnt]=$ongoingCorrectorArticles[$crcnt];
-                        $encoursCorrectorArticles[$en_crcnt]['ao_type']='correction';
-                        if($CArticle['status']=='on_hold')
-                            $CArticle['status']='under_study';
-
-                        $current_time=time();
-                        $time_expires=$CArticle['corrector_submit_expires'];
-                        $timestap_diff= $current_time - $time_expires;
-
-                        $encoursCorrectorArticles[$en_crcnt]['status']=$CArticle['status'];
-                        $encoursCorrectorArticles[$en_crcnt]['status_trans']='';
-                        
-                        if($CArticle['writer_status']=='bid' || $CArticle['writer_status']=='disapproved' || !$CArticle['participate_id'] )//newly added for simultaneous correction
-                        {
-                           $encoursCorrectorArticles[$en_crcnt]['status']='writing_ongoing';
-                           $encoursCorrectorArticles[$en_crcnt]['status_trans']='R&eacute;daction en cours';
-                        }
-                        else 
-
-                        if($CArticle['writer_status']!='under_study' || ($CArticle['writer_status']=='under_study' && $CArticle['writer_stage']=='stage0'))
-                        {
-                            $CArticle['status']='under_study';
-                            $encoursCorrectorArticles[$en_crcnt]['status']='under_study';
-                        }
-                        else if(($CArticle['status']=='bid' || $CArticle['status']=='disapproved')  && $timestap_diff > 0 )
-                        {
-                            $encoursCorrectorArticles[$en_crcnt]['status']='time_out';
-                            $CArticle['status']='time_out';
-                        }
-
-                        if(!$encoursCorrectorArticles[$en_crcnt]['status_trans'])
-                            $encoursCorrectorArticles[$en_crcnt]['status_trans']=$this->getAOStatus($CArticle['status']);
-                        $en_crcnt++;
-                    }
                     /**awaiting award Corrector articles**/
                     if($CArticle['status']=='bid_corrector' || $CArticle['status']=='bid_temp' || $CArticle['status']=='bid_refused_temp')
                     {
@@ -682,8 +701,6 @@ class ContribController extends Ep_Controller_Action
                 }
             }
 
-            //echo "<pre>";print_r($ongoingCorrectorArticles);exit;
-
             //Ongoing Poll Details
             $poll_params['req_from']='ongoing';
             $ongoingPollDetails=$this->pollAoSearch($poll_params);
@@ -701,51 +718,8 @@ class ContribController extends Ep_Controller_Action
                     }
                 }
             }
-
-
-
-            $encoursArticles=array_merge($encoursArticles,$encoursCorrectorArticles);
             $awaitingArticles=array_merge($awaitingArticles,$awaitingCorrectorArticles,$awaitingPolls);
-
-            $this->_view->encoursArticles=$encoursArticles;
-            $this->_view->awaitingArticles=$awaitingArticles;
-
-            //echo "<prE>";print_r($encoursArticles);exit;
-            /**get Recent Ao Offers**/
-            $this->_view->recent_AO_Offers=$this->recentAoOffers();
-
-
-            /*get Published Articles**/
-            $publishedArticles=$this->publishedArticles();
-            //echo "<pre>";print_r($publishedArticles);
-            $this->_view->publishedArticles=$publishedArticles;
-
-
-            $participation_corrector=new Ep_Participation_CorrectorParticipation();
-            $ongoingCorrectorArticles=$participation_corrector->ongoingArticles($ContributorIdentifier);
-            if(count($ongoingCorrectorArticles)>0)
-            {
-                $cnt=0;
-                foreach($ongoingCorrectorArticles as $Article)
-                {
-                    $ongoingCorrectorArticles[$cnt]['clientLogo']=$this->getClientPicPath($Article['clientId'],'profile');
-                    $ongoingCorrectorArticles[$cnt]['participants']=$participation_corrector->getParticipantCountOngoing($Article['article_id']);
-                    if($ongoingCorrectorArticles[$cnt]['participants']==0)
-                        $ongoingCorrectorArticles[$cnt]['participants']=1;
-                    if($Article['status']=='on_hold')
-                        $Article['status']='under_study';
-                    $ongoingCorrectorArticles[$cnt]['status_trans']=$this->getAOStatus($Article['status']);
-                    $cnt++;
-                }
-            }
-            // echo "<pre>";print_r($ongoingArticles);exit;
-
-            $this->_view->meta_title="Contributor-contributor participation";
-            $this->_view->ongoingArticles=$ongoingArticles;
-            $this->_view->ongoingCorrectorArticles=$ongoingCorrectorArticles;
-            $this->_view->ContributorIdentifier=$ContributorIdentifier;
-            $this->render("Contrib_ongoing");
-        }
+            return $awaitingArticles;
     }
     /**Contributor's published Articles*/
     public function publishedArticles($searchArticleParams=NULL,$ContributorIdentifier=NULL)
@@ -850,12 +824,11 @@ class ContribController extends Ep_Controller_Action
             $articleDetails=$article->getArticleSearchDetails($searchParameters);
 
             $articleCount=count($articleDetails);
-            if($articleCount>0)
-            {
+            if($articleCount>0){
                 $cnt=0;
                 $recruitment=0;
                 $i = 0;
-                foreach($articleDetails as $details) {
+                foreach($articleDetails as $details){
                     $flag = "true";//default value at begining
                     //checking if source laug is compulsury to check, if source laung is compulsary to check then unserialize launge_more and check if the laung fluence is above 50%//
                     if ($details['sourcelang_nocheck'] != 'yes' && $details['product'] === 'translation') {
@@ -1001,7 +974,7 @@ class ContribController extends Ep_Controller_Action
             }
 
 
-            /***********getting POll AO Details**************/
+            /*********** getting POll AO Details **************/
             $pollDetails=$this->pollAoSearch($searchParameters);
             $pollCount=count($pollDetails);
             if($pollCount==0)
@@ -1197,23 +1170,24 @@ class ContribController extends Ep_Controller_Action
 
 
             //Upcoming Artilce/Polls info
-            $upcomingArticles=$this->upcomingDeliveries($articleParams);
-            if(count($upcomingArticles)>0)
+            $_SESSION['articleParams'] = $articleParams;//to use in ajax function
+/*high*///            $upcomingArticles=$this->upcomingDeliveries($articleParams);
+           /* if(count($upcomingArticles)>0)
             {
                 //Added for popup prev next 
                 $_SESSION['upcoming_offers']=$upcomingArticles;
             }
-            $this->_view->upcomingArticles=$upcomingArticles;
+            $this->_view->upcomingArticles=$upcomingArticles;*/
 
 
             //Finished Artilce/polls info
-            $terminatedArticles=$this->finishedDeliveries($articleParams);
+/*high*//*            $terminatedArticles=$this->finishedDeliveries($articleParams);
             if(count($terminatedArticles)>0)
             {
                 //Added for popup prev next 
                 $_SESSION['finished_offers']=$terminatedArticles;
             }
-            $this->_view->terminatedArticles=$terminatedArticles;
+            $this->_view->terminatedArticles=$terminatedArticles;*/
 
             //Added w.r.t recruitment
             $recruitment_obj=new Ep_Recruitment_Participation();
@@ -10015,5 +9989,195 @@ class ContribController extends Ep_Controller_Action
                 }
             }
         }
+    }
+    /* *** added on 11.05.2016 *** */
+    //ajax load realted to contrib/home page//
+    //page optimization related code//
+    public function loadHomeAjaxRecentAoOffersAction(){
+        $this->_view->page = 'loadHomeAjaxRecentAoOffers';
+        $this->_view->recent_AO_Offers=$this->recentAoOffers();
+        $this->render('Contrib_home_ajax');
+    }
+    public function loadHomeAjaxCalculateProfilePercentageAction(){
+        $this->_view->page = 'loadHomeAjaxCalculateProfilePercentage';
+        $this->_view->profile_percentage= $this->calculateProfilePercentage();
+        $this->render('Contrib_home_ajax');
+    }
+    public function loadHomeAjaxUpcomingCountAction(){
+        $this->_view->page = 'loadHomeAjaxUpcomingCount';
+        $articleParams['cnt_nextday']=true;
+        $upcoming_count = count($this->upcomingDeliveries($articleParams));
+        echo $upcoming_count;exit;
+        //$this->render('Contrib_home_ajax');
+    }
+    //end of ajax load realted to contrib/home page//
+    //ajax load realted to contrib/ongoing page//
+    public function loadOngoingAjaxRecentAoOffersAction(){
+        $this->_view->page = 'loadOngoingAjaxRecentAoOffers';
+        $this->_view->recent_AO_Offers=$this->recentAoOffers();
+        $this->render('Contrib_ongoing_ajax');
+    }
+    public function loadOngoingAjaxPublishedArticlesAction(){
+        $this->_view->page = 'loadOngoingAjaxPublishedArticles';
+        $this->_view->publishedArticles=$this->publishedArticles();
+        $this->render('Contrib_ongoing_ajax');
+    }
+    public function loadOngoingAjaxEncoursArticlesAction(){
+        $ContributorIdentifier=$this->contrib_identifier;
+        $participation=new Ep_Participation_Participation();
+        $ongoingArticles=$participation->ongoingArticles($ContributorIdentifier);
+        $encoursArticles=array();
+        $encoursCorrectorArticles=array();
+        if(count($ongoingArticles)>0)
+        {
+            $cnt=0;
+            $en_cnt=0;
+            $await_cnt=0;
+            foreach($ongoingArticles as $Article)
+            {
+                /**encours Articles**/
+                if((($Article['status']=='bid' || $Article['status']=='under_study' || $Article['status']=='disapproved' || $Article['status']=='disapprove_client') && $Article['article_submit_expires']>0) OR ($Article['status']=='disapproved_temp' || $Article['status']=='closed_temp' || $Article['status']=='closed' || $Article['status']=='closed_client' || $Article['status']=='closed_client_temp' || $Article['status']=='plag_exec' || $Article['status']=='time_out') OR ( $Article['missiontest']=='yes'))
+                {
+                    $encoursArticles[$en_cnt]=$ongoingArticles[$cnt];
+                    if($Article['status']=='on_hold' || $Article['status']=='disapproved_temp' || $Article['status']=='closed_temp' || $Article['status']=='closed_client_temp' || $Article['status']=='plag_exec')
+                    {
+                        $Article['status']='under_study';
+                    }
+                    if($Article['status']=='disapprove_client')
+                    {
+                        $Article['status']='disapproved';
+                    }
+                    $current_time=time();
+                    $time_expires=$Article['article_submit_expires'];
+                    $timestap_diff= $current_time - $time_expires;
+
+                    if($Article['missiontest']=='yes')
+                    {
+                        $participation_expires=$Article['participation_expires'];
+                        if($time_expires >0)
+                        {
+                            if($Article['status']=='bid' && $timestap_diff > 0)
+                            {
+                                $encoursArticles[$en_cnt]['status']='time_out';
+                                $Article['status']='time_out';
+                            }
+                        }
+                        else{
+                            if($Article['status']=='bid' && $participation_expires < time())
+                            {
+                                $encoursArticles[$en_cnt]['status']='time_out';
+                                $Article['status']='time_out';
+                            }
+                        }
+                    }
+                    else if($Article['status']=='bid' && $timestap_diff > 0 )
+                    {
+                        $encoursArticles[$en_cnt]['status']='time_out';
+                        $Article['status']='time_out';
+                    }
+                    $encoursArticles[$en_cnt]['status_trans']=$this->getAOStatus($Article['status']);
+                    $en_cnt++;
+                }
+                $cnt++;
+            }
+        }
+        //Corrector Ongoing Articles
+        $participation_corrector=new Ep_Participation_CorrectorParticipation();
+        $ongoingCorrectorArticles=$participation_corrector->ongoingArticles($ContributorIdentifier);
+        if(count($ongoingCorrectorArticles)>0)
+        {
+            $crcnt=0;
+            $en_crcnt=0;
+            $await_crcnt=0;
+            foreach($ongoingCorrectorArticles as $CArticle)
+            {
+
+                // && $CArticle['corrector_submit_expires']>0
+                /**encours Corrector Articles**/
+                if((($CArticle['status']=='bid' || $CArticle['status']=='under_study' || $CArticle['status']=='disapproved' )) || ($CArticle['status']=='time_out'))
+                {
+                    $encoursCorrectorArticles[$en_crcnt]=$ongoingCorrectorArticles[$crcnt];
+                    $encoursCorrectorArticles[$en_crcnt]['ao_type']='correction';
+                    if($CArticle['status']=='on_hold')
+                        $CArticle['status']='under_study';
+
+                    $current_time=time();
+                    $time_expires=$CArticle['corrector_submit_expires'];
+                    $timestap_diff= $current_time - $time_expires;
+
+                    $encoursCorrectorArticles[$en_crcnt]['status']=$CArticle['status'];
+                    $encoursCorrectorArticles[$en_crcnt]['status_trans']='';
+
+                    if($CArticle['writer_status']=='bid' || $CArticle['writer_status']=='disapproved' || !$CArticle['participate_id'] )//newly added for simultaneous correction
+                    {
+                        $encoursCorrectorArticles[$en_crcnt]['status']='writing_ongoing';
+                        $encoursCorrectorArticles[$en_crcnt]['status_trans']='R&eacute;daction en cours';
+                    }
+                    else
+
+                        if($CArticle['writer_status']!='under_study' || ($CArticle['writer_status']=='under_study' && $CArticle['writer_stage']=='stage0'))
+                        {
+                            $CArticle['status']='under_study';
+                            $encoursCorrectorArticles[$en_crcnt]['status']='under_study';
+                        }
+                        else if(($CArticle['status']=='bid' || $CArticle['status']=='disapproved')  && $timestap_diff > 0 )
+                        {
+                            $encoursCorrectorArticles[$en_crcnt]['status']='time_out';
+                            $CArticle['status']='time_out';
+                        }
+
+                    if(!$encoursCorrectorArticles[$en_crcnt]['status_trans'])
+                        $encoursCorrectorArticles[$en_crcnt]['status_trans']=$this->getAOStatus($CArticle['status']);
+                    $en_crcnt++;
+                }
+                $crcnt++;
+            }
+        }
+        $encoursArticles=array_merge($encoursArticles,$encoursCorrectorArticles);
+        $this->_view->encoursArticles=$encoursArticles;
+        $this->_view->page = 'loadOngoingAjaxEncoursArticles';
+        $this->render('Contrib_ongoing_ajax');
+    }
+    /**Author:Thilagam**/
+    /**Date:18/5/2016**/
+    /**Function:Ajax call to load the awaiting articles**/
+    public function loadOngoingAjaxAwaitingArticlesAction()
+    {
+        $this->_view->page = 'loadOngoingAjaxAwatingArticles';
+        $this->_view->awaitingArticles=$this->getAwaitingArticles();
+        $this->render('Contrib_ongoing_ajax');
+    }
+
+    //end of ajax load realted to contrib/ongoing page//
+    //ajax load realted to contrib/aosearch page//
+    public function loadAosearchAjaxUpcomingArticlesAction(){
+        $this->_view->page = 'loadAosearchAjaxUpcomingArticles';
+        $upcomingArticles =  $this->upcomingDeliveries($_SESSION['articleParams']);
+        if(count($upcomingArticles)>0)
+        {
+            //Added for popup prev next
+            $_SESSION['upcoming_offers']=$upcomingArticles;
+        }
+        $this->_view->upcomingArticles=$upcomingArticles;
+        $this->render('Contrib_aosearch_ajax');
+    }
+    public function loadAosearchAjaxTerminatedArticlesAction(){
+        $this->_view->page = 'loadAosearchAjaxTerminatedArticles';
+        $terminatedArticles=$this->finishedDeliveries($_SESSION['articleParams']);
+        if(count($terminatedArticles)>0)
+        {
+            //Added for popup prev next
+            $_SESSION['finished_offers']=$terminatedArticles;
+        }
+        $this->_view->terminatedArticles=$terminatedArticles;
+        $this->render('Contrib_aosearch_ajax');
+    }
+    /**Unread message count in inbox**/
+    public function loadHeaderAjaxMessageCountAction()
+    {
+        $ticket=new Ep_Ticket_Ticket();
+        $unreadCount=$ticket->getUnreadCount('contributor',$this->EP_Contrib_reg->clientidentifier);
+        echo $unreadCount;
+        exit;
     }
 }

@@ -1,10 +1,39 @@
 {literal}
 <script type="text/javascript">
-var cur_date=0,js_date=0,diff_date=0;
-cur_date={/literal}{$smarty.now}{literal};
-js_date=(new Date().getTime())/ 1000;
-diff_date=Math.floor(js_date-cur_date);
-$("#menu_aosearch").addClass("active");	
+    var cur_date=0,js_date=0,diff_date=0;
+    cur_date={/literal}{$smarty.now}{literal};
+    js_date=(new Date().getTime())/ 1000;
+    diff_date=Math.floor(js_date-cur_date);
+    $("#menu_aosearch").addClass("active");
+    $(document).ready(function(){
+        //call this funcion to load Recent Ao offers on the page using ajax//
+        loadAosearchAjaxUpcomingArticles();
+        loadAosearchAjaxTerminatedArticles();
+    });
+    function loadAosearchAjaxUpcomingArticles(){
+        console.log('initiated loadAosearchAjaxUpcomingArticles');
+        $.ajax({
+            type: 'POST',
+            url: '/contrib/load-aosearch-ajax-upcoming-articles',
+            success: function (data) {
+                $("#upcoming_articles").html(data);
+            }
+        });
+    }
+    function loadAosearchAjaxTerminatedArticles(){
+        console.log('initiated loadAosearchAjaxTerminatedArticles');
+        $.ajax({
+            type: 'POST',
+            url: '/contrib/load-aosearch-ajax-terminated-articles',
+            success: function (data) {
+                $("#terminated_articles").html(data);
+            }
+        });
+    }
+    $( document ).ajaxComplete(function() {
+        console.log( "Triggered ajaxComplete handler." );
+        starttimmer();
+    });
 </script>
 {/literal}
 <div class="container">
@@ -340,14 +369,25 @@ $("#menu_aosearch").addClass("active");
 						{include file="Contrib/pagination.phtml"}
 					</div>	
 					<!---Pagination END-->
-				</div>			
-				<!-- Block to display coming soon articles -->
-				{include file="Contrib/upcoming_ao.phtml"}				
+				</div>
+                <!-- Block to display coming soon articles -->
+				{*{include file="Contrib/upcoming_ao.phtml"}*}
+                <div id="upcoming_articles">
+                	<!-- Loading...-->
+                    <!--Author: Thilagam-->
+					<!--Date: 18/5/2016-->
+					<!--Reason:To replace the text with image-->
+                    <img src="/FO/images/loading-data.gif" alt="Loading..">
+                </div>
 				<!-- Block to finished articles -->
-				{include file="Contrib/terminated_ao.phtml"}
-				
-				
-				
+				{*{include file="Contrib/terminated_ao.phtml"}*}
+                <div id="terminated_articles">
+                    <!-- Loading...-->
+                    <!--Author: Thilagam-->
+					<!--Date: 18/5/2016-->
+					<!--Reason:To replace the text with image-->
+                    <img src="/FO/images/loading-data.gif" alt="Loading..">
+                </div>
 			</section>
 		</div>
 	</div>
