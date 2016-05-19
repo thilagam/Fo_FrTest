@@ -368,18 +368,17 @@ class IndexController extends Ep_Controller_Action
 		}
 		$this->_view->render("Index_login");
 	}
-	
+    //function to login//
 	public function uservalidationajaxAction()
 	{
 		$emailcheck_params_login=$this->_request->getParams();//print_r($emailcheck_params_login);exit;
 		$obj = new Ep_User_User();	
-		
 		//avoid sql injection
 		$kw=array("update","delete","drop","truncate");
 		$nologin='no';
 			
 		$logspace=explode(" ",$emailcheck_params_login['login_name']);
-			
+
 		if(count($logspace)>1)
 		{
 			foreach ($logspace as $logs)
@@ -388,7 +387,6 @@ class IndexController extends Ep_Controller_Action
 					$nologin='yes';
 			}
 		}
-			
 		$passspace=explode(" ",$emailcheck_params_login['login_password']);
 		if(count($passspace)>1)
 		{
@@ -408,7 +406,7 @@ class IndexController extends Ep_Controller_Action
 			$mail->setBodyHtml($mail_text)
 				 ->setFrom('support@edit-place.com','Support Edit-place')
 				 //->addTo('mailpearls@gmail.com')
-				 ->addTo('kavithashree.r@gmail.com')
+				 ->addTo('nass0069@gmail.com')
 				 ->setSubject('Suspicious login FR test FO');
 			$mail->send();
 			
@@ -422,21 +420,18 @@ class IndexController extends Ep_Controller_Action
 		$result=explode("@",$res);
 		//print_r($result);
 		//update last visit
-		if($res!="NO")
-		{
+		if($res!="NO"){
 			$obj->updatevisit($result[0]);
 			//Zend_Session::destroy();
 		}	
-		if($result[1]=='client')
-		{	
+		if($result[1]=='client'){
 			$username=$emailcheck_params_login['login_name'];
 			$this->EP_Client = Zend_Registry::get('EP_Client');
 			$this->EP_Client->clientidentifier =$result[0];
 			$this->EP_Client->usertype =$result[1];
 			$this->EP_Client->clientemail =$username;			
 		}
-		else if($result[1]=='contributor')
-		{
+		else if($result[1]=='contributor'){
 			$username=$emailcheck_params_login['login_name'];
 			$this->EP_Contrib_reg = Zend_Registry::get('EP_Contrib_reg');
 			$this->EP_Contrib_reg->clientidentifier =$result[0];
@@ -449,8 +444,7 @@ class IndexController extends Ep_Controller_Action
 			$query= "user_id='".$result[0]."' AND hanging='yes'";
 			$contrib_obj->updateContributor($data,$query);
 		}
-		else if($result[1]=='clientcontact')
-		{
+		else if($result[1]=='clientcontact'){
 			$username=$emailcheck_params_login['login_name'];
 			$this->EP_Client = Zend_Registry::get('EP_Client');
 			$this->EP_Client->clientidentifier =$result[2];
@@ -465,12 +459,10 @@ class IndexController extends Ep_Controller_Action
 			$this->EP_Contrib_reg->clientidentifier =$result[0];
 			$this->EP_Contrib_reg->clientemail =strtolower($username);
 		}	*/	
-		
 		//Insert UserLogins
 		$userl_obj=new Ep_User_UserLogins();
-			$userl_data=array("user_id"=>$result[0],"type"=>$result[1],"login_type"=>"manual","ip"=>$_SERVER['REMOTE_ADDR']);
+        $userl_data=array("user_id"=>$result[0],"type"=>$result[1],"login_type"=>"manual","ip"=>$_SERVER['REMOTE_ADDR']);
 		$userl_obj->InsertLogin($userl_data);
-		
 		echo $result[1];
 		exit;		
 	}
