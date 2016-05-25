@@ -533,15 +533,20 @@ class UploadHandler
                     $this->orient_image($file_path);
                 }
                 $file->url = $this->get_download_url($file->name);
-                foreach($this->options['image_versions'] as $version => $options) {
-                    if ($this->create_scaled_image($file->name, $version, $options)) {
-                        if (!empty($version)) {
-                            $file->{$version.'_url'} = $this->get_download_url(
-                                $file->name,
-                                $version
-                            );
-                        } else {
-                            $file_size = $this->get_file_size($file_path, true);
+                /**Author:Thilagam**/
+                /**Date:5/25/2016**/
+                /**Reason:Throws an error if $this->options['image_versions'] is not checked while the client uploads a file**/
+                if(!empty($this->options['image_versions'])){
+                    foreach($this->options['image_versions'] as $version => $options) {
+                        if ($this->create_scaled_image($file->name, $version, $options)) {
+                            if (!empty($version)) {
+                                $file->{$version.'_url'} = $this->get_download_url(
+                                    $file->name,
+                                    $version
+                                );
+                            } else {
+                                $file_size = $this->get_file_size($file_path, true);
+                            }
                         }
                     }
                 }
