@@ -6374,7 +6374,7 @@ class ClientController extends Ep_Controller_Action
 			$contribper=$this->getConfiguredval('nopremium_contribpercent');
 		$this->_view->eppercent=100-$contribper;
 		
-		$params1=$this->_request->getParams();	
+		$params1=$this->_request->getParams();
 		if($params1['con_type']!="")
 			$this->EP_Client->funnel_1=$params1;
 			
@@ -6434,24 +6434,24 @@ class ClientController extends Ep_Controller_Action
 		$this->_view->pagemenu=2;
 		$this->_view->render("Client_quotes2liberte");
 	}
-	
+
 	/* Quotes creation step3 liberte - liberte quote insertion is done to Delivery, Article tables */
 	public function quotes3liberteAction()
-	{ 
+	{
 		ini_set('display_errors', 0);
 		//print_r($_FILES);exit;
 		$this->EP_Client = Zend_Registry::get('EP_Client');
-		
-		$params2=$this->_request->getParams();	
-		
+
+		$params2=$this->_request->getParams();
+
 		if($params2['title']!="")
 			$this->EP_Client->funnel_2=$params2;
 			//print_r($params2);exit;
-		
+
 		$user_obj=new Ep_User_User();
 		$userp_obj=new Ep_User_UserPlus();
 		$client_obj=new Ep_User_Client();
-			
+
 		if($_REQUEST['clientid']=="" && $_REQUEST['email']!="" )
 		{
 			//User Insertion
@@ -6465,35 +6465,35 @@ class ClientController extends Ep_Controller_Action
 			$array['type']="client";
 			//print_r($array);exit;
 			$identifier=$user_obj->InsertUser($array);
-			
+
 			//UserPlus Insertion
 			$uparray=array();
 			$uparray['first_name']=$_REQUEST['first_name'];
 			$uparray['last_name']=$_REQUEST['last_name'];
 			$uparray['phone_number']=$_REQUEST['telephone'];
 			$userp_obj->updateUserplus($uparray,$identifier);
-	
+
 			//CLient Insertion
-			$Carray=array();	
+			$Carray=array();
 			$Carray['company_name']=$_REQUEST['company_name'];
 			$Carray['job']=$_REQUEST['ep_job'];
 			$Carray['category']=$_REQUEST['category'];
 			$Carray['website']=$_REQUEST['company_url'];
 			$client_obj->updateClient($Carray,$identifier);
-			
+
 			//Login
 			$username=$_REQUEST['email'];
 			$password=$_REQUEST['quotes_password'];
 			$res=$user_obj->checkClientMailidLogin($username,$password);
-		
+
 			if($res!="NO")
 			{
 				$this->EP_Client->clientidentifier =$res;
 				$this->_view->clientidentifier=$res;
-				$this->EP_Client->clientemail =$username;	
+				$this->EP_Client->clientemail =$username;
 				$this->_view->client_email=$this->EP_Client->clientemail;
-				$this->_view->usertype='client';	
-				$this->_view->clientname=$user_obj->getClientname($this->_view->clientidentifier);		
+				$this->_view->usertype='client';
+				$this->_view->clientname=$user_obj->getClientname($this->_view->clientidentifier);
 			}
 
 		}
@@ -6507,11 +6507,11 @@ class ClientController extends Ep_Controller_Action
 			$uparray['last_name']=$_REQUEST['last_name'];
 			$uparray['phone_number']=$_REQUEST['telephone'];
 			$userp_obj->updateUserplus($uparray,$_REQUEST['clientid']);
-	
+
 			//CLient Insertion
-			$Carray=array();	
+			$Carray=array();
 			$Carray['company_name']=$_REQUEST['company_name'];
-			$Carray['job']=$_REQUEST['ep_job']; 
+			$Carray['job']=$_REQUEST['ep_job'];
 			$Carray['category']=$_REQUEST['category'];
 			$Carray['website']=$_REQUEST['company_url'];
 			$client_obj->updateClient($Carray,$_REQUEST['clientid']);
@@ -6519,12 +6519,12 @@ class ClientController extends Ep_Controller_Action
 		}
 		if($this->_view->clientidentifier=="" || $this->EP_Client->funnel_1['con_type']=="")
 			$this->_redirect("/client/quotes1");
-			
+
 		$article_obj=new Ep_Ao_Article();
-		
+
 		$client_obj=new Ep_User_Client();
 		$client_vals=$client_obj->getClientdetails($this->_view->clientidentifier);
-		
+
 			/*//spec upload
 			$filecount=count($_FILES['files']);
 			$filename=array();
@@ -6533,11 +6533,11 @@ class ClientController extends Ep_Controller_Action
 			{
 				$realfilename=$_FILES['files']['name'][$f];
 				$client_id=$this->_view->clientidentifier;
-				
+
 				$ext=$this->findexts($realfilename);
-				
+
 				$uploaddir = '/home/sites/site5/web/FO/client_spec/';
-				
+
 				if(!is_dir($uploaddir.$client_id))
 				{
 					mkdir($uploaddir.$client_id,0777);
@@ -6546,42 +6546,42 @@ class ClientController extends Ep_Controller_Action
 				$uploaddir=$uploaddir.$client_id."/";
 				$realfilename=trim(utf8_decode($realfilename));
 				$realfilename=str_replace(" ","_",$realfilename);
-				
+
 				$bname=basename($realfilename,".".$ext)."_".uniqid().".".$ext;
-				
+
 				$filename[]=$bname;
 				$filepath[]='/'.$client_id.'/'.$bname;
-				
+
 				$file = $uploaddir . $bname;
 				if (move_uploaded_file($_FILES['files']['tmp_name'][$f], $file))
 					chmod($file,0777);
-					
+
 				$this->EP_Client->funnel_1['filename']=implode("|",$filename);
-				$this->EP_Client->funnel_1['filepath']=implode("|",$filepath);	
-			
-			}*/	
-			
+				$this->EP_Client->funnel_1['filepath']=implode("|",$filepath);
+
+			}*/
+
 			$wordsarray=array("seo"=>"130","desc"=>"80","blog"=>"500","news"=>"200","guide"=>"1000","other"=>"");
-			
+
 			//Inserting Delivery
 			$this->EP_Client->funnel_1['privatepublish']=$client_vals[0]['privatepublish'];
-			
+
 			$statarray=array();
-			
+
 			//for($q=0;$q<count($this->EP_Client->funnel_1['quotetype']);$q++)
-			//{ 
+			//{
 				$delivery_obj=new Ep_Ao_Delivery();
 				$pay_obj=new Ep_Ao_Payment();
 				$payart_obj=new Ep_Ao_PaymentArticle();
-			
+
 				//Inserting Premium quotes
 				$prem_obj=new Ep_Ao_PremiumQuotes();
 				$this->EP_Client->funnel_1['remindtime']=$_REQUEST['remindtime'];
 				$this->EP_Client->funnel_1['aotype']='liberte';
 				$this->EP_Client->funnel_1['title']=$_REQUEST['title'];
-				$quoteid=$prem_obj->InsertPremium($this->_view->clientidentifier,$this->EP_Client->funnel_1); 
-				
-				
+				$quoteid=$prem_obj->InsertPremium($this->_view->clientidentifier,$this->EP_Client->funnel_1);
+
+
 				$this->EP_Client->funnel_1['type']=$this->EP_Client->funnel_1['quotetype'][0];
 				if($this->EP_Client->funnel_1['quotetype'][0]!="other")
 				{
@@ -6590,28 +6590,28 @@ class ClientController extends Ep_Controller_Action
 				}
 				if($this->EP_Client->funnel_1['dontknowcheck']==1)
 					$this->EP_Client->funnel_1['total_article']=count($this->EP_Client->funnel_1['quotetype']);
-				else	
+				else
 					$this->EP_Client->funnel_1['total_article']=$this->EP_Client->funnel_1['articlenum'][$this->EP_Client->funnel_1['type']];
-					
+
 				$this->EP_Client->funnel_1['aotitle']=$this->EP_Client->funnel_2['title'];
-				$this->EP_Client->funnel_1['quoteid']=$quoteid; 
-				$this->EP_Client->funnel_1['contactidentifier']=$this->_view->contactidentifier; 
-			
+				$this->EP_Client->funnel_1['quoteid']=$quoteid;
+				$this->EP_Client->funnel_1['contactidentifier']=$this->_view->contactidentifier;
+
 				$delivery_id=$delivery_obj->InsertLiberte($this->_view->clientidentifier,$this->EP_Client->funnel_1,$this->EP_Client->funnel_2);
-				
+
 				if($delivery_id!="NO")
-				{ 
+				{
 					//Inserting Article
 					if($client_vals[0]['contrib_percentage']!="")
 						$this->EP_Client->funnel_1['contrib_percentage']=$client_vals[0]['contrib_percentage'];
 					else
 						$this->EP_Client->funnel_1['contrib_percentage']=$this->getConfiguredval('nopremium_contribpercent');
-					
+
 					//for($q=0;$q<count($this->EP_Client->funnel_1['quotetype']);$q++)
 					//{
 						$this->EP_Client->funnel_1['typeart']=$this->EP_Client->funnel_1['quotetype'][0];
 						$this->EP_Client->funnel_1['aotitleart']=$this->EP_Client->funnel_2['title'].' - '.$this->EP_Client->funnel_1['typeart'];
-						
+
 						if($this->EP_Client->funnel_1['dontknowcheck']==1)
 						{
 							$artcount=1;
@@ -6621,17 +6621,17 @@ class ClientController extends Ep_Controller_Action
 						{
 							$artcount=$this->EP_Client->funnel_1['articlenum'][$this->EP_Client->funnel_1['typeart']];
 							$this->EP_Client->funnel_1['frequencyart']=$this->EP_Client->funnel_1['frequency'][$this->EP_Client->funnel_1['typeart']];
-						}	
+						}
 						//for($a=0;$a<$artcount;$a++)
 						//{
 							$art_obj=new Ep_Ao_Article();
 							$artid=$art_obj->InsertLiberteArticle($delivery_id,$this->EP_Client->funnel_1,$this->EP_Client->funnel_2);
-						//}
+                   	//}
 					//}
 					//exit;
 					//Inserting Payment
 					$pay_obj->InsertPayment($delivery_id);
-					
+
 					if($client_vals[0]['paypercent']=='0')
 					{
 						$payed_id=$payart_obj->insertpayedclient($this->_view->clientidentifier);
@@ -6641,7 +6641,7 @@ class ClientController extends Ep_Controller_Action
 						$whereA= "delivery_id='".$delivery_id."'";
 						$article_obj->updateArticle($Aarray,$whereA);
 					}
-						
+
 					//ArticleHistory Insertion
 					$hist_obj = new Ep_Article_ArticleHistory();
 					$action_obj = new Ep_Article_ArticleActions();
@@ -6653,7 +6653,7 @@ class ClientController extends Ep_Controller_Action
 							$AO_type='<b>Private</b>';
 						else
 							$AO_type='<b>Public</b>';
-						
+
 						$AO_name='<a href="/ongoing/ao-details?client_id='.$this->_view->clientidentifier.'&ao_id='.$delivery_id.'&submenuId=ML2-SL4" target="_blank"><b>'.$this->EP_Client->funnel_1['title'].'</b></a>';
 							$client_obj=new Ep_User_Client();
 							$detailsC=$client_obj->getClientdetails($this->_view->clientidentifier);
@@ -6669,16 +6669,16 @@ class ClientController extends Ep_Controller_Action
 					$history1['action_sentence']=$actionmessage;
 					$hist_obj->insertHistory($history1);
 				}
-				
+
 				//Stats
 				$this->_view->lang_array=$this->_arrayDb->loadArrayv2("EP_LANGUAGES", $this->_lang);
 				$this->_view->category_array=$this->_arrayDb->loadArrayv2("EP_ARTICLE_CATEGORY", $this->_lang);
 				$type_array=array("seo"=>"Article seo","desc"=>"Descriptifs produit","blog"=>"Article de blog","news"=>"News","guide"=>"Guide","other"=>"Autre");
 				$obj_array=array("premium"=>"Je veux &ecirc;tre recontact&eacute; par Edit-place pour parler de mon projet avant publication","liberte"=>"Je veux directment entrer en contact avec les r&eacute;dacteurs/traducteurs d'Edit-place","liberteprivate"=>"Je veux proposer un projet &agrave; un de mes r&eacute;dacteurs/traducteurs favoris","dontknow"=>"Je ne sais pas");
-				
+
 				for($q=0;$q<count($this->EP_Client->funnel_1['quotetype']);$q++)
 				{
-					$statarray[$q]['type']=$this->EP_Client->funnel_1['quotetype'][$q];	
+					$statarray[$q]['type']=$this->EP_Client->funnel_1['quotetype'][$q];
 					if($this->EP_Client->funnel_1['quotetype'][$q]=="other")
 						$statarray[$q]['typetext']="Other - ".$this->EP_Client->funnel_1['other_type'];
 					else
@@ -6697,12 +6697,12 @@ class ClientController extends Ep_Controller_Action
 								$obj.=" , ";
 						}*/
 					$statarray[$q]['objectives']=$obj_array[$this->EP_Client->funnel_1['objectives']];
-				}	
-				
+				}
+
 				//Creating XLS
 				$this->generatequotesxls($quoteid,"no");
-		
-				//Copy files 
+
+				//Copy files
 				if(count($this->EP_Client->funnel_2['filename'])>0)
 				{
 					//spec file directory
@@ -6715,7 +6715,7 @@ class ClientController extends Ep_Controller_Action
 						chmod($copdir,0777);
 					}
 					//moving spec files from temp location to client_spec
-					
+
 					for($f=0;$f<count($this->EP_Client->funnel_2['filename']);$f++)
 					{
 						$this->EP_Client->funnel_2['filename'][$f]=iconv("UTF-8", "ISO-8859-1//TRANSLIT",$this->EP_Client->funnel_2['filename'][$f]);
@@ -6723,22 +6723,22 @@ class ClientController extends Ep_Controller_Action
 						$dest="/home/sites/site5/web/FO/client_spec/".$this->EP_Client->clientidentifier."/".$this->EP_Client->funnel_2['filename'][$f];
 						copy($source,$dest);
 					}
-				}	
-				
+				}
+
 			//}
 			$this->_view->statarray=$statarray;
 			$this->_view->delivery=$delivery_id;
-			$this->_view->missiontitle=$this->EP_Client->funnel_2['title'];	
+			$this->_view->missiontitle=$this->EP_Client->funnel_2['title'];
 			unset($this->EP_Client->funnel_1);
 			unset($this->EP_Client->funnel_2);
-			
+
 		setlocale(LC_TIME, 'fr_FR');
 		$this->_view->time48=strftime("%A %d %B %Y &agrave; %Ih ",strtotime('+2 days'));
 		$this->_view->category=$client_vals[0]['category'];
-		
+
 		//Category writers
 		$part_obj=new Ep_Ao_Participation();
-		$categorywriters=$part_obj->getCategorywriters($client_vals[0]['category']);  	
+		$categorywriters=$part_obj->getCategorywriters($client_vals[0]['category']);
 		$categoryprofile=array();
 		foreach($categorywriters as $cat)
 		{
@@ -6746,26 +6746,26 @@ class ClientController extends Ep_Controller_Action
 			if(file_exists($profiledir))
 				$categoryprofile[]=$cat;
 		}
-			
+
 		if(count($categoryprofile)>0)
 		{
 			if(count($categoryprofile)>4)
-				$randomkeys=array_rand($categoryprofile,5);	
+				$randomkeys=array_rand($categoryprofile,5);
 			else
-				$randomkeys=array_rand($categoryprofile,count($categoryprofile));	
-				
-			$categoryarr=array(); 
+				$randomkeys=array_rand($categoryprofile,count($categoryprofile));
+
+			$categoryarr=array();
 				foreach($categoryprofile as $catk=>$catv)
 				{
 					if(in_array($catk,$randomkeys))
 						$categoryarr[]=$catv;
 				}
-			$this->_view->categorywriters=$categoryarr;	 
+			$this->_view->categorywriters=$categoryarr;
 		}
 		else
-			$this->_view->categorywriters=array();	 
-		
-		$this->_view->pagemenu=3;			
+			$this->_view->categorywriters=array();
+
+		$this->_view->pagemenu=3;
 		$this->_view->render("Client_quotes3liberte");
 	}
 	
