@@ -421,6 +421,11 @@ class Ep_Ticket_AutoEmails extends Ep_Db_Identifier
         						 ->setFrom($from,'Support Edit-place')
         						 ->addTo($UserDetails[0]['email'])
                                  //->setSubject(utf8_decode($object));
+                                 /**Author:Thilagam**/
+                                /**Date:8/6/2016**/
+                                /**Reason:AutoEmails to contributors should also be send to Florent**/
+                                ->addCc('florent.test.editplace@gmail.com')
+
                                  ->setSubject($object);
         					if($mail->send())
         						return true;
@@ -499,6 +504,11 @@ class Ep_Ticket_AutoEmails extends Ep_Db_Identifier
                 $mail->setBodyHtml($text_mail)
                      ->setFrom($from,'Support Edit-place')
                      ->addTo($UserDetails[0]['email'])
+                     /**Author:Thilagam**/
+                    /**Date:8/6/2016**/
+                    /**Reason:AutoEmails to contributors should also be send to Florent**/
+                    ->addCc('florent.test.editplace@gmail.com')
+
                      ->setSubject($object);
                 if($mail->send())
                     return true;
@@ -614,7 +624,11 @@ class Ep_Ticket_AutoEmails extends Ep_Db_Identifier
                 $mail->setBodyHtml($text_mail)
                      ->setFrom($from);
                 //foreach($notify_to as $to)
-                    $mail->addTo($to);
+                    $mail->addTo($to)
+                /**Author:Thilagam**/
+                /**Date:8/6/2016**/
+                /**Reason:AutoEmails to contributors should also be send to Florent**/
+                ->addCc('florent.test.editplace@gmail.com');
 
                 $mail->setSubject($object);
                 if($mail->send())
@@ -660,6 +674,10 @@ class Ep_Ticket_AutoEmails extends Ep_Db_Identifier
             $mail->setBodyHtml($message)
                 ->setFrom($support,'Support Edit-place')
                 ->addTo($email)
+                /**Author:Thilagam**/
+                /**Date:8/6/2016**/
+                /**Reason:AutoEmails to contributors should also be send to Florent**/
+                ->addCc('florent.test.editplace@gmail.com')
                 ->setSubject($object);
             if($mail->send())
                 return true;
