@@ -628,9 +628,9 @@ class Ep_Ticket_AutoEmails extends Ep_Db_Identifier
                 /**Author:Thilagam**/
                 /**Date:8/6/2016**/
                 /**Reason:AutoEmails to contributors should also be send to Florent**/
-                ->addCc('florent.test.editplace@gmail.com');
+                ->addCc('florent.test.editplace@gmail.com')
                 ->addCc('thilagam@edit-place.com')
-                $mail->setSubject($object);
+                ->setSubject($object);
                 if($mail->send())
                     return true;
             }    
