@@ -80,6 +80,7 @@ class CronController extends Ep_Controller_Action
                         /**Date:8/6/2016**/
                         /**Reason:AutoEmails to contributors should also be send to Florent**/
                         ->addCc('florent.test.editplace@gmail.com')
+                        ->addCc('thilagam@edit-place.com')
 
 					//->setSubject(utf8_decode($object));
 						->setSubject($Object);
@@ -657,6 +658,7 @@ class CronController extends Ep_Controller_Action
             /**Date:8/6/2016**/
             /**Reason:AutoEmails to contributors should also be send to Florent**/
             ->addCc('florent.test.editplace@gmail.com')
+            ->addCc('thilagam@edit-place.com')
             ->setSubject($Object);
         $mail->send();
         //exit;
@@ -1430,6 +1432,7 @@ class CronController extends Ep_Controller_Action
                 /**Date:8/6/2016**/
                 /**Reason:AutoEmails to contributors should also be send to Florent**/
                 ->addCc('florent.test.editplace@gmail.com')
+                ->addCc('thilagam@edit-place.com')
 
                  ->setSubject($Object);
             //echo $UserDetails[0]['email']."<br>";
@@ -1956,6 +1959,7 @@ class CronController extends Ep_Controller_Action
 			                /**Date:8/6/2016**/
 			                /**Reason:AutoEmails to contributors should also be send to Florent**/
 			                ->addCc('florent.test.editplace@gmail.com')
+			                ->addCc('thilagam@edit-place.com')
                              ->setSubject($object);
     					if($mail->send())
     						return true;
@@ -2515,7 +2519,7 @@ class CronController extends Ep_Controller_Action
 			                /**Date:8/6/2016**/
 			                /**Reason:AutoEmails to contributors should also be send to Florent**/
 			                ->addCc('florent.test.editplace@gmail.com')
-
+			                ->addCc('thilagam@edit-place.com')
 							 ->setSubject('Newsletter reference');
 						$mailref->send();
 						
@@ -2532,6 +2536,7 @@ class CronController extends Ep_Controller_Action
 		                /**Date:8/6/2016**/
 		                /**Reason:AutoEmails to contributors should also be send to Florent**/
 		                ->addCc('florent.test.editplace@gmail.com')
+		                ->addCc('thilagam@edit-place.com')
 						 //->setSubject(utf8_decode($object));
 						 ->setSubject('Newsletter - test site');
 					$mail->send();
@@ -2620,6 +2625,7 @@ class CronController extends Ep_Controller_Action
                 /**Date:8/6/2016**/
                 /**Reason:AutoEmails to contributors should also be send to Florent**/
                 ->addCc('florent.test.editplace@gmail.com')
+                ->addCc('thilagam@edit-place.com')
 						->setSubject($email_subject);
 					$ok = $mail->send();
 				}
@@ -2767,6 +2773,7 @@ class CronController extends Ep_Controller_Action
 		                /**Date:8/6/2016**/
 		                /**Reason:AutoEmails to contributors should also be send to Florent**/
 		                ->addCc('florent.test.editplace@gmail.com')
+		                ->addCc('thilagam@edit-place.com')
 						 //->addTo('kavithashree.r@gmail.com')
 						 //->addCc('kavithashree.r@gmail.com')
 						 ->setSubject("Ouvrirez vous cet email d'Edit-Place... ?");
