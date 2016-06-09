@@ -1,5 +1,4 @@
 <?php
-
 class ClientController extends Ep_Controller_Action 
 {
 	public function init() 

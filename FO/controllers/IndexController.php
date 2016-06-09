@@ -91,7 +91,22 @@ class IndexController extends Ep_Controller_Action
 	}
 	
 	public function indexAction()
-	{	//echo "HI";exit;
+	{
+
+        if($_SERVER['HTTP_HOST']=="ep-test.edit-place.com")
+        {
+            //unset($_COOKIE['languageclick']);
+//            if($_COOKIE['languageclick']=="en")
+//                $this->_redirect('http://www.edit-place.co.uk') ;
+//            elseif($_COOKIE['languageclick']=="fr")
+//                $this->_redirect('http://www.edit-place.fr') ;
+
+            $this->render("index_hub");
+            exit;
+            //$this->_redirect("/index/hub");
+        }
+
+        //echo "HI";exit;
 		$delivery_obj=new Ep_Ao_Delivery();
 		$part_obj=new Ep_Ao_Participation();
 		
