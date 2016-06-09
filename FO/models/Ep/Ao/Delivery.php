@@ -114,18 +114,31 @@ class Ep_Ao_Delivery extends Ep_Db_Identifier
 		 else
 			return "NO";
 	}
-	
+    /* *** edited on 23.05.2015 *** */
+    // to resolve the issue of translation missplaces //
 	public function InsertLiberte($user,$funnel,$funnel2)
 	{
-		$darray = array(); 		
+        $darray = array();
 		$darray["id"] = $this->getIdentifier(); 
 		$darray["user_id"] = $user; 
 		$darray['title']=$this->utf8dec($funnel['aotitle']);
 		$darray['total_article']=$funnel['total_article'];
 		$darray['type']=$funnel['type'];		
-		$darray['other_type']=$funnel['textforother'];		
-		$darray['language']="fr";
-		$darray['publish_language']="fr";
+		$darray['other_type']=$funnel['textforother'];
+        // check if mission is translation or not and insert lang accordingly//
+
+        if($funnel['con_type'] == 'translation'){
+            $darray['product'] = 'translation';
+            $darray['language'] = $funnel['translation_to']; //"fr";
+            $darray['language_source'] = $funnel['translation_from'];
+            $darray['publish_language'] = $funnel['translation_to']; //"fr";
+        }
+        else {
+            $darray['product'] = 'redaction';
+	    	$darray['language']= $funnel['writing_lang'];//"fr";
+    		$darray['publish_language']= $funnel['writing_lang'];//"fr";
+        }
+        // end of  check if mission is translation or not and insert lang accordingly//
 		
 		$darray['min_sign']=$funnel['min_sign'];		
 		$darray['max_sign']=$funnel['max_sign'];		
@@ -176,8 +189,7 @@ class Ep_Ao_Delivery extends Ep_Db_Identifier
 			$darray['created_user']=$funnel['contactidentifier'];
 		else
 			$darray['created_user']=$user;
-			
-		$darray['language']="fr";
+
 	
 		$darray['category']="other";
 		
