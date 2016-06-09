@@ -37,7 +37,6 @@ class Ep_Ao_Participation extends Ep_Db_Identifier
 							p.article_id in (SELECT a.id FROM Article a INNER JOIN Delivery d ON a.delivery_id=d.id 
 						WHERE 
 							d.user_id='".$client."') LIMIT 4";
-		
 		if(($writerSet= $this->getQuery($writerQuery,true)) != NULL)
             return $writerSet;
 	}
