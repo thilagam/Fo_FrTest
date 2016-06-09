@@ -469,7 +469,7 @@ class ClientController extends Ep_Controller_Action
 		//fetching Recent activities of client
 		$activitiescnt=$obj->ListRecentActivitiesCount($this->_view->clientidentifier);
 		$activities=$obj->ListRecentActivities(0,$this->_view->clientidentifier);
-
+		
 			for($r=0;$r<count($activities);$r++)
 			{
 				if($activities[$r]['usertype']=="client")
