@@ -1,5 +1,4 @@
 <?php
-
 class Ep_User_Client extends Ep_Db_Identifier
 {
 	protected $_name = 'Client';
