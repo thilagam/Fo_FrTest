@@ -2,7 +2,6 @@
 class Ep_Ao_PaymentArticle extends Ep_Db_Identifier
 {
 	protected $_name = 'Payment_article';
-	
 	public function insertPayment_article($pay_arr)
 	{
 		$Parray = array(); 
