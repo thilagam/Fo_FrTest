@@ -13,10 +13,11 @@ class Ep_User_User extends Ep_Db_Identifier
 	
 	public function checkUserMailidLogin($mailid,$password)
 	{
-		//$whereQuery = "email = '".$mailid."' and password='".$password."' and verified_status='YES' and status='Active'";
-		$whereQuery = "email = '".$mailid."' and password='".$password."' and status='Active'";
-		$query = "select * from ".$this->_name." where ".$whereQuery;		
-		if(($result = $this->getQuery($query,true)) != NULL)
+		$query = "SELECT * FROM ".$this->_name."
+		        WHERE email = '".$mailid."'
+		        AND password = '".$password."'
+		        AND status='Active'";
+		if( ($result = $this->getQuery($query,true)) != NULL)
 			return $result[0]["identifier"].'@'.$result[0]["type"].'@'.$result[0]["client_reference"];
 		else
 			return "NO";
