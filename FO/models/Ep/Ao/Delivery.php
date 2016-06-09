@@ -1,6 +1,8 @@
 <?php
+
 class Ep_Ao_Delivery extends Ep_Db_Identifier
 {
+	
 	protected $_name = 'Delivery';
 	
 	public function InsertDelivery($user,$funnel)
