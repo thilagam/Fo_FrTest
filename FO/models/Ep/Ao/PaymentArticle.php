@@ -50,10 +50,13 @@ class Ep_Ao_PaymentArticle extends Ep_Db_Identifier
 		$this->updateQuery($array,$where);
 	}
 	
+	/**Author:Thilagam**/
+	/**Date:9/6/2016**/
+	/**Reason:To get the first_name as client_firstname**/
 	public function Listbilling($client)
 	{
 		$billQuery="SELECT 
-						DISTINCT(p.id) as id,a.title,d.id as did,a.id as aid,d.created_at as ddate,p.amount,p.amount_paid,p.created_at,ap.article_sent_at,LOWER(up.first_name) as first_name,up.last_name as last_name
+						DISTINCT(p.id) as id,a.title,d.id as did,a.id as aid,d.created_at as ddate,p.amount,p.amount_paid,p.created_at,ap.article_sent_at,LOWER(up.first_name) as first_name,up.last_name as last_name,up.first_name as client_firstname 
 					FROM 
 						Payment_article p INNER JOIN Article a ON p.id=a.invoice_id 
 						INNER JOIN Delivery d ON a.delivery_id=d.id 
@@ -62,7 +65,7 @@ class Ep_Ao_PaymentArticle extends Ep_Db_Identifier
 						LEFT JOIN UserPlus up ON pr.user_id=up.user_id
 					WHERE 
 						p.user_id='".$client."' AND pr.status IN ('published') GROUP BY p.id";
-		//echo $billQuery;
+		//echo $billQuery;exit;
 		if(($billSet= $this->getQuery($billQuery,true)) != NULL)
             return $billSet;				
 		

@@ -4081,15 +4081,18 @@ class ClientController extends Ep_Controller_Action
 		$part_obj=new Ep_Ao_Participation();
 		$pay_obj=new Ep_Ao_PaymentArticle();
 		$user_obj=new Ep_User_User();
-			
+		
 		//Billing list
 		$billings=$pay_obj->Listbilling($this->_view->clientidentifier);//print_r($billings);
-			for($b=0;$b<count($billings);$b++)
+
+			/**Author:Thilagam**/
+			/**Date:9/6/2016**/
+			/**Reason:Code Optimization**/
+			/*for($b=0;$b<count($billings);$b++)
 			{
 				$clientprofs=$user_obj->getClientdetails($this->_view->clientidentifier); 
 				$billings[$b]['client_firstname']=$clientprofs[0]['first_name'];
-			}
-		
+			}*/
 			if(count($billings)>0)
 			{	
 					$page = $this->_getParam('page',1);
